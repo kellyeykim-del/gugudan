@@ -7,6 +7,7 @@ import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave }
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose, bg, groupImg, deco, rewardFor, earnedCount, showReward, Garden } from "./village.js";
+import { mountSkinSwitch } from "./skin.js";
 
 // ───────────────────────── 홈 ─────────────────────────
 function Home() {
@@ -536,4 +537,5 @@ function route() {
 }
 
 window.addEventListener("hashchange", route);
+mountSkinSwitch();
 route();
