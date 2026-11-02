@@ -1,6 +1,8 @@
-// 소리 내기: 낭독 원음(mp3 클립) → Azure로 미리 만든 mp3 → 브라우저 내장 TTS 순서.
+// 소리 내기: ElevenLabs 새 목소리(바꾼 단만) → 낭독 원음(mp3 클립) → Azure로 미리 만든 mp3 → 브라우저 내장 TTS 순서.
+// 단마다 비트낭독(audio/dan)은 따로 playDan()이 통째로 튼다.
 import { LINE_CLIPS, DAN_CLIPS } from "./audio-manifest.js";
 import { TTS_CLIPS } from "./tts-manifest.js";
+import { VOICE_CLIPS } from "./voice-manifest.js";
 
 const RATES = { slow: 0.7, normal: 0.95, fast: 1.15 };
 const CLIP_RATES = { slow: 0.8, normal: 1, fast: 1.15 }; // 원음은 원래 빠르기가 기준
@@ -68,6 +70,7 @@ function tts(text, speed) {
 // useClip=false면 원음이 있어도 미리 만든 음성으로 (한 단 안에서 목소리를 섞지 않으려고)
 export function speak(text, speed = "normal", useClip = true) {
   const k = clipKey(text);
+  if (VOICE_CLIPS[k]) return playFile(`audio/voice/${VOICE_CLIPS[k]}`, speed);
   const f = useClip && LINE_CLIPS[k];
   if (f) return playFile(`audio/lines/${f}`, speed);
   return TTS_CLIPS[k] ? playFile(`audio/tts/${TTS_CLIPS[k]}`, speed) : tts(text, speed);
@@ -79,7 +82,7 @@ export async function speakAll(lines, speed, onLine) {
   stop();
   const my = ++runId;
   const allClips = lines.every(hasClip);
-  const allFiles = allClips || lines.every((l) => TTS_CLIPS[clipKey(l)]);
+  const allFiles = allClips || lines.every((l) => VOICE_CLIPS[clipKey(l)] || TTS_CLIPS[clipKey(l)]);
   for (let i = 0; i < lines.length; i++) {
     if (my !== runId) return false;
     onLine?.(i);
