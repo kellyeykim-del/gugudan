@@ -5,7 +5,7 @@ import { store } from "./store.js";
 import { speak, stop } from "./speech.js";
 import { pool, blankQ, shuffle } from "./quiz.js";
 import { $app, esc, hl, danLabel, isLocked, header, rangeLabel, onLeave } from "./ui.js";
-import { pose, bg } from "./village.js";
+import { pose } from "./village.js";
 
 // 게임마다 함께하는 친구 (준비·결과 화면에만. 게임 중에는 문제와 버튼을 가리지 않게 넣지 않는다)
 const HOST = { "단어 두더지": "nuri", "주어 룰렛": "minty", "짝꿍 카드": "bobo",
@@ -76,7 +76,7 @@ export function Games(params) {
   };
   $app.innerHTML = `${header(sent ? "게임 (문장형)" : "게임 (구구단형)")}
     <section class="page">
-      <div class="play-hero" style="${bg("playground")}">
+      <div class="play-hero">
         <div class="play-hero-card"><b>놀이터에서 영어 게임!</b><span>틀려도 괜찮아요. 친구들과 다시 도전해요</span></div>
         ${pose("minty", "welcome", { cls: "ph-char" })}${pose("bobo", "welcome", { cls: "ph-char" })}
       </div>
@@ -100,7 +100,7 @@ export function ready(title, ids, icon, rules, start, extra = "") {
   $app.innerHTML = `${header(title, hub(ids))}
     <section class="page">
       <div class="card center ready">
-        <div class="ready-scene" style="${bg("playground")}"><span class="gicon big-icon">${icon}</span>${pose(HOST[title] || "nuri", "welcome", { cls: "ready-char" })}</div>
+        <div class="ready-scene"><span class="gicon big-icon">${icon}</span>${pose(HOST[title] || "nuri", "welcome", { cls: "ready-char" })}</div>
         <h2>${title}</h2>
         <p class="quiet">범위: ${esc(rangeLabel(ids))}</p>
         <ul class="rules">${rules.map((r) => `<li>${r}</li>`).join("")}</ul>

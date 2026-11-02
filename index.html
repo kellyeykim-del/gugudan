@@ -3,22 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#d3e5d8">
+  <meta name="theme-color" content="#F4F1F7">
   <title>신나는 영어구구단</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/skins.css">
-  <script>
-    // 디자인 시안: ?skin=a|b|c 가 있으면 그것, 아니면 이 기기에 기억한 시안, 처음이면 A (자세한 건 js/skin.js)
-    (function () {
-      var q = (location.search.match(/[?&]skin=([abc])/i) || [])[1], s = null;
-      try { s = localStorage.getItem("gugudan.skin"); } catch (e) {}
-      document.documentElement.dataset.skin = (q || s || "a").toLowerCase();
-    })();
-  </script>
 </head>
 <body>
   <main id="app" aria-live="polite"></main>

@@ -1,20 +1,22 @@
 :root {
-  --ink: #2b2a33;
-  --quiet: #6b6873;
-  --line: #e2dccd;
-  --cream: #fdf8ec;
-  --card: #ffffff;
-  --mint: #d3e5d8;
-  --mint-deep: #3f7d63;
-  --red: #e0533f;
-  --purple: #4b3f8f;
+  /* 새 캐릭터 디자인 (characters-design-2026-11-03/DESIGN.md): 소프트 라일락 화면 · 남색 글자 · 빨간 주요 버튼 */
+  --ink: #203A78;
+  --quiet: #5A5E74;
+  --line: #DDD5E7;
+  --cream: #F4F1F7;
+  --card: #FFFEFA;
+  --mint: #E5DEEE;
+  --mint-deep: #203A78;
+  --red: #C8322A;
+  --primary: #E84135;
+  --purple: #203A78;
   --ok: #2f9e66;
   --bad: #d9534f;
   --radius: 20px;
-  --lav: #efeaf9;
-  --lav-deep: #cfc6ea;
-  --paper: #fffdf6;
-  --shadow: 0 6px 20px rgba(91, 78, 52, .08);
+  --lav: #E5DEEE;
+  --lav-deep: #CFC4DE;
+  --paper: #FFFEFA;
+  --shadow: 0 6px 20px rgba(32, 58, 120, .07);
 }
 
 * { box-sizing: border-box; }
@@ -47,9 +49,9 @@ button:disabled { cursor: default; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px;
   padding: 0 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--card);
   font-weight: 600; font-size: 15px; }
-.btn.primary { background: var(--mint-deep); color: #fff; border-color: var(--mint-deep); }
+.btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 800; }
 .btn.ghost { background: transparent; }
-.btn.beat { background: #efeaf9; border-color: #cfc6ea; color: var(--purple); }
+.btn.beat { background: var(--lav); border-color: var(--lav-deep); color: var(--purple); }
 .btn.beat.on { background: var(--purple); color: #fff; }
 .btn.disabled { opacity: .4; pointer-events: none; }
 .btn.block { width: 100%; margin-top: 16px; }
@@ -68,7 +70,7 @@ button:disabled { cursor: default; }
 .about-link .go { font-size: 20px; color: var(--purple); }
 
 /* 소개 */
-.about .hero { text-align: center; background: linear-gradient(180deg, #f1edfb, var(--card)); padding: 28px 18px; }
+.about .hero { text-align: center; background: var(--card); padding: 28px 18px; }
 .about .hero .logo { height: 44px; max-width: 100%; }
 .about .hero h2 { font-size: 30px; margin: 14px 0 4px; }
 .about .lead { font-size: 18px; margin: 0 0 18px; }
@@ -104,7 +106,7 @@ button:disabled { cursor: default; }
 .today .btn { margin-top: 16px; }
 .progress { margin-top: 14px; }
 .progress .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.meter { height: 10px; background: #ece6d6; border-radius: 99px; overflow: hidden; }
+.meter { height: 10px; background: var(--lav); border-radius: 99px; overflow: hidden; }
 .meter i { display: block; height: 100%; background: var(--mint-deep); border-radius: 99px; transition: width .3s; }
 .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
 .tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-height: 96px;
@@ -118,7 +120,7 @@ button:disabled { cursor: default; }
 
 /* 별 */
 .stars { color: #f2b632; letter-spacing: 1px; font-size: 16px; }
-.stars .off { color: #ddd6c3; }
+.stars .off { color: #d6cee2; }
 
 /* 구구단표 카드 */
 .grid-d { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
@@ -165,7 +167,7 @@ button:disabled { cursor: default; }
 .lines li.now { background: #fff5d6; border-color: #f2b632; }
 .lines li.open { background: #f1f8f3; }
 .spk { font-size: 16px; opacity: .6; }
-.mask { display: inline-block; background: #e9e2cf; border-radius: 6px; min-width: 2.2em; }
+.mask { display: inline-block; background: var(--lav-deep); border-radius: 6px; min-width: 2.2em; }
 
 /* 단어 순서 맞추기 */
 .answer { min-height: 64px; border: 2px dashed var(--line); border-radius: 14px; padding: 10px; display: flex; flex-wrap: wrap;
@@ -206,8 +208,11 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .wronglist .quiet { font-size: 13px; margin-top: 4px; }
 
 /* 게임 */
-.tile.game { grid-column: 1 / -1; background: #efeaf9; border-color: #cfc6ea; min-height: 0; gap: 4px; }
+.tile.game { position: relative; grid-column: 1 / -1; min-height: 0; gap: 4px; padding-right: 128px; overflow: hidden; }
 .tile.game b { color: var(--purple); }
+.tile-friends { position: absolute; right: 8px; bottom: -14px; display: flex; width: 132px; }
+.tile-friends .pose { width: 60%; }
+.tile-friends .pose + .pose { margin-left: -20%; }
 .range-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .range-card > div { display: flex; flex-direction: column; gap: 2px; }
 .range-card b { font-size: 20px; }
@@ -218,7 +223,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .gcard b { font-size: 18px; }
 .gcard p { margin: 4px 0 6px; font-size: 14px; color: var(--quiet); line-height: 1.5; }
 .gbest { font-size: 13px; font-weight: 700; color: #b8860b; }
-.gicon { font-size: 40px; width: 64px; height: 64px; border-radius: 18px; background: #efeaf9; display: grid; place-items: center; flex: none; }
+.gicon { font-size: 40px; width: 64px; height: 64px; border-radius: 18px; background: var(--lav); display: grid; place-items: center; flex: none; }
 .ready h2 { margin: 12px 0 2px; }
 .ready .big-icon { margin: 0 auto; width: 88px; height: 88px; font-size: 54px; }
 .rules { text-align: left; max-width: 460px; margin: 16px auto 20px; padding-left: 20px; line-height: 1.8; }
@@ -265,7 +270,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .pcard .pface { display: none; }
 .pcard .pface small { display: block; font-size: 11px; color: var(--quiet); font-weight: 700; margin-bottom: 4px; }
 .pcard .pback { font-size: 30px; font-weight: 800; color: #fff; }
-.pcard:not(.up) { background: linear-gradient(135deg, #6f60c4, var(--purple)); border-color: var(--purple); }
+.pcard:not(.up) { background: var(--purple); border-color: var(--purple); }
 .pcard.up .pface { display: block; }
 .pcard.up .pback { display: none; }
 .pcard.up { animation: flip .2s ease-out; }
@@ -352,13 +357,16 @@ p.cheer { margin: 12px 0 0; }
 /* 홈: 오늘의 단 */
 .today { position: relative; overflow: hidden; display: flex; align-items: flex-end; gap: 12px; padding: 18px;
   background: var(--mint); border-color: transparent; min-height: 250px; }
-.today-bg { position: absolute; inset: 0; background-size: cover; background-position: center 62%; opacity: .55; }
 .today-text { position: relative; z-index: 1; flex: 1 1 auto; max-width: 440px; background: var(--paper); border-radius: 18px;
   padding: 16px 18px; box-shadow: var(--shadow); }
 .today-no { margin-top: 2px; }
-.today-hero { position: relative; z-index: 1; flex: none; width: clamp(162px, 21.6vw, 207px); margin: 0 4px -6px auto; }
-.today-hero img { display: block; width: 100%; height: auto; aspect-ratio: 532 / 599; }
-.bubble { position: absolute; top: -2px; left: -26px; background: #fff; border: 2px solid var(--lav-deep); border-radius: 16px;
+.today-hero { position: relative; z-index: 1; flex: none; width: clamp(260px, 36vw, 380px); margin: 0 0 -10px auto; }
+/* 포즈 칸은 좌우 여백이 넓어 서로 겹쳐 세운다. 가운데 누리가 앞 */
+.friends { display: flex; align-items: flex-end; justify-content: center; }
+.friends .pose { width: 50%; }
+.friends .pose + .pose { margin-left: -24%; }
+.friends .pose:nth-child(2) { position: relative; z-index: 1; width: 54%; }
+.bubble { position: absolute; z-index: 2; top: 0; left: 2px; background: #fff; border: 2px solid var(--lav-deep); border-radius: 16px;
   padding: 6px 12px; font-size: 14px; font-weight: 800; color: var(--purple); white-space: nowrap; box-shadow: var(--shadow); }
 .bubble::after { content: ""; position: absolute; right: 18px; bottom: -9px; width: 14px; height: 14px; background: #fff;
   border-right: 2px solid var(--lav-deep); border-bottom: 2px solid var(--lav-deep); transform: rotate(45deg); }
@@ -372,7 +380,7 @@ p.cheer { margin: 12px 0 0; }
 
 /* 외우기 머리: 장소 배경 + 친구 */
 .scene-head { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; min-height: 124px;
-  padding: 12px; border-radius: var(--radius); background-size: cover; background-position: center 70%; overflow: hidden; }
+  padding: 12px; border-radius: var(--radius); background: var(--lav); overflow: hidden; }
 .danhead-card { display: flex; align-items: center; gap: 18px; background: var(--paper); border-radius: 16px; padding: 12px 16px;
   box-shadow: var(--shadow); min-width: 0; }
 .head-char { width: 124px; margin: -10px -2px -16px 0; }
@@ -381,13 +389,17 @@ p.cheer { margin: 12px 0 0; }
 .who-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .who { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; text-align: center; }
 .who .pose { width: min(100%, 132px); }
-.who .group-img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: contain; }
+.who .group { display: flex; justify-content: center; align-items: flex-end; width: 100%; }
+.who .group .pose { width: 58%; }
+.who .group .pose + .pose { margin-left: -21%; }
+.who .group.n2 .pose { width: 70%; }
+.who .group.n2 .pose + .pose { margin-left: -40%; }
 .who span { font-size: 13px; color: var(--quiet); }
 .who b { display: block; font-size: 20px; color: var(--ink); }
 
 /* 비트낭독 무대 */
 .stage { position: relative; display: flex; flex-direction: column; justify-content: flex-end; aspect-ratio: 5 / 2; margin: 0 0 14px;
-  border-radius: var(--radius); background-size: cover; background-position: center 78%; overflow: hidden; }
+  border-radius: var(--radius); background: var(--lav); overflow: hidden; }
 .band { display: flex; justify-content: center; gap: 2%; padding: 0 8%; }
 .band .pose { width: min(24%, 180px); }
 .stage-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 10px 10px; padding: 6px 6px 6px 14px;
@@ -406,14 +418,14 @@ p.cheer { margin: 12px 0 0; }
 
 /* 게임: 놀이터 */
 .play-hero { position: relative; display: flex; align-items: flex-end; gap: 4px; min-height: 124px; padding: 12px; margin-bottom: 12px;
-  border-radius: var(--radius); background-size: cover; background-position: center 70%; overflow: hidden; }
+  border-radius: var(--radius); background: var(--lav); overflow: hidden; }
 .play-hero-card { display: flex; flex-direction: column; gap: 2px; margin-right: auto; max-width: 64%; background: var(--paper);
   border-radius: 16px; padding: 10px 14px; box-shadow: var(--shadow); }
 .play-hero-card b { font-size: 17px; color: var(--purple); }
 .play-hero-card span { font-size: 13px; color: var(--quiet); }
 .ph-char { width: 100px; margin-bottom: -14px; }
 .ready-scene { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 14px; height: 130px;
-  margin: -4px -4px 0; border-radius: 16px; background-size: cover; background-position: center 70%; overflow: hidden; }
+  margin: -4px -4px 0; border-radius: 16px; background: var(--lav); overflow: hidden; }
 .ready-scene .big-icon { margin: 0 0 14px; background: var(--paper); box-shadow: var(--shadow); }
 .ready-char { width: 120px; margin-bottom: -10px; }
 .score-char { display: block; width: 120px; margin: 0 auto 4px; }
@@ -449,9 +461,12 @@ p.cheer { margin: 12px 0 0; }
   .today-text { padding: 14px; }
   .today-no { font-size: 34px; }
   .today-line { font-size: 19px; }
-  .today-hero { width: 101px; margin: 0 -2px -14px 0; }
-  .bubble { top: -34px; left: auto; right: 0; font-size: 13px; padding: 5px 10px; }
-  .bubble::after { right: 40px; }
+  .today { flex-direction: column; align-items: stretch; }
+  .today-hero { order: -1; width: 230px; margin: -6px -8px -14px auto; }
+  .today-text { max-width: none; }
+  .bubble { top: 18px; left: -84px; font-size: 13px; padding: 5px 10px; }
+  .tile.game { padding-right: 104px; }
+  .tile-friends { width: 104px; right: 2px; }
   .scene-head { min-height: 104px; padding: 10px; }
   .danhead-card { gap: 10px; padding: 10px 12px; }
   .danhead-card .big { font-size: 24px; }

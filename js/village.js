@@ -9,9 +9,9 @@ const IMG = "img/village/";
 
 // ── 캐릭터 (manifest.characters) ─────────────────────────
 export const CHARS = {
-  nuri: { name: "누리", desc: "노란 강아지" },
-  minty: { name: "민티", desc: "민트 토끼" },
-  bobo: { name: "보보", desc: "보라 곰" },
+  nuri: { name: "누리", desc: "빨간 강아지" },
+  minty: { name: "민티", desc: "하늘색 토끼" },
+  bobo: { name: "보보", desc: "남색 곰" },
 };
 const POSE_SHEET = { w: 1536, h: 1024 };
 const POSES = {
@@ -54,8 +54,6 @@ const BACKGROUNDS = {
   garden: "background-reward-garden.jpg",
 };
 export const bg = (k) => `background-image:url(${IMG}${BACKGROUNDS[k]})`;
-export const groupImg = (k, alt) =>
-  `<img class="group-img" src="${IMG}group-${k}.png" width="960" height="640" alt="${esc(alt)}" loading="lazy">`;
 
 // ── 보상 장식 (manifest.rewards, 4열×3행) ─────────────────────────
 const DECO_SHEET = { w: 1448, h: 1086 };

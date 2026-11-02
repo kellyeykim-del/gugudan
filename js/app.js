@@ -6,10 +6,12 @@ import { buildQuiz, findBlank, tokens, splitPunct, shuffle } from "./quiz.js";
 import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave } from "./ui.js";
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
-import { pose, setPose, bg, groupImg, deco, rewardFor, earnedCount, showReward, Garden } from "./village.js";
-import { mountSkinSwitch } from "./skin.js";
+import { pose, setPose, bg, deco, rewardFor, earnedCount, showReward, Garden } from "./village.js";
 
 // ───────────────────────── 홈 ─────────────────────────
+// 게임 카드 오른쪽의 작은 민티 · 보보
+const TILE_FRIENDS = `<span class="tile-friends">${pose("minty", "welcome")}${pose("bobo", "welcome")}</span>`;
+
 function Home() {
   const today = MAIN_DANS.find((d) => !store.passed(d.id)) || MAIN_DANS[0];
   const passed = store.passedCount();
@@ -20,7 +22,6 @@ function Home() {
     <section class="home">
       <a class="brand" href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"><h1>신나는 영어구구단</h1></a>
       <a class="today card" href="#/dan/${today.id}">
-        <span class="today-bg" style="${bg("village")}" aria-hidden="true"></span>
         <div class="today-text">
           <div class="today-head"><span class="kicker">오늘의 단</span>${starsHtml(today.id)}</div>
           <div class="today-no">${danLabel(today)}</div>
@@ -30,7 +31,7 @@ function Home() {
         </div>
         <div class="today-hero" aria-hidden="true">
           <span class="bubble">같이 해볼까?</span>
-          <img src="img/village/nuri-hero.png" width="532" height="599" alt="">
+          <div class="friends">${pose("minty", "welcome")}${pose("nuri", "welcome")}${pose("bobo", "welcome")}</div>
         </div>
       </a>
       <div class="progress card">
@@ -43,8 +44,8 @@ function Home() {
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
-        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span></a>
-        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span></a>
+        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${TILE_FRIENDS}</a>
+        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${TILE_FRIENDS}</a>
         <a class="tile" href="#/table"><b>구구단표</b><span>36단 한눈에 보기</span></a>
         <a class="tile" href="#/pick"><b>범위 고르고 연습</b><span>1단 · 묶음 · 10단 · 전체</span></a>
         <a class="tile" href="#/pick?mode=quiz"><b>시험 보기</b><span>빈칸 · 순서 · 듣기</span></a>
@@ -223,7 +224,7 @@ function Dan(id, params) {
 
   $app.innerHTML = `${header(`${danLabel(d)} 외우기`, "#/table")}
     <section class="page">
-      <div class="danhead scene-head" style="${bg(/ice cream/i.test(d.theme?.en || "") ? "icecream" : "school")}">
+      <div class="danhead scene-head">
         <div class="danhead-card"><div><div class="big">${danLabel(d)}</div><div class="quiet">${esc(d.meaning)}</div></div>${starsHtml(d.id)}</div>
         ${pose(STEP_CHAR[step][0], STEP_CHAR[step][1], { cls: "head-char" })}
       </div>
@@ -241,20 +242,23 @@ function Dan(id, params) {
 const STEP_CHAR = { see: ["nuri", "listen"], hide: ["minty", "encourage"], order: ["bobo", "welcome"] };
 const headChar = () => $app.querySelector(".head-char");
 
-// 비트낭독 무대: 선생님 원음이 실제로 재생되는 동안만 .playing (박자 정보는 없어 가벼운 반복 움직임만)
-const STAGE = `<div class="stage" style="${bg("stage")}">
-    <div class="band">${pose("nuri", "rhythm", { label: "마이크를 든 누리" })}${pose("minty", "rhythm", { label: "탬버린을 든 민티" })}${pose("bobo", "rhythm", { label: "북을 치는 보보" })}</div>
+// 비트낭독 무대 (라일락 단색): 선생님 원음이 실제로 재생되는 동안만 .playing (박자 정보는 없어 가벼운 반복 움직임만)
+const STAGE = `<div class="stage">
+    <div class="band">${pose("nuri", "rhythm", { label: "리듬을 타는 누리" })}${pose("minty", "rhythm", { label: "발끝으로 통통 뛰는 민티" })}${pose("bobo", "rhythm", { label: "무릎을 굽히며 박자 맞추는 보보" })}</div>
     <div class="stage-bar"><span class="stage-note" id="stage-note">선생님 원음을 준비하고 있어요</span><button class="btn ghost" id="beatstop">■ 그만</button></div>
   </div>`;
 
 // 1단 주어 그림: I는 누리 자신, We는 누리를 포함한 셋, They는 누리가 가리키는 두 친구
+// 여러 친구를 한 칸에 겹쳐 세운다 (예전 group-we/they 그림은 옛 캐릭터라 쓰지 않는다)
+const group = (poses, label) => `<span class="group n${poses.length}" role="img" aria-label="${esc(label)}">${poses.join("")}</span>`;
+
 function whoPanel(lines) {
   const fig = (i, img, title, desc) => `<button class="who card" data-i="${i}">${img}<span><b>${title}</b>${desc}</span></button>`;
   return `<h3 class="sec">누가 누구일까요? <span class="quiet">그림을 누르면 들려줘요</span></h3>
     <div class="who-grid">
       ${fig(0, pose("nuri", "self", { label: "자기 자신을 가리키는 누리" }), esc(lines[0]), "말하는 나, 누리")}
-      ${fig(2, groupImg("we", "누리, 민티, 보보가 아이스크림을 들고 함께 있는 모습"), esc(lines[2]), "누리를 포함한 우리 셋")}
-      ${fig(3, groupImg("they", "누리가 떨어져 있는 민티와 보보를 가리키는 모습"), esc(lines[3]), "누리가 가리키는 저 두 친구")}
+      ${fig(2, group([pose("nuri", "self"), pose("minty", "welcome"), pose("bobo", "welcome")], "누리, 민티, 보보가 함께 있는 모습"), esc(lines[2]), "누리를 포함한 우리 셋")}
+      ${fig(3, group([pose("minty", "welcome"), pose("bobo", "welcome")], "저쪽에 함께 서 있는 민티와 보보"), esc(lines[3]), "누리가 가리키는 저 두 친구")}
     </div>`;
 }
 
@@ -537,5 +541,4 @@ function route() {
 }
 
 window.addEventListener("hashchange", route);
-mountSkinSwitch();
 route();
