@@ -316,17 +316,20 @@ const STAGE = `<div class="stage">
     <div class="stage-bar"><span class="stage-note" id="stage-note">선생님 원음을 준비하고 있어요</span><button class="btn ghost" id="beatstop">■ 그만</button></div>
   </div>`;
 
-// 1단 주어 그림: I는 말문이 자신, We는 말문이를 포함한 셋, They는 말문이가 가리키는 두 친구
+// 1단 주어 그림: I는 말문이 자신, We는 말문이를 가운데 둔 셋, They는 손을 든 말문이가 가리키는 저쪽 두 친구(작게 = 멀리)
 // 여러 친구를 한 칸에 겹쳐 세운다 (예전 group-we/they 그림은 옛 캐릭터라 쓰지 않는다)
-const group = (poses, label) => `<span class="group n${poses.length}" role="img" aria-label="${esc(label)}">${poses.join("")}</span>`;
+const group = (poses, label, cls = "") => `<span class="group n${poses.length} ${cls}" role="img" aria-label="${esc(label)}">${poses.join("")}</span>`;
+// They: 말문이 손끝에서 저쪽 두 친구로 이어지는 점선 화살표
+const POINT = `<svg class="point" viewBox="0 0 60 30" aria-hidden="true"><path d="M4 22 Q30 2 52 14" fill="none" stroke="#65584E" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round"/><path d="M44 8 L54 15 L43 19" fill="none" stroke="#65584E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function whoPanel(lines) {
   const fig = (i, img, title, desc) => `<button class="who card" data-i="${i}">${img}<span><b>${title}</b>${desc}</span></button>`;
   return `<h3 class="sec">누가 누구일까요? <span class="quiet">그림을 누르면 들려줘요</span></h3>
     <div class="who-grid">
       ${fig(0, pose("nuri", "self", { label: "자기 자신을 가리키는 말문이" }), esc(lines[0]), "말하는 나, 말문이")}
-      ${fig(2, group([pose("nuri", "self"), pose("minty", "welcome"), pose("bobo", "welcome")], "말문이, 귀담이, 차분이가 함께 있는 모습"), esc(lines[2]), "말문이를 포함한 우리 셋")}
-      ${fig(3, group([pose("minty", "welcome"), pose("bobo", "welcome")], "저쪽에 함께 서 있는 귀담이와 차분이"), esc(lines[3]), "말문이가 가리키는 저 두 친구")}
+      ${fig(2, group([pose("minty", "welcome"), pose("nuri", "self"), pose("bobo", "welcome")], "말문이가 가운데에서 귀담이, 차분이와 나란히 선 모습", "we"), esc(lines[2]), "말문이를 포함한 우리 셋")}
+      ${fig(3, `<span class="group they" role="img" aria-label="말문이가 손을 들어 저쪽의 귀담이와 차분이를 가리키는 모습">
+          ${pose("nuri", "rhythm")}${POINT}<span class="far">${pose("minty", "welcome")}${pose("bobo", "welcome")}</span></span>`, esc(lines[3]), "말문이가 가리키는 저 두 친구")}
     </div>`;
 }
 

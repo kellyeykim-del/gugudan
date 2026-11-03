@@ -369,12 +369,18 @@ p.cheer { margin: 12px 0 0; }
 /* 1단 주어 그림 */
 .who-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .who { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; text-align: center; }
-.who .pose { width: min(100%, 132px); }
-.who .group { display: flex; justify-content: center; align-items: flex-end; width: 100%; }
-.who .group .pose { width: 58%; }
-.who .group .pose + .pose { margin-left: -21%; }
-.who .group.n2 .pose { width: 70%; }
-.who .group.n2 .pose + .pose { margin-left: -40%; }
+.who > .pose { width: min(62%, 120px); }
+.who > .pose, .who .group { margin-top: auto; } /* 그림 셋의 발끝을 맞춘다 */
+/* We · They는 I 그림(132px)과 같은 몸집으로 보이게 폭을 묶는다. 시트 칸 좌우 여백이 넓어 칸끼리 겹쳐 세운다 */
+.who .group { position: relative; display: flex; justify-content: center; align-items: flex-end; width: 100%; max-width: 250px; }
+.who .group.we .pose { width: 46%; }
+.who .group.we .pose + .pose { margin-left: -19%; }
+.who .group.we .pose:nth-child(2) { position: relative; z-index: 1; }
+.who .group.they > .pose { width: 50%; margin-right: -10%; }
+.who .group.they .far { display: flex; align-items: flex-end; width: 56%; margin-bottom: 8%; }
+.who .group.they .far .pose { width: 66%; }
+.who .group.they .far .pose + .pose { margin-left: -32%; }
+.who .group.they .point { position: absolute; left: 34%; top: 2%; width: 26%; }
 .who span { font-size: 13px; color: var(--quiet); }
 .who b { display: block; font-size: 20px; color: var(--ink); }
 
