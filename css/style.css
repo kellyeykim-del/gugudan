@@ -486,3 +486,74 @@ p.cheer { margin: 12px 0 0; }
 @media (prefers-reduced-motion: reduce) {
   .stage.playing .band .pose, .fresh, .rw-new, .reward-card { animation: none; }
 }
+
+/* ───────────── 5구간 색 (world-story-v2/tokens.json) ─────────────
+   페이지 바탕 · 장면 바탕만 바꾼다. 캐릭터 · 카드 · 남색 글자 · 빨간 주요 버튼은 모든 구간에서 같다.
+   방향색(--accent)은 작은 표시에만 쓰고 넓은 면에는 쓰지 않는다. */
+:root { --accent: #7963A8; }
+:root[data-region="r2"] { --cream: #F0F5EF; --mint: #DCE8DD; --lav: #DCE8DD; --lav-deep: #BFD3C1; --accent: #42695A; }
+:root[data-region="r3"] { --cream: #FBF2E8; --mint: #F1DECA; --lav: #F1DECA; --lav-deep: #E2C5A8; --accent: #955D38; }
+:root[data-region="r4"] { --cream: #F0F1F8; --mint: #DDE1F0; --lav: #DDE1F0; --lav-deep: #C3CAE4; --accent: #4C5DA1; }
+:root[data-region="bonus"] { --cream: #FAF0F2; --mint: #EEDDE3; --lav: #EEDDE3; --lav-deep: #DCC0CA; --accent: #955B70; }
+.region-tag { display: inline-block; font-size: 12px; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
+
+/* 캐릭터 게임 아이콘: 타일 바탕은 구간 색, 그림은 투명 PNG */
+.gicon { overflow: hidden; }
+.gimg { display: block; width: 84%; height: auto; }
+
+/* 우리 목소리 탐험 */
+.region-thumb { background: var(--lav); align-items: end; overflow: hidden; }
+.region-thumb .pose { width: 100%; margin-bottom: -6px; }
+.journey .story { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.journey .story p { margin: 0; line-height: 1.7; }
+.journey .story .friends { width: 150px; flex: none; }
+.region-card { position: relative; margin-bottom: 12px; padding: 16px 18px; border-radius: var(--radius); box-shadow: var(--shadow);
+  background: var(--scene, #E5DEEE); }
+.region-card .meter { background: var(--card); }
+.region-card[data-region="r1"] { --scene: #E5DEEE; --acc: #7963A8; }
+.region-card[data-region="r2"] { --scene: #DCE8DD; --acc: #42695A; }
+.region-card[data-region="r3"] { --scene: #F1DECA; --acc: #955D38; }
+.region-card[data-region="r4"] { --scene: #DDE1F0; --acc: #4C5DA1; }
+.region-card[data-region="bonus"] { --scene: #EEDDE3; --acc: #955B70; }
+.region-top { display: flex; justify-content: space-between; gap: 10px; }
+.region-range { font-size: 12px; font-weight: 800; color: var(--acc, var(--accent)); }
+.region-card h3 { margin: 2px 0 4px; font-size: 20px; }
+.region-card p { margin: 0 0 10px; font-size: 14px; color: var(--quiet); line-height: 1.6; }
+.region-char { width: 84px; margin: -8px -6px -4px 0; background-color: transparent; }
+.region-card .row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+.region-card .meter i { background: var(--acc, var(--accent)); }
+.module-on { font-weight: 800; color: var(--acc); }
+.region-act { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.badge-done { font-weight: 800; color: var(--ok); }
+.small { font-size: 13px; }
+.core-card { background: #272D52; color: #fff; }
+.core-card h3 { color: #fff; }
+.core-card p, .core-card .small { color: #E4E6F2; }
+.core-card .region-range { color: #D7B36A; }
+.jbox { margin-top: 12px; }
+.qsentence.masked { background: var(--lav); }
+
+/* 마지막 도전 화면: 짙은 남보라 바탕에 밝은 받침 (보보 실루엣이 묻히지 않게) */
+:root[data-region="core"] { --cream: #272D52; }
+:root[data-region="core"] .bar h1 { color: #fff; }
+.core-page .card { margin-top: 12px; }
+.core-machine { display: grid; place-items: center; height: 150px; border-radius: 50% 50% 24px 24px; background: #343B6B; }
+.core-machine.small { height: 84px; }
+.rings { display: flex; gap: 12px; }
+.ring { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 50%; border: 5px solid #5A628F; color: #C9CDE6;
+  font-weight: 800; font-size: 14px; background: #272D52; }
+.core-machine.small .ring { width: 54px; height: 54px; border-width: 4px; font-size: 12px; }
+.ring.on { border-color: #D7B36A; color: #fff; }
+.friends.small { width: 220px; margin: 8px auto 4px; }
+.medal { display: flex; justify-content: center; gap: 4px; width: 132px; height: 132px; margin: 4px auto 10px; border-radius: 50%;
+  background: #D7B36A; border: 6px solid #FFF4DF; box-shadow: 0 0 0 3px #D7B36A; align-items: center; }
+.medal span { font-size: 12px; font-weight: 800; color: #272D52; background: #FFF4DF; border-radius: 99px; padding: 3px 6px; }
+.core-reward .friends { width: 260px; margin: 6px auto; }
+.thanks { list-style: none; padding: 0; margin: 10px auto; max-width: 420px; text-align: left; display: grid; gap: 6px; }
+.thanks li { background: var(--lav); border-radius: 12px; padding: 8px 12px; }
+.thanks b { margin-right: 8px; }
+@media (max-width: 560px) {
+  .journey .story { flex-direction: column; }
+  .region-char { width: 70px; }
+  .ring { width: 58px; height: 58px; font-size: 12px; }
+}

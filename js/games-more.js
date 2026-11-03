@@ -21,7 +21,7 @@ export function Blocks(params) {
   const { ids } = gameRange(params);
   const items = mixed(ids.map(getDan), (s) => tokens(s).length >= 3 && tokens(s).length <= 8);
   if (!items.length) return noGame("문장 블록 쌓기", ids, "이 범위에는 블록으로 만들 문장이 없어요. 다른 단을 골라 주세요.");
-  ready("문장 블록 쌓기", ids, "🧱", [
+  ready("문장 블록 쌓기", ids, "blocks", [
     "위에서 단어 블록이 천천히 떨어져요. 문장 순서대로 블록을 누르세요.",
     "블록이 바닥에 닿으면 ❤️ 하나가 줄고, 그 문장을 처음부터 다시 해요.",
     "문장을 완성할 때마다 탑이 한 층씩 올라가요. 10층이면 성공!",
@@ -161,7 +161,7 @@ export function Bingo(params) {
   if (items.length < 9) return noGame("듣고 빙고", ids, "빙고판을 채울 문장이 모자라요. 단을 더 골라 주세요.");
   const size = items.length >= 16 ? 4 : 3;
   const goal = size === 4 ? 3 : 2;
-  ready("듣고 빙고", ids, "🔢", [
+  ready("듣고 빙고", ids, "bingo", [
     `${size}×${size} 빙고판에 문장이 깔려요. 앱이 읽어 주는 문장을 찾아 누르세요.`,
     `가로·세로·대각선 한 줄을 채우면 빙고! ${goal}줄을 먼저 채우면 끝이에요.`,
     "He has.와 She has.처럼 비슷한 문장이 섞여 있으니 잘 들어요.",
@@ -278,7 +278,7 @@ export function Duel(params) {
   const { ids } = gameRange(params);
   const items = ids.map(getDan).flatMap((d) => pool(d).map((s) => blankQ(d, s)).filter(Boolean));
   if (!items.length) return noGame("1:1 스피드 대결", ids, "이 범위에는 빈칸 문제가 없어요. 다른 단을 골라 주세요.");
-  ready("1:1 스피드 대결", ids, "⚔️", [
+  ready("1:1 스피드 대결", ids, "duel", [
     "기기를 가운데 두고 두 사람이 마주 앉아요. 휴대폰·태블릿이면 위쪽 화면이 뒤집혀 보여요.",
     "같은 빈칸 문제가 양쪽에 나와요. 먼저 맞히는 사람이 1점!",
     "틀리면 그 문제는 더 누를 수 없어요. 먼저 5점을 내면 승리!",

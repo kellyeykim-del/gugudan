@@ -6,6 +6,10 @@ import { speak, stop } from "./speech.js";
 import { pool, blankQ, shuffle } from "./quiz.js";
 import { $app, esc, hl, danLabel, isLocked, header, rangeLabel, onLeave } from "./ui.js";
 import { pose } from "./village.js";
+import { setRegion, regionForIds } from "./journey.js";
+
+// 캐릭터 게임 아이콘 (characters-design-2026-11-03/game-icon-proposal). 게임 이름이 따로 읽히므로 꾸밈 그림.
+export const gameIcon = (k) => `<img class="gimg" src="img/games/${k}.png" width="96" height="96" alt="">`;
 
 // 게임마다 함께하는 친구 (준비·결과 화면에만. 게임 중에는 문제와 버튼을 가리지 않게 넣지 않는다)
 const HOST = { "단어 두더지": "nuri", "주어 룰렛": "minty", "짝꿍 카드": "bobo",
@@ -41,25 +45,25 @@ export function timers() {
 }
 
 const GAMES = [
-  { k: "mole", key: "mole20", icon: "🐹", name: "단어 두더지",
+  { k: "mole", key: "mole20", name: "단어 두더지",
     desc: "빈칸에 맞는 단어(am · does · has …)가 적힌 두더지를 잡아요. 20문제, 100점 만점!",
     sdesc: "빈칸에 맞는 단어(am · are · is)가 적힌 두더지를 잡아요. She ____ sad. 20문제, 100점 만점!",
     best: (v) => `최고 ${v}점 / 100` },
-  { k: "roulette", icon: "🎰", name: "주어 룰렛",
+  { k: "roulette", name: "주어 룰렛",
     desc: "룰렛이 고른 단과 주어로 3초 안에 문장을 말해요. 18단 + She → Did she take?",
     sdesc: "룰렛이 고른 우리말 문장을 3초 안에 영어로 말해요. 그녀는 슬퍼요? → Is she sad?",
     best: (v) => `최고 ${v} / 10` },
-  { k: "pairs", icon: "🃏", name: "짝꿍 카드",
+  { k: "pairs", name: "짝꿍 카드",
     desc: "뒤집힌 카드에서 같은 주어끼리 짝을 찾아요. He has. ↔ He doesn't have.",
     sdesc: "뒤집힌 카드에서 짝이 되는 문장을 찾아요. She is sad. ↔ She is not sad.",
     best: (v) => `최소 ${v}번 만에 성공` },
-  { k: "blocks", icon: "🧱", name: "문장 블록 쌓기",
+  { k: "blocks", name: "문장 블록 쌓기",
     desc: "떨어지는 단어 블록을 문장 순서대로 눌러 탑을 쌓아요. 바닥에 닿기 전에!",
     best: (v) => `최고 ${v}층` },
-  { k: "bingo", icon: "🔢", name: "듣고 빙고",
+  { k: "bingo", name: "듣고 빙고",
     desc: "문장을 듣고 빙고판에서 찾아 눌러요. 교실에서는 선생님이 불러 주는 모드로.",
     best: (v) => `최소 실수 ${v}번` },
-  { k: "duel", icon: "⚔️", name: "1:1 스피드 대결",
+  { k: "duel", name: "1:1 스피드 대결",
     desc: "한 기기를 가운데 두고 마주 앉아, 같은 문제를 누가 먼저 맞히나 겨뤄요.",
     best: null },
 ];
@@ -67,6 +71,7 @@ const GAMES = [
 // ───────────────────────── 게임 고르기 ─────────────────────────
 export function Games(params) {
   const { ids, note } = gameRange(params);
+  setRegion(regionForIds(ids)); // 범위가 한 구간일 때만 그 구간 색
   const q = `ids=${ids.join(",")}`;
   const sent = isSent(ids);
   // 문장형은 1·2·3단을 바로 켜고 끈다 (하나는 꼭 남긴다)
@@ -89,7 +94,7 @@ export function Games(params) {
       <div class="games">${GAMES.map((g) => {
         const b = store.best(bestKey(g.key || g.k, ids));
         return `<a class="gcard" href="#/game/${g.k}?${q}">
-          <span class="gicon">${g.icon}</span>
+          <span class="gicon">${gameIcon(g.k)}</span>
           <div><b>${g.name}</b><p>${sent && g.sdesc ? g.sdesc : g.desc}</p><span class="gbest">${!g.best ? "👥 2인용" : b === undefined ? "아직 기록 없음" : `🏆 ${g.best(b)}`}</span></div>
         </a>`;
       }).join("")}</div>
@@ -97,10 +102,11 @@ export function Games(params) {
 }
 
 export function ready(title, ids, icon, rules, start, extra = "") {
+  setRegion(regionForIds(ids));
   $app.innerHTML = `${header(title, hub(ids))}
     <section class="page">
       <div class="card center ready">
-        <div class="ready-scene"><span class="gicon big-icon">${icon}</span>${pose(HOST[title] || "nuri", "welcome", { cls: "ready-char" })}</div>
+        <div class="ready-scene"><span class="gicon big-icon">${gameIcon(icon)}</span>${pose(HOST[title] || "nuri", "welcome", { cls: "ready-char" })}</div>
         <h2>${title}</h2>
         <p class="quiet">범위: ${esc(rangeLabel(ids))}</p>
         <ul class="rules">${rules.map((r) => `<li>${r}</li>`).join("")}</ul>
@@ -146,7 +152,7 @@ export function Mole(params) {
   const { ids } = gameRange(params);
   const items = ids.map(getDan).flatMap((d) => pool(d).map((s) => blankQ(d, s)).filter(Boolean));
   if (!items.length) return noGame("단어 두더지", ids, "이 범위에는 빈칸 문제가 없어요. 다른 단을 골라 주세요.");
-  ready("단어 두더지", ids, "🐹", [
+  ready("단어 두더지", ids, "mole", [
     "문장의 빈칸에 맞는 단어가 적힌 두더지를 잡으세요.",
     `모두 ${MOLE_N}문제, 100점 만점이에요. 한 문제에 5점!`,
     "틀린 두더지를 잡으면 그 문제는 틀린 걸로 하고 다음 문제로 넘어가요.",
@@ -260,7 +266,7 @@ export function Roulette(params) {
   // 주어 7개로 된 단만 (There is/are처럼 틀이 다른 단은 빼고)
   const dans = ids.map(getDan).filter((d) => d.lines.length === 7 && !d.drillFromExamples);
   if (!dans.length) return noGame("주어 룰렛", ids, "이 범위에는 주어 7개로 된 단이 없어요. 다른 단을 골라 주세요.");
-  ready("주어 룰렛", ids, "🎰", isSent(ids) ? [
+  ready("주어 룰렛", ids, "roulette", isSent(ids) ? [
     "룰렛이 단 하나와 주어 하나를 고르고, 우리말 문장을 보여 줘요.",
     "3초 안에 영어 문장으로 소리 내어 말해 보세요.",
     "정답을 듣고, 맞혔는지 스스로 체크해요. 모두 10판!",
@@ -383,7 +389,7 @@ export function Pairs(params) {
   const either = open.filter((p) => ids.includes(p.a.id) || ids.includes(p.b.id));
   const set = pick(both.length ? both : either.length ? either : open);
   const outside = !both.length;
-  ready("짝꿍 카드", ids, "🃏", [
+  ready("짝꿍 카드", ids, "pairs", [
     `이번 짝꿍: <b>${danLabel(set.a)}</b> ↔ <b>${danLabel(set.b)}</b> (${set.kind})`,
     sent ? "카드를 두 장씩 뒤집어 짝이 되는 문장을 찾으세요." : "카드를 두 장씩 뒤집어 같은 주어끼리 짝을 찾으세요.",
     "뒤집을 때마다 문장을 읽어 줘요. 적은 횟수로 다 찾을수록 좋아요!",

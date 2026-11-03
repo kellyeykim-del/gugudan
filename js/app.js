@@ -7,10 +7,11 @@ import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave }
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose, bg, deco, rewardFor, earnedCount, showReward, Garden } from "./village.js";
+import { regionOf, regionDans, setRegion, regionForIds, regionJustDone, Journey, Challenge, Core } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
-// 게임 카드 오른쪽의 작은 민티 · 보보
-const TILE_FRIENDS = `<span class="tile-friends">${pose("minty", "welcome")}${pose("bobo", "welcome")}</span>`;
+// 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 빨간 누리를 넣어 파랑·남색만 남지 않게 하고, 짝꿍은 카드마다 바꾼다
+const tileFriends = (other, act) => `<span class="tile-friends">${pose("nuri", "welcome")}${pose(other, act)}</span>`;
 
 function Home() {
   const today = MAIN_DANS.find((d) => !store.passed(d.id)) || MAIN_DANS[0];
@@ -18,6 +19,9 @@ function Home() {
   const wrong = store.wrongIds().length;
   const earned = earnedCount();
   const gardenNo = Math.min(Math.floor((today.no - 1) / 12), 2) + 1 || 1;
+  const region = regionOf(today);
+  const rDans = regionDans(region);
+  setRegion(region.id);
   $app.innerHTML = `
     <section class="home">
       <a class="brand" href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"><h1>신나는 영어구구단</h1></a>
@@ -38,14 +42,19 @@ function Home() {
         <div class="row"><b>통과한 단</b><span>${passed} / ${MAIN_DANS.length}</span></div>
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
+      <a class="garden-link card journey-link" href="#/journey">
+        <span class="garden-thumb region-thumb" aria-hidden="true">${pose(region.host, "welcome")}</span>
+        <div><b>🎙 우리 목소리 탐험</b><span>${esc(region.place)} · 목소리 카드 ${rDans.filter((x) => store.passed(x.id)).length} / ${rDans.length}</span></div>
+        <span class="go" aria-hidden="true">→</span>
+      </a>
       <a class="garden-link card" href="#/garden?g=${gardenNo}">
         <span class="garden-thumb" style="${bg("garden")}" aria-hidden="true">${deco(Math.max(0, (Math.min(earned, 36) - 1) % 12))}</span>
         <div><b>🌷 우리 마을 정원</b><span>${earned ? `장식 ${earned} / 36개 · 단을 통과할 때마다 하나씩 생겨요` : "단을 처음 통과하면 정원에 장식이 생겨요"}</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
-        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${TILE_FRIENDS}</a>
-        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${TILE_FRIENDS}</a>
+        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("bobo", "encourage")}</a>
+        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("minty", "welcome")}</a>
         <a class="tile" href="#/table"><b>구구단표</b><span>36단 한눈에 보기</span></a>
         <a class="tile" href="#/pick"><b>범위 고르고 연습</b><span>1단 · 묶음 · 10단 · 전체</span></a>
         <a class="tile" href="#/pick?mode=quiz"><b>시험 보기</b><span>빈칸 · 순서 · 듣기</span></a>
@@ -216,16 +225,20 @@ function Dan(id, params) {
       if (st) st.outerHTML = starsHtml(d.id);
       if (n === 3 && rewardFor(d)) showReward(d);
       else toast(n === 3 ? `🎉 ${danLabel(d)} 통과! 별 3개` : `⭐ 별 ${n}개`);
+      // 구간의 마지막 단을 마치면 탐험 지도 소식을 한 번 더 (보상 창이 닫힐 즈음)
+      const r = n === 3 && regionJustDone(d);
+      if (r) setTimeout(() => toast(`🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`), rewardFor(d) ? 2500 : 1800);
     }
   };
 
   const tabs = STEP_TABS.map((t) =>
     `<a class="tab ${t.k === step ? "on" : ""}" href="#/dan/${d.id}?step=${t.k}">${t.label}${store.stepDone(d.id, t.k) ? " ✓" : ""}</a>`).join("");
 
+  setRegion(regionOf(d).id);
   $app.innerHTML = `${header(`${danLabel(d)} 외우기`, "#/table")}
     <section class="page">
       <div class="danhead scene-head">
-        <div class="danhead-card"><div><div class="big">${danLabel(d)}</div><div class="quiet">${esc(d.meaning)}</div></div>${starsHtml(d.id)}</div>
+        <div class="danhead-card"><div><span class="region-tag">${esc(regionOf(d).place)}</span><div class="big">${danLabel(d)}</div><div class="quiet">${esc(d.meaning)}</div></div>${starsHtml(d.id)}</div>
         ${pose(STEP_CHAR[step][0], STEP_CHAR[step][1], { cls: "head-char" })}
       </div>
       <nav class="tabs">${tabs}</nav>
@@ -416,6 +429,7 @@ function Quiz(params) {
   if (!ids.length) return (location.hash = "#/pick?mode=quiz");
   const n = Math.min(+params.get("n") || 10, 30);
   const qs = buildQuiz(ids, n, { audio: canSpeak });
+  setRegion(regionForIds(ids));
   const results = [];
   let qi = 0;
 
@@ -529,6 +543,10 @@ function route() {
   const params = new URLSearchParams(query);
   const parts = path.split("/").filter(Boolean);
   window.scrollTo(0, 0);
+  setRegion("r1");
+  if (parts[0] === "journey") return Journey();
+  if (parts[0] === "challenge") return Challenge(parts[1]);
+  if (parts[0] === "core") return Core(params);
   if (parts[0] === "about") return About();
   if (parts[0] === "table") return Table(params);
   if (parts[0] === "pick") return Pick(params);
