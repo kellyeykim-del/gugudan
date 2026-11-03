@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" preserveAspectRatio="xMaxYMax slice">
+  <!-- 첫 목소리 연구실: 아치 창 · 선반 · 펜던트 등 · 책상 위 마이크 (낮은 대비 단색 면) -->
+  <path d="M470 320V150a120 120 0 0 1 240 0v170z" fill="#EFEAF5"/>
+  <path d="M500 320V158a90 90 0 0 1 180 0v162z" fill="#F4F1F7"/>
+  <rect x="740" y="80" width="60" height="8" rx="4" fill="#D8CEE6"/>
+  <rect x="740" y="150" width="60" height="8" rx="4" fill="#D8CEE6"/>
+  <rect x="752" y="44" width="14" height="36" rx="3" fill="#D8CEE6"/><rect x="770" y="54" width="12" height="26" rx="3" fill="#CFC3E0"/>
+  <rect x="756" y="114" width="26" height="36" rx="4" fill="#D8CEE6"/>
+  <path d="M590 0v40" stroke="#D8CEE6" stroke-width="4"/>
+  <path d="M560 62a30 22 0 0 1 60 0z" fill="#EFEAF5" stroke="#D8CEE6" stroke-width="3"/>
+  <rect x="380" y="262" width="440" height="22" rx="11" fill="#F4F1F7"/>
+  <rect x="400" y="284" width="16" height="36" fill="#D8CEE6"/><rect x="770" y="284" width="16" height="36" fill="#D8CEE6"/>
+  <path d="M640 262v-34" stroke="#BCAED6" stroke-width="5" stroke-linecap="round"/>
+  <rect x="626" y="196" width="28" height="40" rx="14" fill="#BCAED6"/>
+  <rect x="618" y="258" width="44" height="6" rx="3" fill="#BCAED6"/>
+</svg>

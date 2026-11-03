@@ -8,7 +8,7 @@
   --mint: #E5DEEE;
   --mint-deep: #203A78;
   --red: #C8322A;
-  --primary: #E84135;
+  --primary: #B82E2C; /* 흰 글자 대비 6.1:1 (world-story-v2 대안색). 누리 몸 빨강 #E84135과 따로 */
   --purple: #203A78;
   --ok: #2f9e66;
   --bad: #d9534f;
@@ -347,7 +347,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 }
 
 /* ───────────── 영어 마을 (누리 · 민티 · 보보) ───────────── */
-.pose, .deco { display: inline-block; background-repeat: no-repeat; flex: none; }
+.pose { display: inline-block; background-repeat: no-repeat; flex: none; }
 .pose { aspect-ratio: 1; }
 .tile, .gcard, .dcard, .lines li, .wronglist li { box-shadow: var(--shadow); }
 .btn { border-radius: 14px; }
@@ -370,13 +370,12 @@ p.cheer { margin: 12px 0 0; }
   padding: 6px 12px; font-size: 14px; font-weight: 800; color: var(--purple); white-space: nowrap; box-shadow: var(--shadow); }
 .bubble::after { content: ""; position: absolute; right: 18px; bottom: -9px; width: 14px; height: 14px; background: #fff;
   border-right: 2px solid var(--lav-deep); border-bottom: 2px solid var(--lav-deep); transform: rotate(45deg); }
-.garden-link { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; }
-.garden-link div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.garden-link span { font-size: 13px; color: var(--quiet); }
-.garden-link .go { font-size: 20px; color: var(--purple); }
-.garden-thumb { width: 64px; height: 64px; border-radius: 14px; background-size: cover; background-position: center 70%;
+.station-link { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; }
+.station-link div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.station-link span { font-size: 13px; color: var(--quiet); }
+.station-link .go { font-size: 20px; color: var(--purple); }
+.station-thumb { width: 64px; height: 64px; border-radius: 14px; background-size: cover; background-position: center 70%;
   display: grid; place-items: center; flex: none; }
-.garden-thumb .deco { width: 46px; }
 
 /* 외우기 머리: 장소 배경 + 친구 */
 .scene-head { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; min-height: 124px;
@@ -431,26 +430,17 @@ p.cheer { margin: 12px 0 0; }
 .score-char { display: block; width: 120px; margin: 0 auto 4px; }
 
 /* 보상 정원 */
-.garden-page .tab small { display: block; font-size: 12px; font-weight: 400; color: var(--quiet); }
-.garden-scene { position: relative; aspect-ratio: 1280 / 853; margin-bottom: 12px; border-radius: var(--radius);
-  background-size: cover; overflow: hidden; box-shadow: var(--shadow); }
-.garden-scene .in-garden { position: absolute; filter: drop-shadow(0 3px 2px rgba(60, 80, 40, .18)); }
-.spot { position: absolute; aspect-ratio: 1; display: grid; place-items: center; }
-.spot span { background: rgba(255, 253, 246, .9); border: 2px dashed #a9cf93; border-radius: 99px; padding: 2px 8px;
-  font-size: clamp(10px, 1.5vw, 13px); font-weight: 700; color: var(--quiet); white-space: nowrap; }
-.garden-host { position: absolute; right: 1%; bottom: -2%; width: 16%; }
-.garden-info p { margin: 8px 0; line-height: 1.6; }
-.garden-info .small { font-size: 13px; }
-.fresh { animation: grow .8s ease-out; }
-@keyframes grow { from { transform: scale(.3); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } to { transform: none; } }
-
 /* 단 통과 보상 창 */
 .reward-modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(43, 42, 51, .45); }
 .reward-card { width: min(440px, 100%); max-height: 100%; overflow: auto; background: var(--paper); border-radius: 24px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, .25); animation: rise .3s ease-out; }
-.reward-scene { position: relative; aspect-ratio: 16 / 10; background-size: cover; background-position: center 65%; }
+.reward-scene { position: relative; aspect-ratio: 16 / 10; background: var(--lav); }
 .rw-char { position: absolute; left: 6%; bottom: 2%; width: 44%; }
-.rw-new { position: absolute; right: 8%; bottom: 8%; width: 36%; animation: grow .8s .2s ease-out both; }
+.vc-big { position: absolute; right: 7%; top: 14%; width: 46%; display: flex; flex-direction: column; gap: 4px; padding: 14px 12px;
+  background: var(--card); border-radius: 14px; box-shadow: var(--shadow); text-align: center; animation: rise .4s .15s ease-out both; }
+.vc-big span { font-size: 12px; font-weight: 800; color: var(--accent); }
+.vc-big b { font-size: 20px; }
+.vc-big small { font-size: 12px; color: var(--quiet); }
 .reward-body { padding: 16px 20px 20px; text-align: center; }
 .reward-body h2 { margin: 6px 0 4px; font-size: 22px; }
 .reward-body p { margin: 0; }
@@ -484,7 +474,7 @@ p.cheer { margin: 12px 0 0; }
 
 /* 움직임을 줄이고 싶은 사용자: 캐릭터 움직임과 등장 효과를 끈다 */
 @media (prefers-reduced-motion: reduce) {
-  .stage.playing .band .pose, .fresh, .rw-new, .reward-card { animation: none; }
+  .stage.playing .band .pose, .vc-big, .reward-card { animation: none; }
 }
 
 /* ───────────── 5구간 색 (world-story-v2/tokens.json) ─────────────
@@ -557,3 +547,29 @@ p.cheer { margin: 12px 0 0; }
   .region-char { width: 70px; }
   .ring { width: 58px; height: 58px; font-size: 12px; }
 }
+
+/* 목소리 카드 · 방송 순서 */
+.vcards { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 4px; }
+.vcard { display: grid; place-items: center; aspect-ratio: 3 / 4; border-radius: 8px; border: 1.5px dashed rgba(32, 58, 120, .25);
+  font-size: 13px; font-weight: 700; color: var(--quiet); background: rgba(255, 254, 250, .55); }
+.vcard.on { border: 0; background: var(--card); color: var(--ink); box-shadow: 0 2px 0 rgba(32, 58, 120, .12); }
+.cue { margin: 8px 0 12px; padding-left: 22px; display: grid; gap: 6px; font-size: 17px; font-weight: 600; }
+.opt.on { background: var(--lav); border-color: var(--ink); }
+.onair { margin-bottom: 12px; }
+
+/* 장소 그림 (img/places): 구간 바탕색 위에 낮은 대비 단색 그림. 글자는 늘 흰 카드 위에 둔다 */
+:is(.scene-head, .stage, .play-hero, .ready-scene, .today, .reward-scene, .region-card) {
+  background-image: url(../img/places/r1.svg); background-repeat: no-repeat; background-position: right bottom; background-size: auto 100%; }
+:root[data-region="r2"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r2"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r2.svg); }
+:root[data-region="r3"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r3"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r3.svg); }
+:root[data-region="r4"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r4"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r4.svg); }
+:root[data-region="bonus"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="bonus"]:is(.reward-scene, .region-card) { background-image: url(../img/places/bonus.svg); }
+[data-region="r1"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r1.svg); }
+.reward-scene[data-region="r2"] { background-color: #DCE8DD; } .reward-scene[data-region="r3"] { background-color: #F1DECA; }
+.reward-scene[data-region="r4"] { background-color: #DDE1F0; } .reward-scene[data-region="bonus"] { background-color: #EEDDE3; }
+.reward-scene[data-region="r1"] { background-color: #E5DEEE; }
+.core-card { background-image: none; }
+.core-machine { background: url(../img/places/core.svg) center bottom / cover no-repeat, #343B6B; }
+.region-card .region-top > div, .region-card .row, .region-card .region-act { position: relative; }
+/* 방송국 카드는 키가 커서 그림을 위쪽 띠에만 깐다 (카드 칸과 겹치지 않게) */
+.region-card { background-size: auto 132px; background-position: right top; }

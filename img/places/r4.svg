@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" preserveAspectRatio="xMaxYMax slice">
+  <!-- 별빛 방송탑: 동심원 신호 · 계단 탑 -->
+  <path d="M560 80a60 60 0 0 1 120 0M530 80a90 90 0 0 1 180 0M500 80a120 120 0 0 1 240 0" fill="none" stroke="#E9ECF6" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="620" cy="84" r="16" fill="#E9ECF6"/>
+  <path d="M612 100h16l10 70h-36z" fill="#CBD1E8"/>
+  <rect x="560" y="170" width="120" height="24" rx="6" fill="#E9ECF6"/>
+  <rect x="530" y="194" width="180" height="26" rx="6" fill="#CBD1E8"/>
+  <rect x="496" y="220" width="248" height="28" rx="6" fill="#E9ECF6"/>
+  <rect x="456" y="248" width="328" height="72" rx="6" fill="#CBD1E8"/>
+  <path d="M600 320v-40a20 20 0 0 1 40 0v40z" fill="#AEB8DC"/>
+  <path d="M420 120l6 14 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2zM770 150l4 9 9 1-7 6 2 9-8-4-8 4 2-9-7-6 9-1z" fill="#E9ECF6"/>
+</svg>

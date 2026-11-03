@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" preserveAspectRatio="xMaxYMax slice">
+  <!-- 앙코르 제작실: 둥근 탁자 · 빈 카드 · 재생 버튼 · 펜던트 등 -->
+  <path d="M480 320V160a110 110 0 0 1 220 0v160z" fill="#F5E8EC"/>
+  <path d="M590 0v44" stroke="#E4CBD4" stroke-width="4"/><path d="M562 66a28 22 0 0 1 56 0z" fill="#F5E8EC" stroke="#E4CBD4" stroke-width="3"/>
+  <ellipse cx="600" cy="262" rx="210" ry="30" fill="#F5E8EC"/>
+  <rect x="440" y="262" width="320" height="58" fill="#F5E8EC"/>
+  <rect x="470" y="226" width="54" height="40" rx="6" fill="#FFFEFA" transform="rotate(-8 497 246)"/>
+  <rect x="680" y="226" width="54" height="40" rx="6" fill="#FFFEFA" transform="rotate(7 707 246)"/>
+  <circle cx="600" cy="236" r="26" fill="#D3AEBC"/><path d="M592 222l20 14-20 14z" fill="#F5E8EC"/>
+  <rect x="740" y="90" width="50" height="64" rx="8" fill="#E4CBD4"/><rect x="752" y="104" width="26" height="6" rx="3" fill="#F5E8EC"/>
+</svg>

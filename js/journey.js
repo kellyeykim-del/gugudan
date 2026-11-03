@@ -1,12 +1,13 @@
-// 우리 목소리 탐험: 5구간 색 · 구간 도전 · 마지막 도전 '거대 무음 코어'
+// 우리 목소리 방송국: 5구간 색 · 목소리 카드 · 구간 도전 · 마지막 도전 '거대 무음 코어'
 // 기준: characters-design-2026-11-03/world-story-v2 (DESIGN_STORY_V2.md, tokens.json)
 // 문제는 모두 기존 단 문장·선생님 음원에서만 만든다 (새 문장·새 음원을 만들지 않는다).
 // 기록은 학습 기록(gugudan.v1)과 따로 저장해 기존 별·오답·게임 기록을 건드리지 않는다.
 import { MAIN_DANS, BONUS_DANS, getDan } from "./data.js";
 import { store } from "./store.js";
-import { speak, stop, canSpeak } from "./speech.js";
+import { speak, speakAll, stop, canSpeak } from "./speech.js";
 import { pool, blankQ, shuffle, tokens, findBlank, splitPunct } from "./quiz.js";
 import { $app, esc, hl, danLabel, header } from "./ui.js";
+import { drillLines } from "./data.js";
 import { pose } from "./village.js";
 
 // ── 5구간 ─────────────────────────
@@ -24,7 +25,9 @@ export const REGIONS = [
     challenge: { name: "세 개의 끊어진 신호", intro: "신호마다 빠진 말 찾기와 문장 조립, 두 문제씩 모두 6개를 고쳐요.",
       done: "세 연결선이 순서대로 이어졌어요!" } },
   { id: "r4", from: 31, to: 36, place: "별빛 방송탑", module: "방송 시작 모듈", host: "minty",
-    goal: "방송에 무엇이 있고 없는지 확인하고, 마지막 방송을 준비해요." },
+    goal: "방송에 무엇이 있고 없는지 확인하고, 마지막 방송을 준비해요.",
+    challenge: { name: "첫 방송 순서 정하기", intro: "있다 · 없다와 좋아하는 것을 묻는 문제 3개를 풀고, 마지막엔 정답 없이 내가 고른 카드 3장으로 방송 순서를 정해요.",
+      done: "방송 시작 모듈이 켜졌어요! 내가 고른 방송 순서는 방송국에 저장돼요." } },
   { id: "bonus", place: "앙코르 제작실", module: "앙코르 앨범", host: "bobo",
     goal: "정해진 방송을 마친 뒤, 우리가 만들고 싶은 방송을 함께 만들어요." },
 ];
@@ -119,7 +122,13 @@ const CHALLENGES = {
   r1: (dans) => { const ds = shuffle(dans); return [listenQ(ds[0], 2), listenQ(ds[1], 3), listenQ(ds[2], 3), speakQ(ds[3])]; },
   r2: (dans) => { const ds = shuffle(dans); return [listenQ(ds[0]), meaningQ(ds[1], dans), orderQ(ds[2]), meaningQ(ds[3], dans)]; },
   r3: (dans) => { const ds = shuffle(dans); return [0, 1, 2].flatMap((i) => [blank(ds[i]), orderQ(ds[i])]); },
+  r4: (dans) => { const ds = shuffle(dans); return [listenQ(ds[0]), meaningQ(ds[1], dans), blank(ds[2]), pickQ(dans)]; },
 };
+// 취향 선택 (채점 없음): 이 구간 문장 5개 중 3개를 골라 방송 순서를 정한다
+function pickQ(dans) {
+  const all = shuffle([...new Set(dans.flatMap((d) => pool(d)))]).slice(0, 5);
+  return { type: "pick", dan: dans[0].id, options: all };
+}
 
 // ── 문제 한 개 보여 주기 ─────────────────────────
 // 틀려도 진행은 남고 그 문제만 다시. 두 번 어려우면 '같이 풀기'(보기를 줄이거나 첫 단어를 놓아 준다).
@@ -192,6 +201,31 @@ function askOne(q, $box, onDone, { help = false } = {}) {
     return;
   }
 
+  if (q.type === "pick") {
+    const chosen = [];
+    const draw = () => {
+      $box.innerHTML = `<p class="qtitle">방송에 넣을 카드 3장을 순서대로 골라요 <span class="pill">정답이 없는 선택</span></p>
+        <ol class="cue">${[0, 1, 2].map((i) => `<li>${chosen[i] ? esc(chosen[i]) : '<span class="quiet">비어 있어요</span>'}</li>`).join("")}</ol>
+        <div class="opts col">${q.options.map((o) => `<button class="opt ${chosen.includes(o) ? "on" : ""}" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+        <div class="row2"><button class="btn primary" id="air" ${chosen.length === 3 ? "" : "disabled"}>이 순서로 방송하기</button></div>`;
+      $box.querySelectorAll(".opt").forEach((b) => (b.onclick = () => {
+        const o = b.dataset.o;
+        const at = chosen.indexOf(o);
+        if (at >= 0) chosen.splice(at, 1); else if (chosen.length < 3) chosen.push(o);
+        draw();
+      }));
+      $box.querySelector("#air").onclick = async () => {
+        J.broadcast = [...chosen];
+        saveJ();
+        $box.querySelectorAll("button").forEach((x) => (x.disabled = true));
+        await speakAll(chosen, store.settings.speed);
+        onDone();
+      };
+    };
+    draw();
+    return;
+  }
+
   if (q.type === "speak") {
     $box.innerHTML = `<div class="qmeta">${tag}<span class="quiet">${esc(d.meaning)}</span></div>
       <p class="qtitle">문장을 가린 채 먼저 소리 내어 말해 보세요</p>
@@ -223,33 +257,42 @@ function runQuestions(qs, $page, onAll) {
   next();
 }
 
-// ── 탐험 지도 ─────────────────────────
-export function Journey() {
+// ── 우리 목소리 방송국 (예전 '우리 마을 정원' 자리) ─────────────────────────
+// 연구실 소품은 구간 안 완료 수로 바뀐다 (3단 마이크 받침, 6단 마이크 완성). 기능은 처음부터 다 쓸 수 있다.
+const moduleState = (r, n, total) => {
+  if (n === total) return `✓ ${r.module}`;
+  if (r.id === "r1") return n >= 6 ? "마이크 완성 · 모듈까지 조금 더" : n >= 3 ? "마이크 받침 완성" : "마이크 부품 모으는 중";
+  return `${r.module} 준비 중`;
+};
+
+export function Station() {
   setRegion("r1");
   const passed = store.passedCount();
-  const card = (r) => {
+  const card = (r, { final = false } = {}) => {
     const dans = regionDans(r);
     const n = regionCount(r);
     const done = n === dans.length;
     const range = r.id === "bonus" ? "추가 7단" : `${r.from}–${r.to}단`;
-    let action = "";
+    let action;
     if (r.challenge) {
       const cleared = J.challenges[r.id];
       action = cleared ? `<span class="badge-done">✓ ${esc(r.challenge.name)} 완료</span> <a class="btn" href="#/challenge/${r.id}">다시 도전</a>`
         : done ? `<a class="btn primary" href="#/challenge/${r.id}">구간 도전: ${esc(r.challenge.name)}</a>`
         : `<span class="quiet small">${dans.length}단을 모두 마치면 구간 도전 ‘${esc(r.challenge.name)}’이 열려요</span>`;
-    } else if (r.id === "r4") {
-      action = done ? `<span class="quiet small">36단을 모두 마치면 마지막 도전이 열려요</span>` : `<span class="quiet small">이 구간 6단을 마치면 방송 시작 모듈이 완성돼요</span>`;
     } else {
-      action = `<span class="quiet small">보너스 단은 내용·음원 검수 후 도전이 열려요 (준비 중)</span>`;
+      action = `<span class="quiet small">최종 도전 ‘나만의 앙코르’는 보너스 단 내용을 다시 살펴본 뒤 열려요 (준비 중)</span>`;
     }
+    // 목소리 카드: 단마다 한 장. 통과한 단은 채워지고 누르면 그 단으로 간다
+    const chips = dans.map((d) => store.passed(d.id)
+      ? `<a class="vcard on" href="#/dan/${d.id}" title="${esc(drillLines(d)[0])}">${d.bonus ? `B${d.no}` : d.no}</a>`
+      : `<span class="vcard">${d.bonus ? `B${d.no}` : d.no}</span>`).join("");
     return `<article class="region-card" data-region="${r.id}">
       <div class="region-top">
-        <div><span class="region-range">${range}</span><h3>${esc(r.place)}</h3><p>${esc(r.goal)}</p></div>
+        <div><span class="region-range">${final ? "최종 도전 · " : ""}${range}</span><h3>${esc(r.place)}</h3><p>${esc(r.goal)}</p></div>
         ${pose(r.host, done ? "celebrate" : "welcome", { cls: "region-char" })}
       </div>
-      <div class="row"><b>목소리 카드 ${n} / ${dans.length}</b><span class="${done ? "module-on" : "quiet"}">${done ? "✓ " : ""}${esc(r.module)}</span></div>
-      <div class="meter"><i style="width:${(n / dans.length) * 100}%"></i></div>
+      <div class="row"><b>목소리 카드 ${n} / ${dans.length}</b><span class="${done ? "module-on" : "quiet"}">${esc(moduleState(r, n, dans.length))}</span></div>
+      <div class="vcards" aria-label="${esc(r.place)} 목소리 카드">${chips}</div>
       <div class="region-act">${action}</div>
     </article>`;
   };
@@ -257,32 +300,90 @@ export function Journey() {
     ? `<a class="btn primary" href="#/core">기념 카드 보기</a> <a class="btn" href="#/core?again=1">다시 도전</a>`
     : coreOpen() ? `<a class="btn primary" href="#/core">거대 무음 코어 깨우기</a>`
     : `<span class="small">본편 36단을 모두 마치면 열려요 · 지금 ${passed} / 36</span>`;
-  $app.innerHTML = `${header("우리 목소리 탐험")}
+  const onAir = J.broadcast?.length
+    ? `<div class="card onair"><b>📻 내가 고른 방송 순서</b><ol class="cue">${J.broadcast.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>
+        <button class="btn" id="replay">다시 방송하기</button></div>` : "";
+  $app.innerHTML = `${header("우리 목소리 방송국")}
     <section class="page journey">
       <div class="card story">
         <div class="friends">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "welcome")}</div>
         <p>세 친구가 만든 작은 방송국에는 목소리를 멀리 전하는 장치가 있어요. 그런데 친구들은 아직 영어를 몰라요.
-        <b>네가 한 단씩 알려 주면</b> 친구들이 그 말을 기억하고, 다섯 공간의 장치가 하나씩 이어져요.</p>
+        <b>네가 한 단씩 알려 주면</b> 친구들이 그 말을 목소리 카드에 담고, 네 공간의 장치가 하나씩 이어져요.</p>
       </div>
-      ${REGIONS.map(card).join("")}
+      ${onAir}
+      ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}
       <article class="region-card core-card">
-        <span class="region-range">마지막 도전</span><h3>거대 무음 코어</h3>
+        <span class="region-range">본편 마지막 도전</span><h3>거대 무음 코어</h3>
         <p>말의 뜻, 문장의 순서, 우리의 목소리. 세 신호를 모으면 오래 잠든 코어가 깨어나요.</p>
         <div class="region-act">${core}</div>
       </article>
+      ${card(REGIONS[4], { final: true })}
       <p class="quiet small">별은 듣기 · 말하기 자기 확인 · 문장 순서 활동의 완료 기록이에요. 자동 발음 평가나 영어 능력 인증이 아니에요.</p>
     </section>`;
+  const replay = $app.querySelector("#replay");
+  if (replay) replay.onclick = () => speakAll(J.broadcast, store.settings.speed);
+}
+
+// ── 단 통과 보상: 목소리 카드 한 장 ─────────────────────────
+// 새로 통과했을 때 한 번만 부른다 (지난 기록으로는 띄우지 않음)
+export function showVoiceCard(d) {
+  if (d.sent) return;
+  const r = regionOf(d);
+  const n = regionCount(r);
+  const total = regionDans(r).length;
+  const box = document.createElement("div");
+  box.className = "reward-modal";
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  box.setAttribute("aria-labelledby", "reward-title");
+  box.innerHTML = `<div class="reward-card">
+      <div class="reward-scene" data-region="${r.id}">
+        ${pose(r.host, "celebrate", { cls: "rw-char", label: "축하하는 친구" })}
+        <div class="vc-big"><span>${danLabel(d)}</span><b>${esc(drillLines(d)[0])}</b><small>${esc(d.meaning)}</small></div>
+      </div>
+      <div class="reward-body">
+        <span class="kicker">🎉 ${danLabel(d)} 통과! 별 3개</span>
+        <h2 id="reward-title">목소리 카드가 생겼어요!</h2>
+        <p class="quiet">네가 알려 준 말을 친구들이 기억했어요. ${esc(r.place)} 목소리 카드 ${n} / ${total}</p>
+        <div class="row2">
+          <a class="btn" href="#/station">방송국 보기</a>
+          <button class="btn primary" id="rw-ok">계속하기</button>
+        </div>
+      </div>
+    </div>`;
+  const last = document.activeElement;
+  const close = () => {
+    box.remove();
+    document.removeEventListener("keydown", onKey);
+    if (last?.isConnected) last.focus();
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") return close();
+    if (e.key !== "Tab") return;
+    // 창 안의 버튼 두 개 사이에서만 포커스가 돈다
+    const f = [...box.querySelectorAll("a, button")];
+    const i = f.indexOf(document.activeElement);
+    e.preventDefault();
+    f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus();
+  };
+  document.addEventListener("keydown", onKey);
+  box.querySelector("#rw-ok").onclick = close;
+  box.querySelector("a").onclick = close;
+  box.onclick = (e) => { if (e.target === box) close(); };
+  // '다 봤어요'처럼 보상과 동시에 다음 단계로 넘어가도 창은 남겨 둔다 (onLeave로 닫지 않음)
+  document.body.appendChild(box);
+  box.querySelector("#rw-ok").focus();
 }
 
 // ── 구간 도전 ─────────────────────────
 export function Challenge(id) {
   const r = REGIONS.find((x) => x.id === id && x.challenge);
-  if (!r) return (location.hash = "#/journey");
+  if (!r) return (location.hash = "#/station");
   setRegion(r.id);
   const dans = regionDans(r);
-  if (!regionDone(r)) return (location.hash = "#/journey");
+  if (!regionDone(r)) return (location.hash = "#/station");
   const intro = () => {
-    $app.innerHTML = `${header(r.challenge.name, "#/journey")}
+    $app.innerHTML = `${header(r.challenge.name, "#/station")}
       <section class="page"><div class="card center ready">
         <div class="ready-scene">${pose(r.host, "welcome", { cls: "ready-char" })}</div>
         <h2>${esc(r.challenge.name)}</h2><p class="quiet">${esc(r.place)} · ${r.from}–${r.to}단</p>
@@ -294,17 +395,17 @@ export function Challenge(id) {
   };
   const play = () => {
     const qs = CHALLENGES[r.id](dans).filter(Boolean);
-    $app.innerHTML = `${header(r.challenge.name, "#/journey")}
+    $app.innerHTML = `${header(r.challenge.name, "#/station")}
       <section class="page"><div class="meter jmeter"><i style="width:0"></i></div><div class="jbox"></div></section>`;
     runQuestions(qs, $app.querySelector(".page"), () => {
       J.challenges[r.id] ||= today();
       const saved = saveJ();
-      $app.innerHTML = `${header(r.challenge.name, "#/journey")}
+      $app.innerHTML = `${header(r.challenge.name, "#/station")}
         <section class="page"><div class="card center">
           ${pose(r.host, "celebrate", { cls: "done-char" })}
           <p class="big">${esc(r.challenge.name)} 성공!</p><p>${esc(r.challenge.done)}</p>
           ${saved ? "" : '<p class="quiet small">이 기기에 기록을 저장하지 못했어요.</p>'}
-          <div class="row2"><a class="btn primary" href="#/journey">탐험 지도로</a><a class="btn" href="#/">홈으로</a></div>
+          <div class="row2"><a class="btn primary" href="#/station">방송국으로</a><a class="btn" href="#/">홈으로</a></div>
         </div></section>`;
     });
   };
@@ -322,7 +423,7 @@ const PHASES = [
 ];
 
 export function Core(params) {
-  if (!coreOpen()) return (location.hash = "#/journey");
+  if (!coreOpen()) return (location.hash = "#/station");
   setRegion("core");
   if (params.get("again")) { J.core.phases = [false, false, false]; saveJ(); }
   else if (J.core.cleared) return reward();
@@ -330,7 +431,7 @@ export function Core(params) {
   if (phase === -1) return send();
   const P = PHASES[phase];
   const rings = J.core.phases.map((p, i) => `<span class="ring ${p ? "on" : ""}">${["뜻", "순서", "목소리"][i]}</span>`).join("");
-  $app.innerHTML = `${header("거대 무음 코어", "#/journey")}
+  $app.innerHTML = `${header("거대 무음 코어", "#/station")}
     <section class="page core-page">
       <div class="core-machine"><div class="rings">${rings}</div></div>
       <div class="card center"><p class="kicker">${phase + 1} / 3 단계</p><h2>${P.name}</h2><p>${P.how}</p>
@@ -339,7 +440,7 @@ export function Core(params) {
     </section>`;
   $app.querySelector("#go").onclick = () => {
     const qs = P.make().filter(Boolean);
-    $app.innerHTML = `${header(P.name, "#/journey")}
+    $app.innerHTML = `${header(P.name, "#/station")}
       <section class="page core-page"><div class="core-machine small"><div class="rings">${rings}</div></div>
       <div class="meter jmeter"><i style="width:0"></i></div><div class="jbox card"></div></section>`;
     runQuestions(qs, $app.querySelector(".page"), () => {
@@ -352,7 +453,7 @@ export function Core(params) {
 
 // 세 링이 모두 열리면 아이가 직접 눌러야 코어가 깨어난다
 function send() {
-  $app.innerHTML = `${header("거대 무음 코어", "#/journey")}
+  $app.innerHTML = `${header("거대 무음 코어", "#/station")}
     <section class="page core-page">
       <div class="core-machine"><div class="rings"><span class="ring on">뜻</span><span class="ring on">순서</span><span class="ring on">목소리</span></div></div>
       <div class="card center"><h2>세 링이 모두 열렸어요!</h2><p>이제 우리 목소리를 보내면 코어가 깨어나요.</p>
@@ -368,7 +469,7 @@ function send() {
 
 function reward(saved = true) {
   setRegion("r4");
-  $app.innerHTML = `${header("우리가 함께 만든 방송", "#/journey")}
+  $app.innerHTML = `${header("우리가 함께 만든 방송", "#/station")}
     <section class="page core-reward">
       <div class="card center">
         <div class="medal" role="img" aria-label="목소리 마스터 기념 메달"><span>뜻</span><span>순서</span><span>목소리</span></div>

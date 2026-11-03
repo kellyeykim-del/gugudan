@@ -6,8 +6,8 @@ import { buildQuiz, findBlank, tokens, splitPunct, shuffle } from "./quiz.js";
 import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave } from "./ui.js";
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
-import { pose, setPose, bg, deco, rewardFor, earnedCount, showReward, Garden } from "./village.js";
-import { regionOf, regionDans, setRegion, regionForIds, regionJustDone, Journey, Challenge, Core } from "./journey.js";
+import { pose, setPose } from "./village.js";
+import { regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
 // 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 빨간 누리를 넣어 파랑·남색만 남지 않게 하고, 짝꿍은 카드마다 바꾼다
@@ -17,8 +17,6 @@ function Home() {
   const today = MAIN_DANS.find((d) => !store.passed(d.id)) || MAIN_DANS[0];
   const passed = store.passedCount();
   const wrong = store.wrongIds().length;
-  const earned = earnedCount();
-  const gardenNo = Math.min(Math.floor((today.no - 1) / 12), 2) + 1 || 1;
   const region = regionOf(today);
   const rDans = regionDans(region);
   setRegion(region.id);
@@ -42,14 +40,9 @@ function Home() {
         <div class="row"><b>통과한 단</b><span>${passed} / ${MAIN_DANS.length}</span></div>
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
-      <a class="garden-link card journey-link" href="#/journey">
-        <span class="garden-thumb region-thumb" aria-hidden="true">${pose(region.host, "welcome")}</span>
-        <div><b>🎙 우리 목소리 탐험</b><span>${esc(region.place)} · 목소리 카드 ${rDans.filter((x) => store.passed(x.id)).length} / ${rDans.length}</span></div>
-        <span class="go" aria-hidden="true">→</span>
-      </a>
-      <a class="garden-link card" href="#/garden?g=${gardenNo}">
-        <span class="garden-thumb" style="${bg("garden")}" aria-hidden="true">${deco(Math.max(0, (Math.min(earned, 36) - 1) % 12))}</span>
-        <div><b>🌷 우리 마을 정원</b><span>${earned ? `장식 ${earned} / 36개 · 단을 통과할 때마다 하나씩 생겨요` : "단을 처음 통과하면 정원에 장식이 생겨요"}</span></div>
+      <a class="station-link card" href="#/station">
+        <span class="station-thumb region-thumb" aria-hidden="true">${pose(region.host, "welcome")}</span>
+        <div><b>📻 우리 목소리 방송국</b><span>${esc(region.place)} · 목소리 카드 ${rDans.filter((x) => store.passed(x.id)).length} / ${rDans.length} · 전체 ${passed} / 36</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
@@ -217,17 +210,17 @@ function Dan(id, params) {
   const step = params.get("step") || "see";
   const lines = drillLines(d);
 
-  // 별은 단계를 처음 마칠 때만. 단을 처음 통과하면 정원 보상 창을 한 번 띄운다.
+  // 별은 단계를 처음 마칠 때만. 단을 처음 통과하면 목소리 카드 창을 한 번 띄운다.
   const award = (k) => {
     if (store.markStep(d.id, k)) {
       const n = store.stars(d.id);
       const st = $app.querySelector(".danhead-card .stars");
       if (st) st.outerHTML = starsHtml(d.id);
-      if (n === 3 && rewardFor(d)) showReward(d);
+      if (n === 3 && !d.sent) showVoiceCard(d);
       else toast(n === 3 ? `🎉 ${danLabel(d)} 통과! 별 3개` : `⭐ 별 ${n}개`);
       // 구간의 마지막 단을 마치면 탐험 지도 소식을 한 번 더 (보상 창이 닫힐 즈음)
       const r = n === 3 && regionJustDone(d);
-      if (r) setTimeout(() => toast(`🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`), rewardFor(d) ? 2500 : 1800);
+      if (r) setTimeout(() => toast(`🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`), 2500);
     }
   };
 
@@ -544,7 +537,7 @@ function route() {
   const parts = path.split("/").filter(Boolean);
   window.scrollTo(0, 0);
   setRegion("r1");
-  if (parts[0] === "journey") return Journey();
+  if (["station", "journey", "garden"].includes(parts[0])) return Station();
   if (parts[0] === "challenge") return Challenge(parts[1]);
   if (parts[0] === "core") return Core(params);
   if (parts[0] === "about") return About();
@@ -553,7 +546,6 @@ function route() {
   if (parts[0] === "dan") return Dan(parts[1], params);
   if (parts[0] === "quiz") return Quiz(params);
   if (parts[0] === "games") return Games(params);
-  if (parts[0] === "garden") return Garden(params);
   if (parts[0] === "game") return ({ mole: Mole, roulette: Roulette, pairs: Pairs, blocks: Blocks, bingo: Bingo, duel: Duel }[parts[1]] || Games)(params);
   return Home();
 }
