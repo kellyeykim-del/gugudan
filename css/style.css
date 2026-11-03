@@ -1,22 +1,23 @@
 :root {
-  /* 새 캐릭터 디자인 (characters-design-2026-11-03/DESIGN.md): 소프트 라일락 화면 · 남색 글자 · 빨간 주요 버튼 */
-  --ink: #203A78;
-  --quiet: #5A5E74;
-  --line: #DDD5E7;
-  --cream: #F4F1F7;
-  --card: #FFFEFA;
-  --mint: #E5DEEE;
-  --mint-deep: #203A78;
-  --red: #C8322A;
-  --primary: #B82E2C; /* 흰 글자 대비 6.1:1 (world-story-v2 대안색). 말문이 몸 빨강 #E84135과 따로 */
-  --purple: #203A78;
-  --ok: #2f9e66;
-  --bad: #d9534f;
+  /* 손그림 세 친구(muted-handdrawn-v2)에 맞춘 색: 벤지 리딩룸처럼 흰 바탕 · 웜브라운 글자 · 테라코타 주요 버튼 */
+  --ink: #4A3F37;
+  --quiet: #6E6155;
+  --line: #ECE7E0;
+  --cream: #FFFFFF;
+  --card: #FFFFFF;
+  --mint: #F5F5F4;
+  --mint-deep: #56667D;
+  --red: #B8432F; /* 헷갈리는 곳 표시. 카드 위 대비 5.4:1 */
+  --primary: #9C5641; /* 흰 글자 대비 5.5:1 */
+  --purple: #56667D;
+  --ok: #4F8A5B;
+  --bad: #C0503F;
   --radius: 20px;
-  --lav: #E5DEEE;
-  --lav-deep: #CFC4DE;
-  --paper: #FFFEFA;
-  --shadow: 0 6px 20px rgba(32, 58, 120, .07);
+  --lav: #F5F5F4;
+  --lav-deep: #E7E5E0;
+  --paper: #FFFFFF;
+  --shadow: 0 4px 14px rgba(74, 63, 55, .06);
+  --hand: "Gaegu", "Noto Sans KR", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -60,9 +61,6 @@ button:disabled { cursor: default; }
 
 /* 홈 */
 .home { padding-top: 20px; }
-.brand { display: block; margin-bottom: 16px; }
-.brand .logo { height: 34px; display: block; }
-.brand h1 { font-size: 28px; margin: 8px 0 0; }
 .about-link { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; }
 .about-link img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: top; background: #eee; }
 .about-link div { flex: 1; display: flex; flex-direction: column; }
@@ -98,12 +96,7 @@ button:disabled { cursor: default; }
   .maker { grid-template-columns: 1fr; }
   .maker img { width: 140px; }
 }
-.today { display: block; background: var(--mint); border-color: transparent; padding: 22px; }
-.today-head { display: flex; justify-content: space-between; align-items: center; }
 .kicker { font-size: 13px; font-weight: 800; color: var(--mint-deep); }
-.today-no { font-size: 40px; font-weight: 800; margin: 6px 0 2px; }
-.today-line { font-size: 22px; font-weight: 600; }
-.today .btn { margin-top: 16px; }
 .progress { margin-top: 14px; }
 .progress .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .meter { height: 10px; background: var(--lav); border-radius: 99px; overflow: hidden; }
@@ -120,7 +113,7 @@ button:disabled { cursor: default; }
 
 /* 별 */
 .stars { color: #f2b632; letter-spacing: 1px; font-size: 16px; }
-.stars .off { color: #d6cee2; }
+.stars .off { color: #E3DACB; }
 
 /* 구구단표 카드 */
 .grid-d { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
@@ -208,7 +201,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .wronglist .quiet { font-size: 13px; margin-top: 4px; }
 
 /* 게임 */
-.tile.game { position: relative; grid-column: 1 / -1; min-height: 0; gap: 4px; padding-right: 128px; overflow: hidden; }
+.tile.game { position: relative; min-height: 0; gap: 4px; padding-right: 128px; overflow: hidden; }
 .tile.game b { color: var(--purple); }
 .tile-friends { position: absolute; right: 8px; bottom: -14px; display: flex; width: 132px; }
 .tile-friends .pose { width: 60%; }
@@ -295,7 +288,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
   background: linear-gradient(180deg, #eef3fb, #f7f2e6); border: 1px solid var(--line); border-bottom: 6px solid #8a6a4a; }
 .field.shake { animation: shake .3s 2; }
 .field .block { position: absolute; top: 0; height: 40px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--purple); color: #fff;
-  font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 3px 0 #33296a;
+  font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 3px 0 #3E4A5C;
   touch-action: manipulation; will-change: transform; }
 .field .block.bad { background: var(--bad); box-shadow: 0 3px 0 #9c2f2c; }
 
@@ -322,8 +315,8 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .duel { display: grid; grid-template-rows: 1fr 1fr; gap: 10px; height: calc(100dvh - 76px); padding-bottom: 10px; }
 .duel .side { display: flex; flex-direction: column; justify-content: center; gap: 10px; border-radius: 18px; padding: 14px;
   border: 3px solid transparent; transition: background .2s; }
-.duel .p0 { background: #e8f0fc; border-color: #9cb8e8; transform: rotate(180deg); }
-.duel .p1 { background: #fcebea; border-color: #eba9a4; }
+.duel .p0 { background: #E6EBF1; border-color: #AFBCCB; transform: rotate(180deg); }
+.duel .p1 { background: #F6E6DF; border-color: #D9AE9C; }
 .duel .side.win { background: #e3f5ea; border-color: var(--ok); }
 .duel .side.lose { opacity: .55; }
 .duel .who { font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; }
@@ -354,22 +347,11 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .cheer { color: var(--purple); font-weight: 700; }
 p.cheer { margin: 12px 0 0; }
 
-/* 홈: 오늘의 단 */
-.today { position: relative; overflow: hidden; display: flex; align-items: flex-end; gap: 12px; padding: 18px;
-  background: var(--mint); border-color: transparent; min-height: 250px; }
-.today-text { position: relative; z-index: 1; flex: 1 1 auto; max-width: 440px; background: var(--paper); border-radius: 18px;
-  padding: 16px 18px; box-shadow: var(--shadow); }
-.today-no { margin-top: 2px; }
-.today-hero { position: relative; z-index: 1; flex: none; width: clamp(260px, 36vw, 380px); margin: 0 0 -10px auto; }
 /* 포즈 칸은 좌우 여백이 넓어 서로 겹쳐 세운다. 가운데 말문이가 앞 */
 .friends { display: flex; align-items: flex-end; justify-content: center; }
 .friends .pose { width: 50%; }
 .friends .pose + .pose { margin-left: -24%; }
 .friends .pose:nth-child(2) { position: relative; z-index: 1; width: 54%; }
-.bubble { position: absolute; z-index: 2; top: 0; left: 2px; background: #fff; border: 2px solid var(--lav-deep); border-radius: 16px;
-  padding: 6px 12px; font-size: 14px; font-weight: 800; color: var(--purple); white-space: nowrap; box-shadow: var(--shadow); }
-.bubble::after { content: ""; position: absolute; right: 18px; bottom: -9px; width: 14px; height: 14px; background: #fff;
-  border-right: 2px solid var(--lav-deep); border-bottom: 2px solid var(--lav-deep); transform: rotate(45deg); }
 .station-link { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; }
 .station-link div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .station-link span { font-size: 13px; color: var(--quiet); }
@@ -447,14 +429,6 @@ p.cheer { margin: 12px 0 0; }
 @keyframes rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 560px) {
-  .today { min-height: 0; padding: 14px; gap: 6px; }
-  .today-text { padding: 14px; }
-  .today-no { font-size: 34px; }
-  .today-line { font-size: 19px; }
-  .today { flex-direction: column; align-items: stretch; }
-  .today-hero { order: -1; width: 230px; margin: -6px -8px -14px auto; }
-  .today-text { max-width: none; }
-  .bubble { top: 18px; left: -84px; font-size: 13px; padding: 5px 10px; }
   .tile.game { padding-right: 104px; }
   .tile-friends { width: 104px; right: 2px; }
   .scene-head { min-height: 104px; padding: 10px; }
@@ -480,11 +454,16 @@ p.cheer { margin: 12px 0 0; }
 /* ───────────── 5구간 색 (world-story-v2/tokens.json) ─────────────
    페이지 바탕 · 장면 바탕만 바꾼다. 캐릭터 · 카드 · 남색 글자 · 빨간 주요 버튼은 모든 구간에서 같다.
    방향색(--accent)은 작은 표시에만 쓰고 넓은 면에는 쓰지 않는다. */
-:root { --accent: #7963A8; }
-:root[data-region="r2"] { --cream: #F0F5EF; --mint: #DCE8DD; --lav: #DCE8DD; --lav-deep: #BFD3C1; --accent: #42695A; }
-:root[data-region="r3"] { --cream: #FBF2E8; --mint: #F1DECA; --lav: #F1DECA; --lav-deep: #E2C5A8; --accent: #955D38; }
-:root[data-region="r4"] { --cream: #F0F1F8; --mint: #DDE1F0; --lav: #DDE1F0; --lav-deep: #C3CAE4; --accent: #4C5DA1; }
-:root[data-region="bonus"] { --cream: #FAF0F2; --mint: #EEDDE3; --lav: #EEDDE3; --lav-deep: #DCC0CA; --accent: #955B70; }
+/* 구간 색표: 요소에 data-region을 달면 --page(바탕) · --scene(장면) · --scene-deep(테두리) · --acc(작은 표시) 가 정해진다.
+   말문이 테라코타(1–10) · 귀담이 세이지(11–20) · 모래(21–30) · 차분이 블루그레이(31–36) · 장미 회색(보너스). --acc는 흰 글자 대비 4.8:1 이상 */
+:root, [data-region="home"] { --page: #FFFFFF; --scene: #F5F5F4; --scene-deep: #E7E5E0; --acc: #7A6553; }
+[data-region="r1"] { --page: #FFFFFF; --scene: #FBF0EA; --scene-deep: #EED9CE; --acc: #A5604A; }
+[data-region="r2"] { --page: #FFFFFF; --scene: #EDF4EC; --scene-deep: #D5E2D1; --acc: #5C7356; }
+[data-region="r3"] { --page: #FFFFFF; --scene: #FBF4E8; --scene-deep: #EADBC2; --acc: #8A6A3F; }
+[data-region="r4"] { --page: #FFFFFF; --scene: #EDF1F6; --scene-deep: #D3DCE6; --acc: #556A83; }
+[data-region="bonus"] { --page: #FFFFFF; --scene: #F8EEEE; --scene-deep: #E8D3D1; --acc: #8E5F63; }
+:root { --accent: var(--acc); }
+:root[data-region] { --cream: var(--page); --mint: var(--scene); --lav: var(--scene); --lav-deep: var(--scene-deep); }
 .region-tag { display: inline-block; font-size: 12px; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
 
 /* 캐릭터 게임 아이콘: 타일 바탕은 구간 색, 그림은 투명 PNG */
@@ -498,13 +477,8 @@ p.cheer { margin: 12px 0 0; }
 .journey .story p { margin: 0; line-height: 1.7; }
 .journey .story .friends { width: 150px; flex: none; }
 .region-card { position: relative; margin-bottom: 12px; padding: 16px 18px; border-radius: var(--radius); box-shadow: var(--shadow);
-  background: var(--scene, #E5DEEE); }
+  background: var(--scene); }
 .region-card .meter { background: var(--card); }
-.region-card[data-region="r1"] { --scene: #E5DEEE; --acc: #7963A8; }
-.region-card[data-region="r2"] { --scene: #DCE8DD; --acc: #42695A; }
-.region-card[data-region="r3"] { --scene: #F1DECA; --acc: #955D38; }
-.region-card[data-region="r4"] { --scene: #DDE1F0; --acc: #4C5DA1; }
-.region-card[data-region="bonus"] { --scene: #EEDDE3; --acc: #955B70; }
 .region-top { display: flex; justify-content: space-between; gap: 10px; }
 .region-range { font-size: 12px; font-weight: 800; color: var(--acc, var(--accent)); }
 .region-card h3 { margin: 2px 0 4px; font-size: 20px; }
@@ -516,28 +490,28 @@ p.cheer { margin: 12px 0 0; }
 .region-act { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .badge-done { font-weight: 800; color: var(--ok); }
 .small { font-size: 13px; }
-.core-card { background: #272D52; color: #fff; }
+.core-card { background: #3A4152; color: #fff; }
 .core-card h3 { color: #fff; }
-.core-card p, .core-card .small { color: #E4E6F2; }
-.core-card .region-range { color: #D7B36A; }
+.core-card p, .core-card .small { color: #E8EAEE; }
+.core-card .region-range { color: #CDAE72; }
 .jbox { margin-top: 12px; }
 .qsentence.masked { background: var(--lav); }
 
 /* 마지막 도전 화면: 짙은 남보라 바탕에 밝은 받침 (차분이 실루엣이 묻히지 않게) */
-:root[data-region="core"] { --cream: #272D52; }
+:root[data-region="core"] { --cream: #3A4152; }
 :root[data-region="core"] .bar h1 { color: #fff; }
 .core-page .card { margin-top: 12px; }
-.core-machine { display: grid; place-items: center; height: 150px; border-radius: 50% 50% 24px 24px; background: #343B6B; }
+.core-machine { display: grid; place-items: center; height: 150px; border-radius: 50% 50% 24px 24px; background: #474F63; }
 .core-machine.small { height: 84px; }
 .rings { display: flex; gap: 12px; }
-.ring { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 50%; border: 5px solid #5A628F; color: #C9CDE6;
-  font-weight: 800; font-size: 14px; background: #272D52; }
+.ring { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 50%; border: 5px solid #6A7387; color: #D3D7DF;
+  font-weight: 800; font-size: 14px; background: #3A4152; }
 .core-machine.small .ring { width: 54px; height: 54px; border-width: 4px; font-size: 12px; }
-.ring.on { border-color: #D7B36A; color: #fff; }
+.ring.on { border-color: #CDAE72; color: #fff; }
 .friends.small { width: 220px; margin: 8px auto 4px; }
 .medal { display: flex; justify-content: center; gap: 4px; width: 132px; height: 132px; margin: 4px auto 10px; border-radius: 50%;
-  background: #D7B36A; border: 6px solid #FFF4DF; box-shadow: 0 0 0 3px #D7B36A; align-items: center; }
-.medal span { font-size: 12px; font-weight: 800; color: #272D52; background: #FFF4DF; border-radius: 99px; padding: 3px 6px; }
+  background: #CDAE72; border: 6px solid #F4E8D5; box-shadow: 0 0 0 3px #CDAE72; align-items: center; }
+.medal span { font-size: 12px; font-weight: 800; color: #3A4152; background: #F4E8D5; border-radius: 99px; padding: 3px 6px; }
 .core-reward .friends { width: 260px; margin: 6px auto; }
 .thanks { list-style: none; padding: 0; margin: 10px auto; max-width: 420px; text-align: left; display: grid; gap: 6px; }
 .thanks li { background: var(--lav); border-radius: 12px; padding: 8px 12px; }
@@ -550,26 +524,100 @@ p.cheer { margin: 12px 0 0; }
 
 /* 목소리 카드 · 방송 순서 */
 .vcards { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 4px; }
-.vcard { display: grid; place-items: center; aspect-ratio: 3 / 4; border-radius: 8px; border: 1.5px dashed rgba(32, 58, 120, .25);
+.vcard { display: grid; place-items: center; aspect-ratio: 3 / 4; border-radius: 8px; border: 1.5px dashed rgba(74, 63, 55, .25);
   font-size: 13px; font-weight: 700; color: var(--quiet); background: rgba(255, 254, 250, .55); }
-.vcard.on { border: 0; background: var(--card); color: var(--ink); box-shadow: 0 2px 0 rgba(32, 58, 120, .12); }
+.vcard.on { border: 0; background: var(--card); color: var(--ink); box-shadow: 0 2px 0 rgba(74, 63, 55, .12); }
 .cue { margin: 8px 0 12px; padding-left: 22px; display: grid; gap: 6px; font-size: 17px; font-weight: 600; }
 .opt.on { background: var(--lav); border-color: var(--ink); }
 .onair { margin-bottom: 12px; }
 
 /* 장소 그림 (img/places): 구간 바탕색 위에 낮은 대비 단색 그림. 글자는 늘 흰 카드 위에 둔다 */
-:is(.scene-head, .stage, .play-hero, .ready-scene, .today, .reward-scene, .region-card) {
+:is(.scene-head, .stage, .play-hero, .ready-scene, .reward-scene, .region-card) {
   background-image: url(../img/places/r1.svg); background-repeat: no-repeat; background-position: right bottom; background-size: auto 100%; }
-:root[data-region="r2"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r2"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r2.svg); }
-:root[data-region="r3"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r3"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r3.svg); }
-:root[data-region="r4"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="r4"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r4.svg); }
-:root[data-region="bonus"] :is(.scene-head, .stage, .play-hero, .ready-scene, .today), [data-region="bonus"]:is(.reward-scene, .region-card) { background-image: url(../img/places/bonus.svg); }
+:root[data-region="r2"] :is(.scene-head, .stage, .play-hero, .ready-scene), [data-region="r2"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r2.svg); }
+:root[data-region="r3"] :is(.scene-head, .stage, .play-hero, .ready-scene), [data-region="r3"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r3.svg); }
+:root[data-region="r4"] :is(.scene-head, .stage, .play-hero, .ready-scene), [data-region="r4"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r4.svg); }
+:root[data-region="bonus"] :is(.scene-head, .stage, .play-hero, .ready-scene), [data-region="bonus"]:is(.reward-scene, .region-card) { background-image: url(../img/places/bonus.svg); }
 [data-region="r1"]:is(.reward-scene, .region-card) { background-image: url(../img/places/r1.svg); }
-.reward-scene[data-region="r2"] { background-color: #DCE8DD; } .reward-scene[data-region="r3"] { background-color: #F1DECA; }
-.reward-scene[data-region="r4"] { background-color: #DDE1F0; } .reward-scene[data-region="bonus"] { background-color: #EEDDE3; }
-.reward-scene[data-region="r1"] { background-color: #E5DEEE; }
+.reward-scene { background-color: var(--scene); }
 .core-card { background-image: none; }
-.core-machine { background: url(../img/places/core.svg) center bottom / cover no-repeat, #343B6B; }
+.core-machine { background: url(../img/places/core.svg) center bottom / cover no-repeat, #474F63; }
 .region-card .region-top > div, .region-card .row, .region-card .region-act { position: relative; }
 /* 방송국 카드는 키가 커서 그림을 위쪽 띠에만 깐다 (카드 칸과 겹치지 않게) */
 .region-card { background-size: auto 132px; background-position: right top; }
+
+/* ───────────── 홈: 제목 → 빠른 버튼 → 구간별 학습하기 (벤지 리딩룸 구성 참고) ─────────────
+   손글씨 제목은 Gaegu(OFL 무료 글꼴). 구간 카드 색은 data-region 색표에서 가져온다. */
+.home-hero { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 16px 22px;
+  background: var(--mint); border: 0; box-shadow: none; }
+.home-hero .friends { width: 170px; flex: none; }
+.home-title .logo { height: 24px; display: block; }
+.home-title h1 { font-family: var(--hand); font-size: 40px; font-weight: 700; margin: 6px 0 0; line-height: 1.05; }
+.home-title p { margin: 4px 0 0; font-size: 14px; color: var(--quiet); }
+.quick { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 16px 0 4px; }
+.qbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 18px; border-radius: 14px; font-size: 15px;
+  font-weight: 600; background: var(--scene); border: 1px solid var(--scene-deep); box-shadow: 0 2px 0 var(--scene-deep); white-space: nowrap; }
+.qbtn.dim { opacity: .6; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 24px 0 12px; }
+.sec-head h2 { display: flex; align-items: center; gap: 6px; margin: 0; font-family: var(--hand); font-size: 28px; }
+.sec-char { width: 44px; margin: -6px 0 -8px; }
+.regions { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.rtile { display: flex; flex-direction: column; gap: 8px; }
+.rtile-card { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 10px;
+  border-radius: 18px; background: var(--scene); border: 1px solid var(--scene-deep); text-align: center; }
+.rno { position: absolute; top: 8px; left: 14px; font-size: 20px; color: var(--quiet); }
+.rtile-char { width: 80px; margin: 8px 0 0; }
+.rtile b { font-family: var(--hand); font-size: 26px; line-height: 1.1; }
+.rplace { font-size: 13px; color: var(--quiet); }
+.rdots { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; max-width: 126px; margin-top: 6px; }
+.rdots i { width: 9px; height: 9px; border-radius: 50%; background: var(--card); border: 1px solid var(--scene-deep); }
+.rdots i.on { background: var(--acc); border-color: var(--acc); }
+.rtile small { font-size: 12px; color: var(--quiet); }
+.rgo { display: block; text-align: center; padding: 9px 6px; border-radius: 99px; background: var(--card); border: 1px solid var(--line);
+  font-size: 14px; font-weight: 600; }
+.rtile:hover .rgo, .rtile:focus-visible .rgo { background: var(--acc); border-color: var(--acc); color: #fff; }
+.rtile.all .rtile-card { border: 2px solid var(--acc); }
+.rtile.locked .rtile-card { opacity: .72; }
+.home .progress { margin-top: 16px; }
+.home .menu { grid-template-columns: 1fr 1fr; }
+@media (max-width: 640px) { .home .menu { grid-template-columns: 1fr; } }
+
+/* 구간 화면: 단 칸. 다 외운 단은 구간 색으로 채운다 */
+.region-hero-card { flex: 1; flex-direction: column; align-items: stretch; gap: 2px; max-width: 460px; }
+.region-hero-card h2 { font-family: var(--hand); font-size: 32px; margin: 0; line-height: 1.1; }
+.region-hero-card p { margin: 2px 0 8px; font-size: 14px; color: var(--quiet); line-height: 1.5; }
+.region-hero-card .row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; }
+.region-hero-card .meter { background: var(--scene); }
+.region-hero-card .meter i { background: var(--acc); }
+.dgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.dcell { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 120px; padding: 12px 8px; border-radius: 16px;
+  background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); text-align: center; transition: transform .15s; }
+.dcell:hover { transform: translateY(-2px); }
+.dno { font-family: var(--hand); font-size: 36px; font-weight: 700; line-height: 1; }
+.dno small { font-size: 18px; margin-left: 2px; }
+.dfirst { margin-top: auto; font-size: 12px; color: var(--quiet); }
+.dcell.part { background: var(--scene); border-color: var(--scene-deep); }
+.dcell.done { background: var(--acc); border-color: var(--acc); color: #fff; }
+.dcell.done .dfirst, .dcell.done .red { color: #fff; }
+.dcell.done .stars { color: #FFE3A3; }
+.dcell.locked { opacity: .55; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 10px 0 0; font-size: 13px; color: var(--quiet); }
+.legend i { display: inline-block; width: 14px; height: 14px; margin-right: 5px; vertical-align: -2px; border-radius: 4px;
+  background: var(--card); border: 1px solid var(--line); }
+.legend i.done { background: var(--acc); border-color: var(--acc); }
+.legend i.part { background: var(--scene); border-color: var(--scene-deep); }
+.region-page .actions { margin-top: 18px; }
+.bar h1 { font-family: var(--hand); font-size: 26px; }
+
+@media (max-width: 760px) {
+  .regions { grid-template-columns: repeat(2, 1fr); }
+  .home-hero { gap: 10px; padding: 14px; }
+  .home-hero .friends { width: 120px; }
+  .home-title h1 { font-size: 30px; }
+  .dgrid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 400px) {
+  .home-hero .friends { width: 96px; }
+  .home-title h1 { font-size: 26px; }
+  .dno { font-size: 30px; }
+}

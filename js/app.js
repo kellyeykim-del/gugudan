@@ -7,51 +7,70 @@ import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave }
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose } from "./village.js";
-import { regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
+import { REGIONS, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
-// 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 빨간 말문이를 넣어 파랑·남색만 남지 않게 하고, 짝꿍은 카드마다 바꾼다
+// 벤지 리딩룸처럼: 제목 → 자주 쓰는 버튼 → '구간별 학습하기' 카드 5장. 단은 구간 화면에서 고른다.
+// 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 말문이를 넣고, 짝꿍은 카드마다 바꾼다
 const tileFriends = (other, act) => `<span class="tile-friends">${pose("nuri", "welcome")}${pose(other, act)}</span>`;
+const regionRange = (r) => (r.id === "bonus" ? "보너스 7단" : `${r.from}–${r.to}단`);
+const regionLocked = (r) => r.id === "bonus" && !store.bonusOpen();
+
+function regionTile(r, i) {
+  const dans = regionDans(r);
+  const n = dans.filter((d) => store.passed(d.id)).length;
+  const all = n === dans.length;
+  return `<a class="rtile ${all ? "all" : ""} ${regionLocked(r) ? "locked" : ""}" data-region="${r.id}" href="#/region/${r.id}">
+      <span class="rtile-card">
+        <span class="rno">${String(i + 1).padStart(2, "0")}</span>
+        ${pose(r.host, all ? "celebrate" : "welcome", { cls: "rtile-char" })}
+        <b>${regionRange(r)}</b>
+        <span class="rplace">${esc(r.place)}</span>
+        <span class="rdots" aria-hidden="true">${dans.map((d) => `<i class="${store.passed(d.id) ? "on" : ""}"></i>`).join("")}</span>
+        <small>${regionLocked(r) ? "🔒 36단을 마치면 열려요" : `${n} / ${dans.length} 통과`}</small>
+      </span>
+      <span class="rgo">${regionLocked(r) ? "둘러보기 →" : "학습하러 가기 →"}</span>
+    </a>`;
+}
 
 function Home() {
   const today = MAIN_DANS.find((d) => !store.passed(d.id)) || MAIN_DANS[0];
   const passed = store.passedCount();
   const wrong = store.wrongIds().length;
-  const region = regionOf(today);
-  const rDans = regionDans(region);
-  setRegion(region.id);
+  setRegion("home");
   $app.innerHTML = `
     <section class="home">
-      <a class="brand" href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"><h1>신나는 영어구구단</h1></a>
-      <a class="today card" href="#/dan/${today.id}">
-        <div class="today-text">
-          <div class="today-head"><span class="kicker">오늘의 단</span>${starsHtml(today.id)}</div>
-          <div class="today-no">${danLabel(today)}</div>
-          <div class="today-line">${hl(drillLines(today)[0])}</div>
-          <div class="quiet">${esc(today.meaning)}</div>
-          <span class="btn primary">외우러 가기 →</span>
+      <header class="home-hero card">
+        <div class="friends" aria-hidden="true">${pose("minty", "welcome")}${pose("nuri", "welcome")}${pose("bobo", "welcome")}</div>
+        <div class="home-title">
+          <a href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"></a>
+          <h1>신나는 영어구구단</h1>
+          <p>주어 7개 × 36단, 소리 내어 외우는 영어 문장</p>
         </div>
-        <div class="today-hero" aria-hidden="true">
-          <span class="bubble">같이 해볼까?</span>
-          <div class="friends">${pose("minty", "welcome")}${pose("nuri", "welcome")}${pose("bobo", "welcome")}</div>
-        </div>
-      </a>
+      </header>
+      <nav class="quick">
+        <a class="qbtn" data-region="r1" href="#/table">📋 구구단표</a>
+        <a class="qbtn" data-region="r2" href="#/pick">🎯 범위 고르고 연습</a>
+        <a class="qbtn" data-region="r4" href="#/pick?mode=quiz">✏️ 시험 보기</a>
+        <a class="qbtn ${wrong ? "" : "dim"}" data-region="r3" href="#/pick?preset=wrong">📌 내 묶음${wrong ? ` ${wrong}` : ""}</a>
+      </nav>
+      <div class="sec-head">
+        <h2>${pose("nuri", "welcome", { cls: "sec-char" })}구간별 학습하기</h2>
+        <a class="qbtn" href="#/dan/${today.id}">▷ 이어서 ${danLabel(today)}</a>
+      </div>
+      <div class="regions">${REGIONS.map(regionTile).join("")}</div>
       <div class="progress card">
         <div class="row"><b>통과한 단</b><span>${passed} / ${MAIN_DANS.length}</span></div>
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
       <a class="station-link card" href="#/station">
-        <span class="station-thumb region-thumb" aria-hidden="true">${pose(region.host, "welcome")}</span>
-        <div><b>📻 우리 목소리 방송국</b><span>${esc(region.place)} · 목소리 카드 ${rDans.filter((x) => store.passed(x.id)).length} / ${rDans.length} · 전체 ${passed} / 36</span></div>
+        <span class="station-thumb region-thumb" aria-hidden="true">${pose(regionOf(today).host, "welcome")}</span>
+        <div><b>📻 우리 목소리 방송국</b><span>목소리 카드 ${passed} / 36 · 구간 도전 · 마지막 도전</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
         <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("bobo", "encourage")}</a>
         <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("minty", "welcome")}</a>
-        <a class="tile" href="#/table"><b>구구단표</b><span>36단 한눈에 보기</span></a>
-        <a class="tile" href="#/pick"><b>범위 고르고 연습</b><span>1단 · 묶음 · 10단 · 전체</span></a>
-        <a class="tile" href="#/pick?mode=quiz"><b>시험 보기</b><span>빈칸 · 순서 · 듣기</span></a>
-        <a class="tile ${wrong ? "" : "dim"}" href="#/pick?preset=wrong"><b>내 묶음</b><span>${wrong ? `틀린 단 ${wrong}개` : "아직 없어요"}</span></a>
       </nav>
       <a class="about-link card" href="#/about">
         <img src="img/ceo-kang-sojin.jpg" alt="">
@@ -64,10 +83,53 @@ function Home() {
         <button class="btn ghost" id="reset">학습 기록 지우기</button>
       </details>
     </section>`;
-  $app.querySelector("#unlock").onchange = (e) => store.setSetting("unlockAll", e.target.checked);
+  $app.querySelector("#unlock").onchange = (e) => { store.setSetting("unlockAll", e.target.checked); Home(); };
   $app.querySelector("#reset").onclick = () => {
     if (confirm("이 기기의 별과 시험 기록을 모두 지울까요?")) { store.reset(); Home(); }
   };
+}
+
+// ───────────────────────── 구간 ─────────────────────────
+// 한 구간의 단 칸들. 다 외운 단(별 3개)은 구간 색으로 채워지고, 하는 중인 단은 옅게 물든다.
+function Region(id) {
+  const r = REGIONS.find((x) => x.id === id);
+  if (!r) return (location.hash = "#/");
+  const dans = regionDans(r);
+  const n = dans.filter((d) => store.passed(d.id)).length;
+  const locked = regionLocked(r);
+  const ids = dans.map((d) => d.id).join(",");
+  const cell = (d) => {
+    const st = store.passed(d.id) ? "done" : store.stars(d.id) ? "part" : "";
+    return `<a class="dcell ${st} ${locked ? "locked" : ""}" href="${locked ? `#/region/${r.id}` : `#/dan/${d.id}`}">
+        <span class="dno">${d.bonus ? `B${d.no}` : d.no}<small>단</small></span>
+        ${locked ? '<span class="dlock">🔒</span>' : starsHtml(d.id)}
+        <span class="dfirst">${hl(drillLines(d)[0])}</span>
+      </a>`;
+  };
+  setRegion(r.id);
+  $app.innerHTML = `${header(`${regionRange(r)} · ${esc(r.place)}`)}
+    <section class="page region-page">
+      <div class="scene-head region-hero">
+        <div class="danhead-card region-hero-card">
+          <span class="region-tag">${String(REGIONS.indexOf(r) + 1).padStart(2, "0")} 구간 · ${regionRange(r)}</span>
+          <h2>${esc(r.place)}</h2>
+          <p>${esc(r.goal)}</p>
+          <div class="row"><b>다 외운 단</b><span>${n} / ${dans.length}</span></div>
+          <div class="meter"><i style="width:${(n / dans.length) * 100}%"></i></div>
+        </div>
+        ${pose(r.host, n === dans.length ? "celebrate" : "welcome", { cls: "head-char" })}
+      </div>
+      ${locked ? `<p class="hint">🔒 본편 36단을 모두 통과하면 열려요. 설정의 선생님 모드로 미리 열 수 있어요.</p>` : ""}
+      <h3 class="sec">단 고르기 <span class="quiet">다 외운 단은 색이 바뀌어요</span></h3>
+      <div class="dgrid">${dans.map(cell).join("")}</div>
+      <p class="legend"><span><i class="done"></i>다 외웠어요</span><span><i class="part"></i>하는 중</span><span><i></i>아직</span></p>
+      ${locked ? "" : `<div class="actions">
+        ${r.challenge ? (n === dans.length ? `<a class="btn primary" href="#/challenge/${r.id}">구간 도전: ${esc(r.challenge.name)}</a>`
+          : `<span class="btn disabled">🔒 구간 도전: ${esc(r.challenge.name)}</span>`) : ""}
+        <a class="btn" href="#/quiz?ids=${ids}&n=10">이 구간 시험 10문제</a>
+        <a class="btn" href="#/games?ids=${ids}">🎮 이 구간 게임</a>
+      </div>`}
+    </section>`;
 }
 
 // ───────────────────────── 소개 ─────────────────────────
@@ -228,7 +290,7 @@ function Dan(id, params) {
     `<a class="tab ${t.k === step ? "on" : ""}" href="#/dan/${d.id}?step=${t.k}">${t.label}${store.stepDone(d.id, t.k) ? " ✓" : ""}</a>`).join("");
 
   setRegion(regionOf(d).id);
-  $app.innerHTML = `${header(`${danLabel(d)} 외우기`, "#/table")}
+  $app.innerHTML = `${header(`${danLabel(d)} 외우기`, d.sent ? "#/table" : `#/region/${regionOf(d).id}`)}
     <section class="page">
       <div class="danhead scene-head">
         <div class="danhead-card"><div><span class="region-tag">${esc(regionOf(d).place)}</span><div class="big">${danLabel(d)}</div><div class="quiet">${esc(d.meaning)}</div></div>${starsHtml(d.id)}</div>
@@ -541,6 +603,7 @@ function route() {
   if (parts[0] === "challenge") return Challenge(parts[1]);
   if (parts[0] === "core") return Core(params);
   if (parts[0] === "about") return About();
+  if (parts[0] === "region") return Region(parts[1]);
   if (parts[0] === "table") return Table(params);
   if (parts[0] === "pick") return Pick(params);
   if (parts[0] === "dan") return Dan(parts[1], params);

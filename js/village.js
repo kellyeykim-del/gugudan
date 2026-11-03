@@ -1,5 +1,6 @@
 // 캐릭터 동작 그림 (말문이 · 귀담이 · 차분이). 시트는 3열 2행, 동작 6개.
-// 새 디자인 시트(characters-design-2026-11-03/actions)를 tools/cutout_characters.py로 투명하게 만든 것.
+// 손그림 v2 보드(characters-design-2026-11-03/muted-handdrawn-v2)를 tools/cutout_muted.py로 잘라 6칸 시트로 만든 것.
+// 보드의 동작은 친구마다 3개라 몇 칸은 같은 그림이다.
 // 좌표는 원래 1536x1024 기준이고 % 위치로 잘라 쓰므로 줄인 시트에도 그대로 맞는다.
 import { esc } from "./ui.js";
 
@@ -7,9 +8,9 @@ const IMG = "img/village/";
 
 // ── 캐릭터 (manifest.characters) ─────────────────────────
 export const CHARS = {
-  nuri: { name: "말문이", desc: "빨간 강아지" },
-  minty: { name: "귀담이", desc: "하늘색 토끼" },
-  bobo: { name: "차분이", desc: "남색 곰" },
+  nuri: { name: "말문이", desc: "테라코타색 강아지" },
+  minty: { name: "귀담이", desc: "세이지색 토끼" },
+  bobo: { name: "차분이", desc: "블루그레이 곰" },
 };
 const POSE_SHEET = { w: 1536, h: 1024 };
 const POSES = {

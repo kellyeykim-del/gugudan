@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" preserveAspectRatio="xMaxYMax slice">
   <!-- 소리 탐험 항구: 다리 아치 · 소리 깃발 · 쌓인 상자 · 가로등 -->
-  <path d="M380 320V230h420v90z" fill="#E8F0E8"/>
-  <path d="M420 320v-50a40 40 0 0 1 80 0v50zM540 320v-50a40 40 0 0 1 80 0v50z" fill="#DCE8DD"/>
-  <rect x="380" y="222" width="420" height="12" rx="6" fill="#C9DCCB"/>
-  <path d="M700 222V70" stroke="#A9C6AE" stroke-width="5" stroke-linecap="round"/>
-  <path d="M703 74h70v44h-70z" fill="#C9DCCB"/>
-  <path d="M724 86v20M734 80v32M744 88v16M754 84v24" stroke="#A9C6AE" stroke-width="4" stroke-linecap="round"/>
-  <rect x="610" y="170" width="52" height="52" rx="8" fill="#C9DCCB"/><rect x="640" y="122" width="44" height="48" rx="8" fill="#BCD4BF"/>
-  <rect x="664" y="178" width="44" height="44" rx="8" fill="#BCD4BF"/>
-  <path d="M626 196h20M654 146h16M676 200h20" stroke="#A9C6AE" stroke-width="4" stroke-linecap="round"/>
-  <path d="M470 222v-80" stroke="#C9DCCB" stroke-width="5"/><circle cx="470" cy="134" r="12" fill="#E8F0E8" stroke="#C9DCCB" stroke-width="4"/>
+  <path d="M380 320V230h420v90z" fill="#F4F8F3"/>
+  <path d="M420 320v-50a40 40 0 0 1 80 0v50zM540 320v-50a40 40 0 0 1 80 0v50z" fill="#EDF4EC"/>
+  <rect x="380" y="222" width="420" height="12" rx="6" fill="#D8E3D4"/>
+  <path d="M700 222V70" stroke="#BBCDB5" stroke-width="5" stroke-linecap="round"/>
+  <path d="M703 74h70v44h-70z" fill="#D8E3D4"/>
+  <path d="M724 86v20M734 80v32M744 88v16M754 84v24" stroke="#BBCDB5" stroke-width="4" stroke-linecap="round"/>
+  <rect x="610" y="170" width="52" height="52" rx="8" fill="#D8E3D4"/><rect x="640" y="122" width="44" height="48" rx="8" fill="#C9D8C3"/>
+  <rect x="664" y="178" width="44" height="44" rx="8" fill="#C9D8C3"/>
+  <path d="M626 196h20M654 146h16M676 200h20" stroke="#BBCDB5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M470 222v-80" stroke="#D8E3D4" stroke-width="5"/><circle cx="470" cy="134" r="12" fill="#F4F8F3" stroke="#D8E3D4" stroke-width="4"/>
 </svg>

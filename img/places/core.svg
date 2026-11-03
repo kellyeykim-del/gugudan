@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" preserveAspectRatio="xMidYMax slice">
   <!-- 거대 무음 코어: 둥근 아치 기둥 · 받침대 (링은 화면 요소로 따로 그린다) -->
-  <path d="M0 320V120a120 120 0 0 1 240 0v200zM560 320V120a120 120 0 0 1 240 0v200z" fill="#2E3560"/>
-  <path d="M160 320V80a240 120 0 0 1 480 0v240z" fill="#343B6B"/>
-  <ellipse cx="400" cy="300" rx="260" ry="26" fill="#3E4679"/>
-  <circle cx="120" cy="60" r="3" fill="#D7B36A"/><circle cx="700" cy="44" r="3" fill="#D7B36A"/><circle cx="640" cy="120" r="2" fill="#D7B36A"/>
+  <path d="M0 320V120a120 120 0 0 1 240 0v200zM560 320V120a120 120 0 0 1 240 0v200z" fill="#353B4A"/>
+  <path d="M160 320V80a240 120 0 0 1 480 0v240z" fill="#474F63"/>
+  <ellipse cx="400" cy="300" rx="260" ry="26" fill="#525A6E"/>
+  <circle cx="120" cy="60" r="3" fill="#CDAE72"/><circle cx="700" cy="44" r="3" fill="#CDAE72"/><circle cx="640" cy="120" r="2" fill="#CDAE72"/>
 </svg>
