@@ -352,7 +352,7 @@ p.cheer { margin: 12px 0 0; }
 .friends { display: flex; align-items: flex-end; justify-content: center; }
 .friends .pose { width: 50%; }
 .friends .pose + .pose { margin-left: -24%; }
-.friends .pose:nth-child(2) { position: relative; z-index: 1; width: 54%; }
+.friends .pose:nth-child(2) { position: relative; z-index: 1; } /* 가운데 친구도 같은 크기 (비율 유지) */
 .station-link { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 12px 16px; }
 .station-link div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .station-link span { font-size: 13px; color: var(--quiet); }
@@ -383,6 +383,7 @@ p.cheer { margin: 12px 0 0; }
 .who .group.they .far .pose + .pose { margin-left: -32%; }
 .who .group.they .point { position: absolute; left: 34%; top: 2%; width: 26%; }
 .who span { font-size: 13px; color: var(--quiet); }
+.who > span:not(.pose) { min-height: 5.2em; } /* 설명이 두 줄인 카드(They are)도 그림 발끝·제목 높이가 같게 */
 .who b { display: block; font-size: 20px; color: var(--ink); }
 
 /* 비트낭독 무대 */
@@ -706,7 +707,6 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 /* 친구 크기를 라디오 장면 비율로 맞춘 뒤(점프 귀담이·차분이가 커짐) 서로 부딪히지 않게 덜 겹친다 */
 .welcome .friends:not(.small) { width: min(340px, 100%); }
 .welcome .friends:not(.small) .pose { width: 42%; }
-.welcome .friends:not(.small) .pose:nth-child(2) { width: 46%; }
 .welcome .friends:not(.small) .pose + .pose { margin-left: -14%; }
 .btn.big { font-size: 20px; padding: 12px 28px; }
 .name-set { flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -761,17 +761,21 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 @media (max-width: 560px) { .region-hero-card h2 .h2-range { display: block; font-size: .8em; } }
 
 /* 방송국 소개 카드: 친구 둘(왼쪽) · 글 · 친구 하나(오른쪽). 구간 카드와 다른 동작 */
-.journey .story { justify-content: space-between; }
-.journey .story .story-text { flex: 1; }
+.journey .story { justify-content: center; gap: 32px; }
+.journey .story .story-text { flex: 0 1 auto; }
 .journey .story .friends.pair { width: 190px; }
 .journey .story .pair .pose { width: 60%; }
 .journey .story .pair .pose + .pose { margin-left: -16%; }
 .journey .story .pair .pose:nth-child(2) { width: 60%; }
 .journey .story .friends.solo { width: 130px; }
-.journey .story .solo .pose { width: 100%; }
+.journey .story .solo .pose { width: 114px; transform: scaleX(-1); } /* 친구들 쪽(왼쪽)을 보게 */
 @media (max-width: 560px) {
   .journey .story .friends.pair { width: 180px; }
-  .journey .story .friends.solo { width: 100px; }
+  .journey .story .friends.solo { width: 100px; } .journey .story .solo .pose { width: 100%; }
+  /* 휴대폰: 세 친구를 한 줄(둘 · 하나)로 위에, 글은 아래 가운데 */
+  .journey .story { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: end; column-gap: 8px; row-gap: 14px; }
+  .journey .story .story-text { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+  .journey .story .friends.pair { width: 170px; } .journey .story .friends.solo { width: 102px; } /* 둘 그림 한 칸(170×60%)과 같은 크기 */
 }
 
 /* 구간 화면: 친구 발끝을 왼쪽 글 상자 아래 끝에 맞춘다 */

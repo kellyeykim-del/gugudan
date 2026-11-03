@@ -291,7 +291,7 @@ function Dan(id, params) {
   const d = getDan(id);
   if (!d) return (location.hash = "#/table");
   if (isLocked(d)) return (location.hash = "#/table?locked=1");
-  const step = params.get("step") || "see";
+  const step = STEP_CHAR[params.get("step")] ? params.get("step") : "see"; // 모르는 단계 주소면 ① 보고 듣기
   const lines = drillLines(d);
 
   // 별은 단계를 처음 마칠 때만. 단을 처음 통과하면 목소리 카드 창을 한 번 띄운다.
@@ -316,7 +316,7 @@ function Dan(id, params) {
     <section class="page">
       <div class="danhead scene-head">
         <div class="danhead-card"><div><span class="region-tag">${esc(regionOf(d).place)}</span><div class="big">${danLabel(d)}</div><div class="quiet">${esc(d.meaning)}</div></div>${starsHtml(d.id)}</div>
-        ${pose(STEP_CHAR[step][0], STEP_CHAR[step][1], { cls: "head-char" })}
+        ${pose(...stepChar(d, step), { cls: "head-char" })}
       </div>
       <nav class="tabs">${tabs}</nav>
       <div id="step"></div>
@@ -330,7 +330,19 @@ function Dan(id, params) {
 }
 
 // 단계마다 함께하는 친구와 기본 동작: 듣기는 말문이, 가리고 말하기는 귀담이 격려, 순서 맞추기는 차분이
-const STEP_CHAR = { see: ["nuri", "listen"], hide: ["minty", "encourage"], order: ["bobo", "welcome"], rec: ["nuri", "self"] };
+// 단계별 머리 그림. 세 친구의 여러 동작을 단마다 돌려 쓴다 (같은 단·같은 단계는 늘 같은 그림).
+// 말문이 listen·talk는 상반신 그림이라 바닥에 잘린 것처럼 보여 쓰지 않는다
+const STEP_CHAR = {
+  see: [["minty", "listen"], ["bobo", "listen"], ["nuri", "sit"], ["minty", "sit"]], // 귀 기울여 듣기
+  hide: [["nuri", "welcome"], ["minty", "welcome"], ["nuri", "self"], ["bobo", "welcome"]], // 소리 내어 말하기
+  order: [["bobo", "welcome"], ["minty", "rhythm"], ["bobo", "rhythm"], ["nuri", "rhythm"]], // 차근차근 맞추기
+  rec: [["nuri", "self"], ["bobo", "encourage"], ["minty", "welcome"], ["nuri", "welcome"]], // 내 목소리
+};
+const stepChar = (d, step) => {
+  const list = STEP_CHAR[step];
+  const n = [...String(d.id)].reduce((a, c) => a + c.charCodeAt(0), 0);
+  return list[n % list.length];
+};
 const headChar = () => $app.querySelector(".head-char");
 
 // 비트낭독 무대 (라일락 단색): 선생님 원음이 실제로 재생되는 동안만 .playing (박자 정보는 없어 가벼운 반복 움직임만)
