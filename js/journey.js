@@ -319,7 +319,8 @@ export function Station() {
         <div class="friends">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "welcome")}</div>
         <div class="story-text"><p>말문이, 귀담이, 차분이의<br>작은 라디오 방송국이에요.</p>
         <p>이 세 친구들은 아직 영어를 몰라요.<br>
-        <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p></div>
+        <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p>
+        <a class="small redo" href="#/welcome">👋 친구 소개 · 이름 다시 하기</a></div>
       </div>
       ${onAir}
       ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}

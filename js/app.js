@@ -65,7 +65,7 @@ function Home() {
         <a class="qbtn ${wrong ? "" : "dim"}" data-region="r3" href="#/pick?preset=wrong">📌 내 묶음${wrong ? ` ${wrong}` : ""}</a>
       </nav>
       <div class="sec-head">
-        <h2>${pose("nuri", "talk", { cls: "sec-char" })}구간별 학습하기</h2>
+        <h2>${pose("nuri", "welcome", { cls: "sec-char" })}구간별 학습하기</h2>
         <a class="qbtn" href="#/dan/${today.id}">▷ 이어서 ${danLabel(today)}</a>
       </div>
       <div class="regions">${REGIONS.map(regionTile).join("")}</div>

@@ -51,6 +51,15 @@ export function Welcome(next = "#/") {
     location.hash === next ? window.dispatchEvent(new HashChangeEvent("hashchange")) : (location.hash = next);
   };
   const skip = `<button class="linkbtn" id="skip">건너뛰기</button>`;
+  // 잘못 눌렀을 때: 두 번째 장면부터 위에 '← 이전'과 '처음부터'(친구 소개). 이름도 다시 고칠 수 있다
+  let stopScene = () => {};
+  const nav = (prev) => {
+    $app.querySelector(".welcome .card").insertAdjacentHTML("afterbegin",
+      `<div class="wnav"><button class="btn ghost" id="wback">← 이전</button><button class="btn ghost" id="wrestart">↺ 처음부터</button></div>`);
+    const go = (scene) => () => { stopScene(); stopScene = () => {}; scene(); };
+    $app.querySelector("#wback").onclick = go(prev);
+    $app.querySelector("#wrestart").onclick = go(meet);
+  };
 
   const meet = () => {
     $app.innerHTML = `<section class="page welcome">
@@ -91,6 +100,7 @@ export function Welcome(next = "#/") {
       hello();
     };
     $app.querySelector("#later").onclick = howto;
+    nav(meet);
   };
 
   const hello = () => {
@@ -104,6 +114,7 @@ export function Welcome(next = "#/") {
         <button class="btn primary big" id="start">다음</button>
       </div></section>`;
     $app.querySelector("#start").onclick = beat;
+    nav(askName);
   };
 
   // 한 마디 4박: I · am · 이름 · (쉼). 세 번 되풀이하는 동안 아이가 따라 말한다 (채점 없음)
@@ -112,6 +123,7 @@ export function Welcome(next = "#/") {
     let timer = null;
     const stopBeat = () => { clearInterval(timer); timer = null; };
     onLeave(stopBeat);
+    stopScene = stopBeat;
     $app.innerHTML = `<section class="page welcome">
       <div class="card center">
         <p class="kicker">박자에 맞춰 다 같이!</p>
@@ -156,6 +168,7 @@ export function Welcome(next = "#/") {
       timer = setInterval(step, 650);
     };
     $app.querySelector("#skipbeat").onclick = () => { stopBeat(); howto(); };
+    nav(hello);
   };
 
   // 공부 방법 한 장: 세 단계 = 별 3개 = 한 단 통과 → 목소리 카드, 그리고 녹음하기
@@ -174,6 +187,7 @@ export function Welcome(next = "#/") {
     $app.querySelector("#dan1").onclick = () => { next = "#/dan/1"; done(); };
     $app.querySelector("#home").onclick = done;
     $app.querySelector("#dan1").focus();
+    nav(learner() ? beat : askName); // 이름을 '나중에'로 넘겼으면 이름 화면으로
   };
 
   meet();
