@@ -10,6 +10,7 @@ import { $app, esc, hl, danLabel, header } from "./ui.js";
 import { drillLines } from "./data.js";
 import { pose } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
+import { learnerGa } from "./welcome.js";
 
 // ── 5구간 ─────────────────────────
 // 저학년이 바로 알아듣게: 장소·모으는 물건·도전 이름은 쉬운 말, 도전은 문제 4개 안팎 + 눈에 보이는 진행(상자·전구)
@@ -316,8 +317,9 @@ export function Station() {
     <section class="page journey">
       <div class="card story">
         <div class="friends">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "welcome")}</div>
-        <p>세 친구의 작은 라디오 방송국이에요. 친구들은 아직 영어를 몰라요.
-        <b>네가 한 단을 마칠 때마다</b> 목소리 카드가 한 장 생기고, 카드를 모으면 방송국에 새 물건이 생겨요!</p>
+        <div class="story-text"><p>말문이, 귀담이, 차분이의<br>작은 라디오 방송국이에요.</p>
+        <p>이 세 친구들은 아직 영어를 몰라요.<br>
+        <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p></div>
       </div>
       ${onAir}
       ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}
@@ -353,7 +355,7 @@ export function showVoiceCard(d) {
       <div class="reward-body">
         <span class="kicker">🎉 ${danLabel(d)} 통과! 별 3개</span>
         <h2 id="reward-title">목소리 카드가 생겼어요!</h2>
-        <p class="quiet">네가 알려 준 말을 친구들이 기억했어요. ${esc(r.place)} 목소리 카드 ${n} / ${total}</p>
+        <p class="quiet">${esc(learnerGa())} 알려 준 말을 친구들이 기억했어요. ${esc(r.place)} 목소리 카드 ${n} / ${total}</p>
         <div class="row2">
           <a class="btn primary" href="#/dan/${d.id}?step=rec">🎙 내 목소리 녹음하기</a>
           <button class="btn" id="rw-ok">계속하기</button>
@@ -493,7 +495,7 @@ function reward(saved = true) {
         <p class="quiet">${esc(J.core.cleared)} · 본편 36단 · 별 108개</p>
         <div class="friends">${pose("nuri", "celebrate")}${pose("minty", "celebrate")}${pose("bobo", "encourage")}</div>
         <ul class="thanks">
-          <li><b>말문이</b> 처음엔 한마디도 몰랐는데, 네가 알려 줬어.</li>
+          <li><b>말문이</b> 처음엔 한마디도 몰랐는데, ${esc(learnerGa())} 알려 줬어.</li>
           <li><b>귀담이</b> 이제 우리가 배운 말을 들려줄게!</li>
           <li><b>차분이</b> 함께 해 줘서 고마워.</li>
         </ul>

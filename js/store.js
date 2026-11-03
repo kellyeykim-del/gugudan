@@ -77,8 +77,11 @@ export const store = {
     state.settings = { ...state.settings, [k]: v };
     save();
   },
+  // 학습 기록만 지운다. 학습자 이름과 소개를 봤는지는 남긴다
   reset() {
+    const { learner, welcomed } = state.settings;
     state = blank();
+    state.settings = { ...state.settings, learner, welcomed };
     save();
   },
 };

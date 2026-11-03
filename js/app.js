@@ -8,6 +8,7 @@ import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose } from "./village.js";
 import { mountRecorder, stopRecorder, canRecord } from "./recorder.js";
+import { Welcome, needsWelcome, learner } from "./welcome.js";
 import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
@@ -88,11 +89,19 @@ function Home() {
       </a>
       <details class="settings">
         <summary>설정</summary>
+        <form class="row name-set" id="nameset"><label for="learner">학습자 이름</label>
+          <input id="learner" maxlength="12" autocomplete="off" value="${esc(learner())}" placeholder="이름"><button class="btn" type="submit">저장</button>
+          <a class="small" href="#/welcome">친구 소개 다시 보기</a></form>
         <label><input type="checkbox" id="unlock" ${store.settings.unlockAll ? "checked" : ""}> 선생님 모드: 보너스 단 · 구간 도전 미리 열기</label>
         <button class="btn ghost" id="reset">학습 기록 지우기</button>
       </details>
     </section>`;
   $app.querySelector("#unlock").onchange = (e) => { store.setSetting("unlockAll", e.target.checked); Home(); };
+  $app.querySelector("#nameset").onsubmit = (e) => {
+    e.preventDefault();
+    store.setSetting("learner", $app.querySelector("#learner").value.trim());
+    toast("이름을 저장했어요");
+  };
   $app.querySelector("#reset").onclick = () => {
     if (confirm("이 기기의 별과 시험 기록을 모두 지울까요?")) { store.reset(); Home(); }
   };
@@ -628,6 +637,8 @@ function route() {
   const parts = path.split("/").filter(Boolean);
   window.scrollTo(0, 0);
   setRegion("r1");
+  if (parts[0] === "welcome") return Welcome("#/");
+  if (needsWelcome()) return Welcome(location.hash || "#/"); // 처음 켰을 때 한 번: 친구 소개 · 이름
   if (["station", "journey", "garden"].includes(parts[0])) return Station();
   if (parts[0] === "challenge") return Challenge(parts[1]);
   if (parts[0] === "core") return Core(params);
