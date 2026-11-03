@@ -12,10 +12,11 @@ import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, re
 // ───────────────────────── 홈 ─────────────────────────
 // 벤지 리딩룸처럼: 제목 → 자주 쓰는 버튼 → '구간별 학습하기' 카드 5장. 단은 구간 화면에서 고른다.
 // 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 말문이를 넣고, 짝꿍은 카드마다 바꾼다
-const tileFriends = (mine, other, act) => `<span class="tile-friends">${pose("nuri", mine)}${pose(other, act)}</span>`;
+// 게임 칸 오른쪽 아래 두 친구. 말문이 talk 동작은 원화가 상반신만 그려져 있어 잘려 보이므로 온몸 동작만 쓴다
+const tileFriends = (a, aAct, b, bAct) => `<span class="tile-friends">${pose(a, aAct)}${pose(b, bAct)}</span>`;
 // 구간 카드마다 다른 동작 (다 마친 구간은 축하 동작)
 // 대문 라디오에서 차례로 흘러나오는 문장 (구구단 첫 줄들)
-const ON_AIR = ["I am.", "You are.", "Do I have?", "I don't go.", "She is.", "We like."];
+const ON_AIR = ["I am", "You are", "Do I have?", "I don't go", "She is", "We like"];
 const TILE_ACT = { r1: "welcome", r2: "listen", r3: "listen", r4: "rhythm", bonus: "sit" };
 const regionRange = (r) => (r.id === "bonus" ? "보너스 7단" : `${r.from}–${r.to}단`);
 const regionLocked = (r) => r.id === "bonus" && !store.bonusOpen();
@@ -70,14 +71,14 @@ function Home() {
         <div class="row"><b>통과한 단</b><span>${passed} / ${MAIN_DANS.length}</span></div>
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
-      <a class="station-link card" href="#/station">
-        <span class="station-thumb region-thumb" aria-hidden="true">${pose("bobo", "sit")}</span>
+      <a class="station-link card accent-card" data-region="r2" href="#/station">
+        <span class="station-thumb region-thumb" aria-hidden="true">${pose("nuri", "welcome")}</span>
         <div><b>📻 우리 목소리 방송국</b><span>목소리 카드 ${passed} / 36 · 구간 도전 · 마지막 도전</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
-        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("talk", "bobo", "encourage")}</a>
-        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("rhythm", "minty", "rhythm")}</a>
+        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("nuri", "welcome", "bobo", "encourage")}</a>
+        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("minty", "listen", "bobo", "listen")}</a>
       </nav>
       <a class="about-link card" href="#/about">
         <img src="img/ceo-kang-sojin.jpg" alt="">

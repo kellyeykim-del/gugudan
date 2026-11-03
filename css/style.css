@@ -203,7 +203,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 /* 게임 */
 .tile.game { position: relative; min-height: 0; gap: 4px; padding-right: 128px; overflow: hidden; }
 .tile.game b { color: var(--purple); }
-.tile-friends { position: absolute; right: 8px; bottom: -14px; display: flex; width: 132px; }
+.tile-friends { position: absolute; right: 8px; bottom: 2px; display: flex; align-items: flex-end; width: 132px; }
 .tile-friends .pose { width: 60%; }
 .tile-friends .pose + .pose { margin-left: -20%; }
 .range-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -599,7 +599,7 @@ p.cheer { margin: 12px 0 0; }
   font-size: 14px; font-weight: 600; }
 .rtile:hover .rgo, .rtile:focus-visible .rgo { background: var(--acc); border-color: var(--acc); color: #fff; }
 .rtile.all .rtile-card { border: 2px solid var(--acc); }
-.rtile.locked .rtile-card { opacity: .72; }
+.rtile.locked .rdots { opacity: .6; } /* 잠긴 카드도 그림·글자는 또렷하게, 잠금은 🔒 문구로만 */
 .home .progress { margin-top: 16px; }
 .home .menu { grid-template-columns: 1fr 1fr; }
 @media (max-width: 640px) { .home .menu { grid-template-columns: 1fr; } }
@@ -644,3 +644,8 @@ p.cheer { margin: 12px 0 0; }
   .home-title h1 { font-size: 26px; }
   .dno { font-size: 30px; }
 }
+/* 흰 화면 속 포인트: 방송국 바로가기만 구간 색 바탕 */
+.accent-card { background: var(--scene); border-color: var(--scene-deep); }
+.accent-card .station-thumb { background: var(--card); }
+.accent-card .station-thumb .pose { margin-bottom: 0; }
+.accent-card b { color: var(--acc); }
