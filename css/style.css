@@ -556,7 +556,23 @@ p.cheer { margin: 12px 0 0; }
    손글씨 제목은 Gaegu(OFL 무료 글꼴). 구간 카드 색은 data-region 색표에서 가져온다. */
 .home-hero { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 16px 22px;
   background: var(--mint); border: 0; box-shadow: none; }
-.hero-scene { width: 300px; max-width: 46%; height: auto; flex: none; }
+/* 대문: 라디오 앞 세 친구. 라디오(그림 가로 55% · 세로 40% 지점)에서 문장 말풍선이 차례로 떠올라 사라진다 */
+.hero-stage { position: relative; width: 230px; max-width: 44%; flex: none; padding-top: 34px; }
+.hero-scene { display: block; width: 100%; height: auto; }
+.onair i { position: absolute; left: 55%; top: calc(34px + 38%); transform: translate(-50%, 0); opacity: 0; font-style: normal; white-space: nowrap;
+  font-family: var(--hand); font-size: 17px; font-weight: 700; color: var(--ink); background: #fff; border: 1.5px solid var(--scene-deep);
+  border-radius: 99px; padding: 1px 9px; animation: onair 9s ease-out var(--d) infinite; }
+@keyframes onair {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(.7); }
+  5% { opacity: 1; transform: translate(-50%, -14px) scale(1); }
+  14% { opacity: 1; }
+  17% { opacity: 0; transform: translate(calc(-50% + var(--x) * 14px), -52px) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--x) * 14px), -52px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .onair i { animation: none; }
+  .onair i:first-child { opacity: 1; transform: translate(-50%, -24px); }
+}
 .home-title .logo { height: 24px; display: block; }
 .home-title h1 { font-family: var(--hand); font-size: 40px; font-weight: 700; margin: 6px 0 0; line-height: 1.05; }
 .home-title p { margin: 4px 0 0; font-size: 14px; color: var(--quiet); }
@@ -619,7 +635,7 @@ p.cheer { margin: 12px 0 0; }
   .regions { grid-template-columns: repeat(2, 1fr); }
   .home-hero { gap: 10px; padding: 14px; }
   .home-hero { flex-direction: column; text-align: center; }
-  .hero-scene { width: 260px; max-width: 80%; }
+  .hero-stage { width: 210px; max-width: 70%; }
   .home-title .logo { margin: 0 auto; }
   .home-title h1 { font-size: 30px; }
   .dgrid { grid-template-columns: repeat(3, 1fr); }

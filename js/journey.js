@@ -36,6 +36,8 @@ export const regionOf = (d) =>
 export const regionDans = (r) => (r.id === "bonus" ? BONUS_DANS : MAIN_DANS.filter((d) => d.no >= r.from && d.no <= r.to));
 const regionDone = (r) => regionDans(r).every((d) => store.passed(d.id));
 const regionCount = (r) => regionDans(r).filter((d) => store.passed(d.id)).length;
+// 선생님 모드(설정)에서는 구간 도전을 단을 다 마치기 전에도 미리 해 볼 수 있다. 미리 보기는 완료 기록을 남기지 않는다.
+export const teacherMode = () => !!store.settings.unlockAll;
 
 // 화면 바탕색: 지금 보는 단의 구간 색. 여러 구간이 섞이면 기본 라일락.
 export const setRegion = (id) => (document.documentElement.dataset.region = id || "r1");
@@ -278,6 +280,7 @@ export function Station() {
       const cleared = J.challenges[r.id];
       action = cleared ? `<span class="badge-done">✓ ${esc(r.challenge.name)} 완료</span> <a class="btn" href="#/challenge/${r.id}">다시 도전</a>`
         : done ? `<a class="btn primary" href="#/challenge/${r.id}">구간 도전: ${esc(r.challenge.name)}</a>`
+        : teacherMode() ? `<a class="btn" href="#/challenge/${r.id}">👩‍🏫 선생님 미리 보기: ${esc(r.challenge.name)}</a>`
         : `<span class="quiet small">${dans.length}단을 모두 마치면 구간 도전 ‘${esc(r.challenge.name)}’이 열려요</span>`;
     } else {
       action = `<span class="quiet small">최종 도전 ‘나만의 앙코르’는 보너스 단 내용을 다시 살펴본 뒤 열려요 (준비 중)</span>`;
@@ -381,7 +384,8 @@ export function Challenge(id) {
   if (!r) return (location.hash = "#/station");
   setRegion(r.id);
   const dans = regionDans(r);
-  if (!regionDone(r)) return (location.hash = "#/station");
+  const preview = !regionDone(r);
+  if (preview && !teacherMode()) return (location.hash = "#/station");
   const intro = () => {
     $app.innerHTML = `${header(r.challenge.name, "#/station")}
       <section class="page"><div class="card center ready">
@@ -389,6 +393,7 @@ export function Challenge(id) {
         <h2>${esc(r.challenge.name)}</h2><p class="quiet">${esc(r.place)} · ${r.from}–${r.to}단</p>
         <p>${esc(r.challenge.intro)}</p>
         <p class="quiet small">틀려도 지금까지 푼 문제는 그대로예요. 시간 제한도 없어요.</p>
+        ${preview ? '<p class="small"><b>선생님 미리 보기</b> · 아직 구간을 다 마치지 않아 완료 기록은 남지 않아요.</p>' : ""}
         <button class="btn primary" id="start">시작!</button>
       </div></section>`;
     $app.querySelector("#start").onclick = play;
@@ -398,7 +403,7 @@ export function Challenge(id) {
     $app.innerHTML = `${header(r.challenge.name, "#/station")}
       <section class="page"><div class="meter jmeter"><i style="width:0"></i></div><div class="jbox"></div></section>`;
     runQuestions(qs, $app.querySelector(".page"), () => {
-      J.challenges[r.id] ||= today();
+      if (!preview) J.challenges[r.id] ||= today();
       const saved = saveJ();
       $app.innerHTML = `${header(r.challenge.name, "#/station")}
         <section class="page"><div class="card center">

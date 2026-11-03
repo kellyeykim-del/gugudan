@@ -7,13 +7,15 @@ import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave }
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose } from "./village.js";
-import { REGIONS, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
+import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
 // 벤지 리딩룸처럼: 제목 → 자주 쓰는 버튼 → '구간별 학습하기' 카드 5장. 단은 구간 화면에서 고른다.
 // 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 말문이를 넣고, 짝꿍은 카드마다 바꾼다
 const tileFriends = (mine, other, act) => `<span class="tile-friends">${pose("nuri", mine)}${pose(other, act)}</span>`;
 // 구간 카드마다 다른 동작 (다 마친 구간은 축하 동작)
+// 대문 라디오에서 차례로 흘러나오는 문장 (구구단 첫 줄들)
+const ON_AIR = ["I am.", "You are.", "Do I have?", "I don't go.", "She is.", "We like."];
 const TILE_ACT = { r1: "welcome", r2: "listen", r3: "listen", r4: "rhythm", bonus: "sit" };
 const regionRange = (r) => (r.id === "bonus" ? "보너스 7단" : `${r.from}–${r.to}단`);
 const regionLocked = (r) => r.id === "bonus" && !store.bonusOpen();
@@ -43,7 +45,10 @@ function Home() {
   $app.innerHTML = `
     <section class="home">
       <header class="home-hero card">
-        <img class="hero-scene" src="img/village/friends-radio.webp" alt="라디오 앞에 앉아 방송을 듣는 말문이, 귀담이, 차분이">
+        <div class="hero-stage">
+          <img class="hero-scene" src="img/village/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">
+          <span class="onair" aria-hidden="true">${ON_AIR.map((t, i) => `<i style="--d:${i * 1.5}s;--x:${i % 2 ? -1 : 1}">${t}</i>`).join("")}</span>
+        </div>
         <div class="home-title">
           <a href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"></a>
           <h1>신나는 영어구구단</h1>
@@ -81,7 +86,7 @@ function Home() {
       </a>
       <details class="settings">
         <summary>설정</summary>
-        <label><input type="checkbox" id="unlock" ${store.settings.unlockAll ? "checked" : ""}> 선생님 모드: 보너스 단 미리 열기</label>
+        <label><input type="checkbox" id="unlock" ${store.settings.unlockAll ? "checked" : ""}> 선생님 모드: 보너스 단 · 구간 도전 미리 열기</label>
         <button class="btn ghost" id="reset">학습 기록 지우기</button>
       </details>
     </section>`;
@@ -127,6 +132,7 @@ function Region(id) {
       <p class="legend"><span><i class="done"></i>다 외웠어요</span><span><i class="part"></i>하는 중</span><span><i></i>아직</span></p>
       ${locked ? "" : `<div class="actions">
         ${r.challenge ? (n === dans.length ? `<a class="btn primary" href="#/challenge/${r.id}">구간 도전: ${esc(r.challenge.name)}</a>`
+          : teacherMode() ? `<a class="btn" href="#/challenge/${r.id}">👩‍🏫 선생님 미리 보기: ${esc(r.challenge.name)}</a>`
           : `<span class="btn disabled">🔒 구간 도전: ${esc(r.challenge.name)}</span>`) : ""}
         <a class="btn" href="#/quiz?ids=${ids}&n=10">이 구간 시험 10문제</a>
         <a class="btn" href="#/games?ids=${ids}">🎮 이 구간 게임</a>
