@@ -689,7 +689,8 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .welcome h2 { font-family: var(--hand), sans-serif; font-size: 28px; margin: 6px 0 14px; }
 .wfriends { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 10px; text-align: left; }
 .wfriends li { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 16px; background: var(--scene); }
-.wf-char { width: 84px; }
+/* 작은 동작 그림은 칸 아래쪽에 붙어 있어(위 27%가 빈칸) 글과 같은 높이로 보이게 올린다 */
+.wf-char { width: 84px; transform: translateY(-13%); }
 .wfriends b { font-size: 18px; }
 .wfriends p { margin: 2px 0 0; line-height: 1.6; }
 .wline { font-size: 18px; line-height: 1.8; margin: 8px 0 16px; }
