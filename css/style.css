@@ -201,9 +201,10 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
 .wronglist .quiet { font-size: 13px; margin-top: 4px; }
 
 /* 게임 */
-.tile.game { position: relative; min-height: 0; gap: 4px; padding-right: 128px; overflow: hidden; }
+.tile.game { position: relative; min-height: 0; gap: 4px; padding-right: 150px; overflow: hidden; }
 .tile.game b { color: var(--purple); }
-.tile-friends { position: absolute; right: 8px; bottom: 2px; display: flex; align-items: flex-end; width: 132px; }
+/* 친구들을 글줄 높이(카드 세로 가운데)에. 그림 칸 위쪽이 비어 있어 가운데보다 조금 더 올린다 */
+.tile-friends { position: absolute; right: 12px; top: 50%; transform: translateY(-62%); display: flex; align-items: flex-end; width: 132px; }
 .tile-friends .pose { width: 60%; }
 .tile-friends .pose + .pose { margin-left: -20%; }
 .range-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -435,7 +436,7 @@ p.cheer { margin: 12px 0 0; }
 @keyframes rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 560px) {
-  .tile.game { padding-right: 104px; }
+  .tile.game { padding-right: 116px; }
   .tile-friends { width: 104px; right: 2px; }
   .scene-head { min-height: 104px; padding: 10px; }
   .danhead-card { gap: 10px; padding: 10px 12px; }
@@ -705,3 +706,25 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .journey { word-break: keep-all; overflow-wrap: break-word; }
 .journey .region-card .row { flex-wrap: wrap; gap: 2px 10px; }
 .journey .region-card .row > * { white-space: nowrap; }
+
+/* 처음 소개: 박자 맞춰 I am ○○! · 공부 방법 */
+.beatline { font-size: 34px; font-weight: 800; margin: 10px 0 4px; color: var(--quiet); }
+.beatline span { display: inline-block; transition: transform .12s, color .12s; }
+.beatline span.on { color: var(--acc); transform: scale(1.3); }
+.beatdots { display: flex; justify-content: center; gap: 8px; margin: 0 0 6px; }
+.beatdots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
+.beatdots i.on { background: var(--acc); }
+.wbeat.go .pose { animation: whop .65s ease-in-out infinite; }
+.wbeat.go .pose:nth-child(2) { animation-delay: .1s; }
+.wbeat.go .pose:nth-child(3) { animation-delay: .2s; }
+@keyframes whop { 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .wbeat.go .pose { animation: none; } .beatline span.on { transform: none; } }
+.wsteps { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 8px; text-align: left; }
+.wsteps li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--scene); }
+.wsteps .wno { font-size: 22px; font-weight: 800; color: var(--acc); }
+.wsteps div { flex: 1; }
+.wsteps p { margin: 2px 0 0; line-height: 1.6; }
+.wgo { justify-content: center; }
+.wgo .btn { white-space: nowrap; }
+/* 방송국 바로가기 작은 그림: 친구가 칸 아래에 붙어 보이지 않게 조금 올림 */
+.accent-card .station-thumb .pose { transform: translateY(-10%); }
