@@ -126,8 +126,8 @@ function Region(id) {
       </a>`;
   };
   setRegion(r.id);
-  // 위 막대는 돌아가는 곳(구간 목록)을 글로도 보여 주고, 구간 범위는 아래 이름 앞에
-  $app.innerHTML = `${header('<a href="#/">구간 목록으로</a>')}
+  // 위에는 큰 제목 막대 대신 작은 인쇄체 '← 구간 목록' 링크. 구간 범위는 아래 이름 앞에
+  $app.innerHTML = `<a class="crumb" href="#/">← 구간 목록</a>
     <section class="page region-page">
       <div class="scene-head region-hero">
         <div class="danhead-card region-hero-card">
