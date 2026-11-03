@@ -472,6 +472,7 @@ p.cheer { margin: 12px 0 0; }
 [data-region="r3"] { --page: #FFFFFF; --scene: #FBF4E8; --scene-deep: #EADBC2; --acc: #8A6A3F; }
 [data-region="r4"] { --page: #FFFFFF; --scene: #EDF1F6; --scene-deep: #D3DCE6; --acc: #556A83; }
 [data-region="bonus"] { --page: #FFFFFF; --scene: #F8EEEE; --scene-deep: #E8D3D1; --acc: #8E5F63; }
+[data-region="lilac"] { --scene: var(--lilac); --scene-deep: var(--lilac-deep); --acc: #67588A; } /* 홈의 방송국 바로가기: 방송국 소개 무대와 같은 연한 라벤더 (글자 대비 5.5:1) */
 :root { --accent: var(--acc); }
 :root[data-region] { --cream: var(--page); --mint: var(--scene); --lav: var(--scene); --lav-deep: var(--scene-deep); }
 .region-tag { display: inline-block; font-size: 12px; font-weight: 800; color: var(--accent); margin-bottom: 2px; }

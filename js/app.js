@@ -79,7 +79,7 @@ function Home() {
         <div class="row"><b>통과한 단</b><span>${passed} / ${MAIN_DANS.length}</span></div>
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
-      <a class="station-link card accent-card" data-region="r2" href="#/station">
+      <a class="station-link card accent-card" data-region="lilac" href="#/station">
         <span class="station-thumb region-thumb" aria-hidden="true">${pose("nuri", "talk", { cls: "talk" })}</span>
         <div><b>📻 우리 목소리 방송국</b><span>목소리 카드 ${passed} / 36 · 구간 도전 · 마지막 도전</span></div>
         <span class="go" aria-hidden="true">→</span>
