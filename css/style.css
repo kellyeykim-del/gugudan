@@ -734,3 +734,13 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .wnav { display: flex; justify-content: space-between; gap: 8px; margin: -6px -4px 8px; }
 .wnav .btn { padding: 6px 12px; font-size: 14px; }
 .journey .story .redo { display: inline-block; margin-top: 10px; color: var(--quiet); }
+/* 대문 오른쪽 위: 첫 소개(친구 소개 · 이름)로 돌아가기. 넓은 화면은 겹쳐 띄워 제목·그림 위치를 바꾸지 않는다 */
+.home-hero { position: relative; }
+.hero-restart { position: absolute; top: 12px; right: 14px; padding: 6px 12px; border-radius: 999px; background: var(--card);
+  border: 1px solid var(--line); font-size: 14px; font-weight: 700; color: var(--quiet); }
+.hero-restart:hover { color: var(--acc); border-color: var(--acc); }
+@media (max-width: 560px) {
+  .hero-restart { position: static; }
+}
+.sec-head h2 { white-space: nowrap; }
+@media (max-width: 560px) { .sec-head h2 { font-size: 22px; } .sec-head .qbtn { white-space: nowrap; } }

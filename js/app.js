@@ -57,6 +57,7 @@ function Home() {
           <h1>신나는 영어구구단</h1>
           <p>주어 7개 × 36단, 소리 내어 외우는 영어 문장</p>
         </div>
+        <a class="hero-restart" href="#/welcome" title="세 친구 소개와 이름 입력을 다시 해요">↺ 처음으로</a>
       </header>
       <nav class="quick">
         <a class="qbtn" data-region="r1" href="#/table">📋 구구단표</a>
