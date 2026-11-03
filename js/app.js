@@ -23,8 +23,8 @@ const ON_AIR = ["I am", "You are", "Do I have?", "I don't go", "She is", "We lik
 // 홈 화면의 말문이는 곳마다 다른 동작: 구간 타일 = 가리키기(self), 제목 옆 = 앉기, 방송국 = 말하기, 문장형 게임 = 손 흔들기
 const TILE_ACT = { r1: "self", r2: "listen", r3: "listen", r4: "rhythm", bonus: "sit" };
 const TILE_FLIP = { r2: "flip" }; // 01 말문이와 02 귀담이가 마주 보게
-// 게임 타일: [귀담이 · 차분이] | [말문이 · 책 읽는 차분이]. 안쪽 두 친구(구구단형 차분이 ↔ 문장형 말문이),
-// 바깥 두 친구(귀담이 ↔ 책 읽는 차분이)가 서로 마주 본다. 구구단형은 오른쪽, 문장형은 뒤집어 왼쪽을 본다
+// 게임 타일: 한 타일 안의 두 친구가 서로 마주 본다(오른쪽 친구를 뒤집음).
+// 구구단형 = 귀담이 → ← 책 읽는 차분이, 문장형 = 말문이 → ← 엄지 든 차분이
 const regionRange = (r) => (r.id === "bonus" ? "보너스 7단" : `${r.from}–${r.to}단`);
 const regionLocked = (r) => r.id === "bonus" && !store.bonusOpen();
 
@@ -85,8 +85,8 @@ function Home() {
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
-        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends(["minty", "welcome"], ["bobo", "encourage"])}</a>
-        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends(["nuri", "welcome", "flip"], ["bobo", "listen", "flip"])}</a>
+        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends(["minty", "welcome"], ["bobo", "listen", "flip"])}</a>
+        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends(["nuri", "welcome"], ["bobo", "encourage", "flip"])}</a>
       </nav>
       <a class="about-link card" href="#/about">
         <img src="img/ceo-kang-sojin.jpg" alt="">
