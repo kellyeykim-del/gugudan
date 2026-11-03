@@ -703,6 +703,11 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .nameform input { font: inherit; font-size: 20px; padding: 10px 14px; border: 2px solid var(--scene-deep); border-radius: 14px; width: min(100%, 240px); text-align: center; }
 .welcome .friends.small { width: 220px; margin: 0 auto; }
 .welcome .friends { width: 280px; margin: 0 auto; }
+/* 친구 크기를 라디오 장면 비율로 맞춘 뒤(점프 귀담이·차분이가 커짐) 서로 부딪히지 않게 덜 겹친다 */
+.welcome .friends:not(.small) { width: min(340px, 100%); }
+.welcome .friends:not(.small) .pose { width: 42%; }
+.welcome .friends:not(.small) .pose:nth-child(2) { width: 46%; }
+.welcome .friends:not(.small) .pose + .pose { margin-left: -14%; }
 .btn.big { font-size: 20px; padding: 12px 28px; }
 .name-set { flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
 .name-set input { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; width: 140px; }
@@ -749,7 +754,7 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 @media (max-width: 560px) { .sec-head h2 { font-size: 22px; } .sec-head .qbtn { white-space: nowrap; } }
 /* 구간 화면: 위 막대 '구간 목록으로', 이름 앞 범위 */
 /* 작은 돌아가기 링크 (구간 화면) */
-.crumb { display: inline-block; margin: 16px 0 14px; font-size: 15px; color: var(--quiet); text-decoration: underline; text-underline-offset: 3px; }
+.crumb { display: inline-block; margin: 16px 0 14px; font-size: 13px; color: var(--quiet); text-decoration: underline; text-underline-offset: 3px; }
 .crumb:hover { color: var(--acc); }
 .region-hero-card h2 .h2-range { color: var(--acc); margin-right: 4px; }
 .region-hero-card h2 { word-break: keep-all; }
