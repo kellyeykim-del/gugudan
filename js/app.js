@@ -126,12 +126,13 @@ function Region(id) {
       </a>`;
   };
   setRegion(r.id);
-  $app.innerHTML = `${header(`${regionRange(r)} · ${esc(r.place)}`)}
+  // 위 막대는 돌아가는 곳(구간 목록)을 글로도 보여 주고, 구간 범위는 아래 이름 앞에
+  $app.innerHTML = `${header('<a href="#/">구간 목록으로</a>')}
     <section class="page region-page">
       <div class="scene-head region-hero">
         <div class="danhead-card region-hero-card">
-          <span class="region-tag">${String(REGIONS.indexOf(r) + 1).padStart(2, "0")} 구간 · ${regionRange(r)}</span>
-          <h2>${esc(r.place)}</h2>
+          <span class="region-tag">${String(REGIONS.indexOf(r) + 1).padStart(2, "0")} 구간</span>
+          <h2><span class="h2-range">${regionRange(r)}</span> ${esc(r.place)}</h2>
           <p>${esc(r.goal)}</p>
           <div class="row"><b>다 외운 단</b><span>${n} / ${dans.length}</span></div>
           <div class="meter"><i style="width:${(n / dans.length) * 100}%"></i></div>

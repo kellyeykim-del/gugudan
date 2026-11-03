@@ -744,3 +744,8 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 }
 .sec-head h2 { white-space: nowrap; }
 @media (max-width: 560px) { .sec-head h2 { font-size: 22px; } .sec-head .qbtn { white-space: nowrap; } }
+/* 구간 화면: 위 막대 '구간 목록으로', 이름 앞 범위 */
+.bar h1 a { color: inherit; }
+.region-hero-card h2 .h2-range { color: var(--acc); margin-right: 4px; }
+.region-hero-card h2 { word-break: keep-all; }
+@media (max-width: 560px) { .region-hero-card h2 .h2-range { display: block; font-size: .8em; } }
