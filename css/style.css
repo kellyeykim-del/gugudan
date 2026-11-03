@@ -616,8 +616,11 @@ p.cheer { margin: 12px 0 0; }
 .region-hero-card .meter i { background: var(--acc); }
 .dgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 .dcell { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 120px; padding: 12px 8px; border-radius: 16px;
-  background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); text-align: center; transition: transform .15s; }
-.dcell:hover { transform: translateY(-2px); }
+  background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); text-align: center; transition: transform .15s, background-color .15s, border-color .15s; }
+/* 올려 보면 살짝 떠오르고 구간 색으로 살짝 물든다 */
+.dcell:hover { transform: translateY(-2px); background: var(--scene); border-color: var(--scene-deep); }
+.dcell.part:hover { background: var(--scene-deep); }
+.dcell.done:hover { background: var(--acc); filter: brightness(1.08); }
 .dno { font-family: var(--hand); font-size: 36px; font-weight: 700; line-height: 1; }
 .dno small { font-size: 18px; margin-left: 2px; }
 .dfirst { margin-top: auto; font-size: 12px; color: var(--quiet); }
@@ -746,8 +749,29 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 @media (max-width: 560px) { .sec-head h2 { font-size: 22px; } .sec-head .qbtn { white-space: nowrap; } }
 /* 구간 화면: 위 막대 '구간 목록으로', 이름 앞 범위 */
 /* 작은 돌아가기 링크 (구간 화면) */
-.crumb { display: inline-block; margin: 14px 0 2px; font-size: 15px; color: var(--quiet); text-decoration: underline; text-underline-offset: 3px; }
+.crumb { display: inline-block; margin: 16px 0 14px; font-size: 15px; color: var(--quiet); text-decoration: underline; text-underline-offset: 3px; }
 .crumb:hover { color: var(--acc); }
 .region-hero-card h2 .h2-range { color: var(--acc); margin-right: 4px; }
 .region-hero-card h2 { word-break: keep-all; }
 @media (max-width: 560px) { .region-hero-card h2 .h2-range { display: block; font-size: .8em; } }
+
+/* 방송국 소개 카드: 친구 둘(왼쪽) · 글 · 친구 하나(오른쪽). 구간 카드와 다른 동작 */
+.journey .story { justify-content: space-between; }
+.journey .story .story-text { flex: 1; }
+.journey .story .friends.pair { width: 190px; }
+.journey .story .pair .pose { width: 60%; }
+.journey .story .pair .pose + .pose { margin-left: -16%; }
+.journey .story .pair .pose:nth-child(2) { width: 60%; }
+.journey .story .friends.solo { width: 130px; }
+.journey .story .solo .pose { width: 100%; }
+@media (max-width: 560px) {
+  .journey .story .friends.pair { width: 180px; }
+  .journey .story .friends.solo { width: 100px; }
+}
+
+/* 구간 화면: 친구 발끝을 왼쪽 글 상자 아래 끝에 맞춘다 */
+.region-hero .head-char { margin-bottom: 0; }
+
+/* 단 고르기 칸: 번호 · 별 · 첫 문장 사이를 조금 좁게 */
+.dcell { min-height: 0; gap: 2px; padding: 10px 8px; }
+.dcell .dfirst { margin-top: 4px; }

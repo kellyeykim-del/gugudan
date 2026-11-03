@@ -21,7 +21,7 @@ export const REGIONS = [
       token: ["🎤", "🌟"], done: "‘첫 목소리’ 별 스티커를 받았어요!" } },
   { id: "r2", from: 11, to: 20, place: "소리 보물섬", module: "소리 보물지도", host: "minty",
     goal: "보물지도 조각을 모아 섬에 숨은 소리 보물을 찾아요.",
-    challenge: { name: "보물 상자 열기", intro: "보물 상자가 4개 있어요. 듣고 고르거나 뜻을 고르면 상자가 하나씩 열려요.",
+    challenge: { name: "보물 상자 열기", intro: "보물 상자가 4개 있어요. 듣고 고르거나 구구단 뜻을 고르면 상자가 하나씩 열려요.",
       token: ["🎁", "💎"], done: "상자 4개를 다 열었어요! 반짝이는 소리 보석을 찾았어요." } },
   { id: "r3", from: 21, to: 30, place: "뚝딱뚝딱 고침방", module: "알록달록 전선", host: "bobo",
     goal: "끊어진 전선을 한 줄씩 이어서 고침방에 불을 켜요.",
@@ -113,7 +113,7 @@ function blank(d) {
   }
   return orderQ(d);
 }
-// 뜻 고르기: 문장을 보고 그 단의 뜻(교재 그대로)을 고른다. 다른 보기는 같은 구간의 다른 뜻.
+// 구구단 뜻 고르기: 문장을 보고 그 문장이 속한 단의 뜻(교재 그대로, 예: ~가 있니?)을 고른다. 문장 한 줄의 번역이 아니다. 다른 보기는 같은 구간의 다른 뜻.
 function meaningQ(d, dans) {
   const s = sentenceOf(d);
   const others = shuffle([...new Set(dans.filter((x) => x.id !== d.id).map((x) => x.meaning))].filter((m) => m !== d.meaning)).slice(0, 2);
@@ -162,7 +162,7 @@ function askOne(q, $box, onDone, { help = false } = {}) {
   if (q.type === "listen" || q.type === "meaning" || q.type === "blank") {
     let opts = q.options;
     if (help && opts.length > 2) opts = shuffle([q.answer, pick(opts.filter((o) => o !== q.answer))]);
-    const title = { listen: "듣고 알맞은 문장 카드를 고르세요", meaning: "이 문장의 뜻을 고르세요", blank: "빠진 말을 고르세요" }[q.type];
+    const title = { listen: "듣고 알맞은 문장 카드를 고르세요", meaning: "이 문장은 어떤 구구단일까요?<br>구구단의 뜻을 고르세요", blank: "빠진 말을 고르세요" }[q.type];
     const body = q.type === "listen" ? `<button class="btn big-play" id="play">🔊 다시 듣기</button>`
       : q.type === "meaning" ? `<div class="qsentence">${esc(q.sentence)}</div>`
       : `<div class="qsentence">${esc(q.before)} <span class="gap">____</span>${/^[.?!,]/.test(q.after) ? "" : " "}${esc(q.after)}</div>`;
@@ -316,11 +316,12 @@ export function Station() {
   $app.innerHTML = `${header("우리 목소리 방송국")}
     <section class="page journey">
       <div class="card story">
-        <div class="friends">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "welcome")}</div>
+        <div class="friends pair">${pose("nuri", "self")}${pose("bobo", "listen")}</div>
         <div class="story-text"><p>말문이, 귀담이, 차분이의<br>작은 라디오 방송국이에요.</p>
         <p>이 세 친구들은 아직 영어를 몰라요.<br>
         <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p>
         <a class="small redo" href="#/welcome">👋 친구 소개 · 이름 다시 하기</a></div>
+        <div class="friends solo">${pose("minty", "rhythm")}</div>
       </div>
       ${onAir}
       ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}
