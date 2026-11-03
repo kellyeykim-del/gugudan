@@ -649,3 +649,31 @@ p.cheer { margin: 12px 0 0; }
 .accent-card .station-thumb { background: var(--card); }
 .accent-card .station-thumb .pose { margin-bottom: 0; }
 .accent-card b { color: var(--acc); }
+
+/* 방송국 도전 진행: 상자·전구 같은 그림 칸 (푼 만큼 바뀜) */
+.jtokens { display: flex; justify-content: center; gap: 12px; margin: 6px 0 12px; font-size: 36px; line-height: 1; }
+.jtokens span { filter: grayscale(.6); opacity: .55; transition: transform .25s; }
+.jtokens span.on { filter: none; opacity: 1; animation: tokpop .45s ease-out; }
+p.jtokens { font-size: 30px; letter-spacing: 8px; }
+@keyframes tokpop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .jtokens span.on { animation: none; } }
+
+/* 내 목소리 녹음 (recorder.js) */
+.recorder { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.rec-btn { min-width: 180px; font-size: 18px; border-color: var(--red); color: var(--red); }
+.rec-btn.stop { background: var(--red); color: #fff; }
+.rec-play { min-width: 180px; font-size: 18px; }
+.rec-live { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+.rec-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); animation: recblink 1s infinite; }
+@keyframes recblink { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .rec-dot { animation: none; } }
+.rec-msg { color: var(--acc); font-weight: 700; }
+.rec-card { margin-top: 12px; padding: 18px; }
+.rec-mini { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); text-align: center; }
+.linkbtn { background: none; border: 0; padding: 0 2px; color: var(--quiet); text-decoration: underline; font: inherit; cursor: pointer; }
+.reward-body > a.small { display: inline-block; margin-top: 8px; }
+/* 외우기 단계 탭 4개(④ 녹음하기): 휴대폰 폭에서는 2줄로 다 보이게 */
+@media (max-width: 560px) {
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; }
+  .tab { padding: 9px 6px; }
+}

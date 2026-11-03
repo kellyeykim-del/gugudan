@@ -7,6 +7,7 @@ import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave }
 import { Games, Mole, Roulette, Pairs } from "./games.js";
 import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose } from "./village.js";
+import { mountRecorder, stopRecorder, canRecord } from "./recorder.js";
 import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
@@ -109,7 +110,7 @@ function Region(id) {
   const cell = (d) => {
     const st = store.passed(d.id) ? "done" : store.stars(d.id) ? "part" : "";
     return `<a class="dcell ${st} ${locked ? "locked" : ""}" href="${locked ? `#/region/${r.id}` : `#/dan/${d.id}`}">
-        <span class="dno">${d.bonus ? `B${d.no}` : d.no}<small>단</small></span>
+        <span class="dno">${d.no}<small>단</small></span>
         ${locked ? '<span class="dlock">🔒</span>' : starsHtml(d.id)}
         <span class="dfirst">${hl(drillLines(d)[0])}</span>
       </a>`;
@@ -272,6 +273,7 @@ const STEP_TABS = [
   { k: "see", label: "① 보고 듣기" },
   { k: "hide", label: "② 가리고 말하기" },
   { k: "order", label: "③ 순서 맞추기" },
+  { k: "rec", label: "④ 녹음하기" }, // 별 없음. 단을 마무리하고 내 목소리로 말해 보고 다시 듣기
 ];
 
 function Dan(id, params) {
@@ -313,10 +315,11 @@ function Dan(id, params) {
   if (step === "see") stepSee($s, d, lines, () => award("see"));
   if (step === "hide") stepHide($s, d, lines, () => award("hide"));
   if (step === "order") stepOrder($s, d, lines, () => award("order"));
+  if (step === "rec") stepRec($s, d, lines);
 }
 
 // 단계마다 함께하는 친구와 기본 동작: 듣기는 말문이, 가리고 말하기는 귀담이 격려, 순서 맞추기는 차분이
-const STEP_CHAR = { see: ["nuri", "listen"], hide: ["minty", "encourage"], order: ["bobo", "welcome"] };
+const STEP_CHAR = { see: ["nuri", "listen"], hide: ["minty", "encourage"], order: ["bobo", "welcome"], rec: ["nuri", "self"] };
 const headChar = () => $app.querySelector(".head-char");
 
 // 비트낭독 무대 (라일락 단색): 선생님 원음이 실제로 재생되는 동안만 .playing (박자 정보는 없어 가벼운 반복 움직임만)
@@ -453,7 +456,7 @@ function stepOrder($s, d, lines, done) {
     if (qi >= picks.length) {
       setPose(headChar(), "celebrate");
       $s.innerHTML = `<div class="card center done-card">${pose("bobo", "celebrate", { cls: "done-char" })}<p class="big">순서 맞추기 ${picks.length}문장 완료!</p>
-        <div class="row2"><a class="btn" href="#/dan/${d.id}?step=see">처음부터</a><a class="btn primary" href="#/quiz?ids=${d.id}&n=10">이 단 시험 보기</a></div></div>`;
+        <div class="row2"><a class="btn primary" href="#/dan/${d.id}?step=rec">🎙 내 목소리 녹음하기</a><a class="btn" href="#/quiz?ids=${d.id}&n=10">이 단 시험 보기</a></div></div>`;
       done();
       return;
     }
@@ -602,9 +605,23 @@ function showResult(ids, qs, results) {
     </section>`;
 }
 
+// ④ 녹음하기: 선생님 목소리를 듣고 이 단 문장을 내 목소리로 녹음 → 다시 듣기 (채점 없음, 이 기기에만 저장)
+function stepRec($s, d, lines) {
+  $s.innerHTML = `
+    <p class="hint">선생님 목소리를 먼저 듣고, 이 단 문장을 내 목소리로 녹음해 보세요. 녹음을 누르고 아래 문장을 차례로 읽은 뒤, ▶ 로 다시 들어요.</p>
+    ${canSpeak ? '<div class="toolbar"><button class="btn" id="teacher">🔊 선생님 먼저 듣기</button></div>' : ""}
+    <div class="card center rec-card"><div class="recorder"></div></div>
+    <ol class="lines rec-lines">${lines.map((l) => `<li><span>${hl(l)}</span></li>`).join("")}</ol>
+    ${canRecord ? '<p class="quiet small">녹음은 이 기기(브라우저)에만 저장되고 어디로도 보내지 않아요. 발음 점수는 매기지 않아요.</p>' : ""}`;
+  const t = $s.querySelector("#teacher");
+  if (t) t.onclick = () => { stopRecorder(); stop(); speakAll(lines, store.settings.speed); };
+  mountRecorder($s.querySelector(".recorder"), `dan:${d.id}`, { onSaved: () => setPose(headChar(), "celebrate") });
+}
+
 // ───────────────────────── 라우터 ─────────────────────────
 function route() {
   stop();
+  stopRecorder();
   runLeave();
   const [path, query = ""] = location.hash.replace(/^#/, "").split("?");
   const params = new URLSearchParams(query);
