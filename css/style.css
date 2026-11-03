@@ -554,11 +554,11 @@ p.cheer { margin: 12px 0 0; }
 
 /* ───────────── 홈: 제목 → 빠른 버튼 → 구간별 학습하기 (벤지 리딩룸 구성 참고) ─────────────
    손글씨 제목은 Gaegu(OFL 무료 글꼴). 구간 카드 색은 data-region 색표에서 가져온다. */
-/* 넓은 화면: 친구들 발끝을 오른쪽 부제(주어 7개 × 36단) 줄에 맞춘다 */
-.home-hero { display: flex; align-items: flex-end; justify-content: center; gap: 26px; padding: 16px 22px;
+.home-hero { display: flex; align-items: center; justify-content: center; gap: 26px; padding: 16px 22px;
   background: var(--mint); border: 0; box-shadow: none; }
 /* 대문: 라디오 앞 세 친구. 라디오(그림 가로 55% · 세로 40% 지점)에서 문장 말풍선이 차례로 떠올라 사라진다 */
-.hero-stage { position: relative; width: 230px; max-width: 44%; flex: none; padding-top: 34px; }
+/* 글은 그대로 두고 그림만 올려 친구들 발끝을 오른쪽 부제(주어 7개 × 36단) 줄에 맞춘다 (넓은 화면) */
+.hero-stage { position: relative; top: -17px; width: 230px; max-width: 44%; flex: none; padding-top: 34px; }
 .hero-scene { display: block; width: 100%; height: auto; }
 .onair i { position: absolute; left: 55%; top: calc(34px + 38%); transform: translate(-50%, 0); opacity: 0; font-style: normal; white-space: nowrap;
   font-family: var(--hand); font-size: 17px; font-weight: 700; color: var(--ink); background: #fff; border: 1.5px solid var(--scene-deep);
@@ -636,7 +636,7 @@ p.cheer { margin: 12px 0 0; }
   .regions { grid-template-columns: repeat(2, 1fr); }
   .home-hero { gap: 10px; padding: 14px; }
   .home-hero { flex-direction: column; align-items: center; text-align: center; }
-  .hero-stage { width: 210px; max-width: 70%; }
+  .hero-stage { top: 0; width: 210px; max-width: 70%; }
   .home-title .logo { margin: 0 auto; }
   .home-title h1 { font-size: 30px; }
   .dgrid { grid-template-columns: repeat(3, 1fr); }
