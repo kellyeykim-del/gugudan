@@ -113,12 +113,27 @@ function blank(d) {
   }
   return orderQ(d);
 }
-// 구구단 뜻 고르기: 문장을 보고 그 문장이 속한 단의 뜻(교재 그대로, 예: ~가 있니?)을 고른다. 문장 한 줄의 번역이 아니다. 다른 보기는 같은 구간의 다른 뜻.
+// 구구단 뜻 고르기: 문장에서 구구단 부분(He likes)을 색칠하고 그 부분의 뜻(교재 그대로, 예: ~는 좋아해)을 고른다. 문장 전체의 번역이 아니다. 다른 보기는 같은 구간의 다른 뜻.
+// 문장에서 그 단의 구구단 부분(예: He likes / Is there)을 찾는다. 보기의 뜻은 이 부분의 뜻이다.
+function corePart(d, s) {
+  const heads = d.lines.map((l) => l.split("~")[0].replace(/\s+(a\/an|a|an)\s*$/i, "").replace(/[.?!]\s*$/, "").trim())
+    .filter(Boolean).sort((a, b) => b.length - a.length);
+  const low = s.toLowerCase();
+  const h = heads.find((x) => low.startsWith(x.toLowerCase()) && !/[a-z']/i.test(s[x.length] || ""));
+  if (h) return s.slice(0, h.length);
+  // 주어가 긴 문장(My dad and I don't have …): 주어 뒤 부분(don't have)까지
+  for (const x of heads) {
+    const tail = x.split(" ").slice(1).join(" ").toLowerCase();
+    const i = tail ? low.indexOf(` ${tail}`) : -1;
+    if (i > 0 && !/[a-z']/i.test(s[i + 1 + tail.length] || "")) return s.slice(0, i + 1 + tail.length);
+  }
+  return s;
+}
 function meaningQ(d, dans) {
   const s = sentenceOf(d);
   const others = shuffle([...new Set(dans.filter((x) => x.id !== d.id).map((x) => x.meaning))].filter((m) => m !== d.meaning)).slice(0, 2);
   if (others.length < 2) return listenQ(d);
-  return { type: "meaning", dan: d.id, sentence: s, answer: d.meaning, options: shuffle([d.meaning, ...others]) };
+  return { type: "meaning", dan: d.id, sentence: s, core: corePart(d, s), answer: d.meaning, options: shuffle([d.meaning, ...others]) };
 }
 // 직접 말해 보기 (발음 채점 없음, 스스로 확인)
 const speakQ = (d) => ({ type: "speak", dan: d.id, sentence: sentenceOf(d) });
@@ -162,9 +177,9 @@ function askOne(q, $box, onDone, { help = false } = {}) {
   if (q.type === "listen" || q.type === "meaning" || q.type === "blank") {
     let opts = q.options;
     if (help && opts.length > 2) opts = shuffle([q.answer, pick(opts.filter((o) => o !== q.answer))]);
-    const title = { listen: "듣고 알맞은 문장 카드를 고르세요", meaning: "이 문장은 어떤 구구단일까요?<br>구구단의 뜻을 고르세요", blank: "빠진 말을 고르세요" }[q.type];
+    const title = { listen: "듣고 알맞은 문장 카드를 고르세요", meaning: "색칠한 구구단 부분은 무슨 뜻일까요?", blank: "빠진 말을 고르세요" }[q.type];
     const body = q.type === "listen" ? `<button class="btn big-play" id="play">🔊 다시 듣기</button>`
-      : q.type === "meaning" ? `<div class="qsentence">${esc(q.sentence)}</div>`
+      : q.type === "meaning" ? `<div class="qsentence"><mark class="qcore">${esc(q.core)}</mark>${esc(q.sentence.slice(q.core.length))}</div>`
       : `<div class="qsentence">${esc(q.before)} <span class="gap">____</span>${/^[.?!,]/.test(q.after) ? "" : " "}${esc(q.after)}</div>`;
     $box.innerHTML = `<div class="qmeta">${tag}</div><p class="qtitle">${title}</p>${body}
       <div class="opts ${q.type === "blank" ? "" : "col"}">${opts.map((o) => `<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div><div class="jfb"></div>`;
