@@ -15,8 +15,8 @@
   --radius: 20px;
   --lav: #F5F5F4;
   --lav-deep: #E7E5E0;
-  --lilac: #E5DEEE; /* 예전 팔레트의 부드러운 라벤더. 구간 색과 겹치지 않는 곳(방송국 소개 무대)에 */
-  --lilac-deep: #CFC4DE;
+  --lilac: #F2EEF8; /* 아주 연한 라벤더(예전 팔레트 #E5DEEE를 더 밝게). 구간 색과 겹치지 않는 곳(방송국 소개 무대)에 */
+  --lilac-deep: #DCD3EA;
   --paper: #FFFFFF;
   --shadow: 0 4px 14px rgba(74, 63, 55, .06);
   --hand: "Gaegu", "Noto Sans KR", sans-serif;
