@@ -331,12 +331,11 @@ export function Station() {
   $app.innerHTML = `${header("우리 목소리 방송국")}
     <section class="page journey">
       <div class="card story">
-        <div class="friends pair">${pose("nuri", "self")}${pose("bobo", "listen")}</div>
+        <div class="story-art" aria-hidden="true">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "listen", { cls: "flip" })}</div>
         <div class="story-text"><p>말문이, 귀담이, 차분이의<br>작은 라디오 방송국이에요.</p>
         <p>이 세 친구들은 아직 영어를 몰라요.<br>
         <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p>
         <a class="small redo" href="#/welcome">👋 친구 소개 · 이름 다시 하기</a></div>
-        <div class="friends solo">${pose("minty", "rhythm")}</div>
       </div>
       ${onAir}
       ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}
