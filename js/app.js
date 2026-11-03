@@ -12,7 +12,9 @@ import { REGIONS, regionOf, regionDans, setRegion, regionForIds, regionJustDone,
 // ───────────────────────── 홈 ─────────────────────────
 // 벤지 리딩룸처럼: 제목 → 자주 쓰는 버튼 → '구간별 학습하기' 카드 5장. 단은 구간 화면에서 고른다.
 // 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 말문이를 넣고, 짝꿍은 카드마다 바꾼다
-const tileFriends = (other, act) => `<span class="tile-friends">${pose("nuri", "welcome")}${pose(other, act)}</span>`;
+const tileFriends = (mine, other, act) => `<span class="tile-friends">${pose("nuri", mine)}${pose(other, act)}</span>`;
+// 구간 카드마다 다른 동작 (다 마친 구간은 축하 동작)
+const TILE_ACT = { r1: "welcome", r2: "listen", r3: "listen", r4: "rhythm", bonus: "sit" };
 const regionRange = (r) => (r.id === "bonus" ? "보너스 7단" : `${r.from}–${r.to}단`);
 const regionLocked = (r) => r.id === "bonus" && !store.bonusOpen();
 
@@ -23,7 +25,7 @@ function regionTile(r, i) {
   return `<a class="rtile ${all ? "all" : ""} ${regionLocked(r) ? "locked" : ""}" data-region="${r.id}" href="#/region/${r.id}">
       <span class="rtile-card">
         <span class="rno">${String(i + 1).padStart(2, "0")}</span>
-        ${pose(r.host, all ? "celebrate" : "welcome", { cls: "rtile-char" })}
+        ${pose(r.host, all ? "celebrate" : TILE_ACT[r.id], { cls: "rtile-char" })}
         <b>${regionRange(r)}</b>
         <span class="rplace">${esc(r.place)}</span>
         <span class="rdots" aria-hidden="true">${dans.map((d) => `<i class="${store.passed(d.id) ? "on" : ""}"></i>`).join("")}</span>
@@ -41,7 +43,7 @@ function Home() {
   $app.innerHTML = `
     <section class="home">
       <header class="home-hero card">
-        <div class="friends" aria-hidden="true">${pose("minty", "welcome")}${pose("nuri", "welcome")}${pose("bobo", "welcome")}</div>
+        <img class="hero-scene" src="img/village/friends-radio.webp" alt="라디오 앞에 앉아 방송을 듣는 말문이, 귀담이, 차분이">
         <div class="home-title">
           <a href="#/about"><img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시"></a>
           <h1>신나는 영어구구단</h1>
@@ -55,7 +57,7 @@ function Home() {
         <a class="qbtn ${wrong ? "" : "dim"}" data-region="r3" href="#/pick?preset=wrong">📌 내 묶음${wrong ? ` ${wrong}` : ""}</a>
       </nav>
       <div class="sec-head">
-        <h2>${pose("nuri", "welcome", { cls: "sec-char" })}구간별 학습하기</h2>
+        <h2>${pose("nuri", "talk", { cls: "sec-char" })}구간별 학습하기</h2>
         <a class="qbtn" href="#/dan/${today.id}">▷ 이어서 ${danLabel(today)}</a>
       </div>
       <div class="regions">${REGIONS.map(regionTile).join("")}</div>
@@ -64,13 +66,13 @@ function Home() {
         <div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>
       </div>
       <a class="station-link card" href="#/station">
-        <span class="station-thumb region-thumb" aria-hidden="true">${pose(regionOf(today).host, "welcome")}</span>
+        <span class="station-thumb region-thumb" aria-hidden="true">${pose("bobo", "sit")}</span>
         <div><b>📻 우리 목소리 방송국</b><span>목소리 카드 ${passed} / 36 · 구간 도전 · 마지막 도전</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
-        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("bobo", "encourage")}</a>
-        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("minty", "welcome")}</a>
+        <a class="tile game" href="#/games"><b>🎮 게임 (구구단형)</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span>${tileFriends("talk", "bobo", "encourage")}</a>
+        <a class="tile game" href="#/games?ids=S1,S2,S3"><b>🎮 게임 (문장형)</b><span>1–3단을 완성된 문장으로 · I am David. · She is sad.</span>${tileFriends("rhythm", "minty", "rhythm")}</a>
       </nav>
       <a class="about-link card" href="#/about">
         <img src="img/ceo-kang-sojin.jpg" alt="">

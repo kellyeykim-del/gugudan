@@ -556,7 +556,7 @@ p.cheer { margin: 12px 0 0; }
    손글씨 제목은 Gaegu(OFL 무료 글꼴). 구간 카드 색은 data-region 색표에서 가져온다. */
 .home-hero { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 16px 22px;
   background: var(--mint); border: 0; box-shadow: none; }
-.home-hero .friends { width: 170px; flex: none; }
+.hero-scene { width: 300px; max-width: 46%; height: auto; flex: none; }
 .home-title .logo { height: 24px; display: block; }
 .home-title h1 { font-family: var(--hand); font-size: 40px; font-weight: 700; margin: 6px 0 0; line-height: 1.05; }
 .home-title p { margin: 4px 0 0; font-size: 14px; color: var(--quiet); }
@@ -572,7 +572,7 @@ p.cheer { margin: 12px 0 0; }
 .rtile-card { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 10px;
   border-radius: 18px; background: var(--scene); border: 1px solid var(--scene-deep); text-align: center; }
 .rno { position: absolute; top: 8px; left: 14px; font-size: 20px; color: var(--quiet); }
-.rtile-char { width: 80px; margin: 8px 0 0; }
+.rtile-char { width: 96px; margin: 4px 0 -4px; }
 .rtile b { font-family: var(--hand); font-size: 26px; line-height: 1.1; }
 .rplace { font-size: 13px; color: var(--quiet); }
 .rdots { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; max-width: 126px; margin-top: 6px; }
@@ -618,12 +618,13 @@ p.cheer { margin: 12px 0 0; }
 @media (max-width: 760px) {
   .regions { grid-template-columns: repeat(2, 1fr); }
   .home-hero { gap: 10px; padding: 14px; }
-  .home-hero .friends { width: 120px; }
+  .home-hero { flex-direction: column; text-align: center; }
+  .hero-scene { width: 260px; max-width: 80%; }
+  .home-title .logo { margin: 0 auto; }
   .home-title h1 { font-size: 30px; }
   .dgrid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 400px) {
-  .home-hero .friends { width: 96px; }
   .home-title h1 { font-size: 26px; }
   .dno { font-size: 30px; }
 }
