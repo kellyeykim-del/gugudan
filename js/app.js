@@ -10,7 +10,7 @@ import { pose, setPose } from "./village.js";
 import { regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
-// 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 빨간 누리를 넣어 파랑·남색만 남지 않게 하고, 짝꿍은 카드마다 바꾼다
+// 게임 카드 오른쪽의 작은 친구 둘. 두 카드 모두 빨간 말문이를 넣어 파랑·남색만 남지 않게 하고, 짝꿍은 카드마다 바꾼다
 const tileFriends = (other, act) => `<span class="tile-friends">${pose("nuri", "welcome")}${pose(other, act)}</span>`;
 
 function Home() {
@@ -244,17 +244,17 @@ function Dan(id, params) {
   if (step === "order") stepOrder($s, d, lines, () => award("order"));
 }
 
-// 단계마다 함께하는 친구와 기본 동작: 듣기는 누리, 가리고 말하기는 민티 격려, 순서 맞추기는 보보
+// 단계마다 함께하는 친구와 기본 동작: 듣기는 말문이, 가리고 말하기는 귀담이 격려, 순서 맞추기는 차분이
 const STEP_CHAR = { see: ["nuri", "listen"], hide: ["minty", "encourage"], order: ["bobo", "welcome"] };
 const headChar = () => $app.querySelector(".head-char");
 
 // 비트낭독 무대 (라일락 단색): 선생님 원음이 실제로 재생되는 동안만 .playing (박자 정보는 없어 가벼운 반복 움직임만)
 const STAGE = `<div class="stage">
-    <div class="band">${pose("nuri", "rhythm", { label: "리듬을 타는 누리" })}${pose("minty", "rhythm", { label: "발끝으로 통통 뛰는 민티" })}${pose("bobo", "rhythm", { label: "무릎을 굽히며 박자 맞추는 보보" })}</div>
+    <div class="band">${pose("nuri", "rhythm", { label: "리듬을 타는 말문이" })}${pose("minty", "rhythm", { label: "발끝으로 통통 뛰는 귀담이" })}${pose("bobo", "rhythm", { label: "무릎을 굽히며 박자 맞추는 차분이" })}</div>
     <div class="stage-bar"><span class="stage-note" id="stage-note">선생님 원음을 준비하고 있어요</span><button class="btn ghost" id="beatstop">■ 그만</button></div>
   </div>`;
 
-// 1단 주어 그림: I는 누리 자신, We는 누리를 포함한 셋, They는 누리가 가리키는 두 친구
+// 1단 주어 그림: I는 말문이 자신, We는 말문이를 포함한 셋, They는 말문이가 가리키는 두 친구
 // 여러 친구를 한 칸에 겹쳐 세운다 (예전 group-we/they 그림은 옛 캐릭터라 쓰지 않는다)
 const group = (poses, label) => `<span class="group n${poses.length}" role="img" aria-label="${esc(label)}">${poses.join("")}</span>`;
 
@@ -262,9 +262,9 @@ function whoPanel(lines) {
   const fig = (i, img, title, desc) => `<button class="who card" data-i="${i}">${img}<span><b>${title}</b>${desc}</span></button>`;
   return `<h3 class="sec">누가 누구일까요? <span class="quiet">그림을 누르면 들려줘요</span></h3>
     <div class="who-grid">
-      ${fig(0, pose("nuri", "self", { label: "자기 자신을 가리키는 누리" }), esc(lines[0]), "말하는 나, 누리")}
-      ${fig(2, group([pose("nuri", "self"), pose("minty", "welcome"), pose("bobo", "welcome")], "누리, 민티, 보보가 함께 있는 모습"), esc(lines[2]), "누리를 포함한 우리 셋")}
-      ${fig(3, group([pose("minty", "welcome"), pose("bobo", "welcome")], "저쪽에 함께 서 있는 민티와 보보"), esc(lines[3]), "누리가 가리키는 저 두 친구")}
+      ${fig(0, pose("nuri", "self", { label: "자기 자신을 가리키는 말문이" }), esc(lines[0]), "말하는 나, 말문이")}
+      ${fig(2, group([pose("nuri", "self"), pose("minty", "welcome"), pose("bobo", "welcome")], "말문이, 귀담이, 차분이가 함께 있는 모습"), esc(lines[2]), "말문이를 포함한 우리 셋")}
+      ${fig(3, group([pose("minty", "welcome"), pose("bobo", "welcome")], "저쪽에 함께 서 있는 귀담이와 차분이"), esc(lines[3]), "말문이가 가리키는 저 두 친구")}
     </div>`;
 }
 

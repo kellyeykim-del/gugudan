@@ -8,7 +8,7 @@
   --mint: #E5DEEE;
   --mint-deep: #203A78;
   --red: #C8322A;
-  --primary: #B82E2C; /* 흰 글자 대비 6.1:1 (world-story-v2 대안색). 누리 몸 빨강 #E84135과 따로 */
+  --primary: #B82E2C; /* 흰 글자 대비 6.1:1 (world-story-v2 대안색). 말문이 몸 빨강 #E84135과 따로 */
   --purple: #203A78;
   --ok: #2f9e66;
   --bad: #d9534f;
@@ -346,7 +346,7 @@ table.res { width: 100%; border-collapse: collapse; background: var(--card); bor
   .lines li { font-size: 24px; }
 }
 
-/* ───────────── 영어 마을 (누리 · 민티 · 보보) ───────────── */
+/* ───────────── 영어 마을 (말문이 · 귀담이 · 차분이) ───────────── */
 .pose { display: inline-block; background-repeat: no-repeat; flex: none; }
 .pose { aspect-ratio: 1; }
 .tile, .gcard, .dcard, .lines li, .wronglist li { box-shadow: var(--shadow); }
@@ -361,7 +361,7 @@ p.cheer { margin: 12px 0 0; }
   padding: 16px 18px; box-shadow: var(--shadow); }
 .today-no { margin-top: 2px; }
 .today-hero { position: relative; z-index: 1; flex: none; width: clamp(260px, 36vw, 380px); margin: 0 0 -10px auto; }
-/* 포즈 칸은 좌우 여백이 넓어 서로 겹쳐 세운다. 가운데 누리가 앞 */
+/* 포즈 칸은 좌우 여백이 넓어 서로 겹쳐 세운다. 가운데 말문이가 앞 */
 .friends { display: flex; align-items: flex-end; justify-content: center; }
 .friends .pose { width: 50%; }
 .friends .pose + .pose { margin-left: -24%; }
@@ -523,7 +523,7 @@ p.cheer { margin: 12px 0 0; }
 .jbox { margin-top: 12px; }
 .qsentence.masked { background: var(--lav); }
 
-/* 마지막 도전 화면: 짙은 남보라 바탕에 밝은 받침 (보보 실루엣이 묻히지 않게) */
+/* 마지막 도전 화면: 짙은 남보라 바탕에 밝은 받침 (차분이 실루엣이 묻히지 않게) */
 :root[data-region="core"] { --cream: #272D52; }
 :root[data-region="core"] .bar h1 { color: #fff; }
 .core-page .card { margin-top: 12px; }

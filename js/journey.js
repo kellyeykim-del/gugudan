@@ -414,11 +414,11 @@ export function Challenge(id) {
 
 // ── 마지막 도전: 거대 무음 코어 ─────────────────────────
 const PHASES = [
-  { who: "minty", name: "민티의 듣기 잠금", how: "선생님 문장을 듣고 맞는 문장을 골라요. 세 개를 풀면 첫 번째 링이 열려요.",
+  { who: "minty", name: "귀담이의 듣기 잠금", how: "선생님 문장을 듣고 맞는 문장을 골라요. 세 개를 풀면 첫 번째 링이 열려요.",
     make: () => [[1, 10], [11, 20], [21, 36]].map(([a, b]) => listenQ(pick(MAIN_DANS.filter((d) => d.no >= a && d.no <= b)), 3)) },
-  { who: "bobo", name: "보보의 순서 잠금", how: "단어를 순서대로 눌러 문장 세 개를 조립해요. 빠르기는 상관없어요.",
+  { who: "bobo", name: "차분이의 순서 잠금", how: "단어를 순서대로 눌러 문장 세 개를 조립해요. 빠르기는 상관없어요.",
     make: () => [[1, 12], [13, 24], [25, 36]].map(([a, b]) => orderQ(pick(MAIN_DANS.filter((d) => d.no >= a && d.no <= b)))) },
-  { who: "nuri", name: "누리의 목소리 잠금", how: "세 친구가 카드를 한 장씩 내밀어요. 가린 채 말해 보고 정답을 확인해요.",
+  { who: "nuri", name: "말문이의 목소리 잠금", how: "세 친구가 카드를 한 장씩 내밀어요. 가린 채 말해 보고 정답을 확인해요.",
     make: () => shuffle(MAIN_DANS).slice(0, 3).map(speakQ) },
 ];
 
@@ -477,9 +477,9 @@ function reward(saved = true) {
         <p class="quiet">${esc(J.core.cleared)} · 본편 36단 · 별 108개</p>
         <div class="friends">${pose("nuri", "celebrate")}${pose("minty", "celebrate")}${pose("bobo", "encourage")}</div>
         <ul class="thanks">
-          <li><b>누리</b> 처음엔 한마디도 몰랐는데, 네가 알려 줬어.</li>
-          <li><b>민티</b> 이제 우리가 배운 말을 들려줄게!</li>
-          <li><b>보보</b> 함께 해 줘서 고마워.</li>
+          <li><b>말문이</b> 처음엔 한마디도 몰랐는데, 네가 알려 줬어.</li>
+          <li><b>귀담이</b> 이제 우리가 배운 말을 들려줄게!</li>
+          <li><b>차분이</b> 함께 해 줘서 고마워.</li>
         </ul>
         <p class="quiet small">기념 메달은 학습 활동 완료 기록이에요. 공인 인증이나 영어 숙달 보증이 아니에요.</p>
         ${saved ? "" : '<p class="quiet small">이 기기에 기록을 저장하지 못했어요.</p>'}
