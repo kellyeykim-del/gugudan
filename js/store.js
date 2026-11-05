@@ -20,6 +20,7 @@ let state = load();
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
+    window.dispatchEvent(new Event("gugudan:saved")); // 학생으로 로그인했으면 cloud.js가 서버에도 올린다
   } catch {
     // 저장이 막힌 환경(시크릿 창 등)에서는 이번 세션 동안만 유지
   }

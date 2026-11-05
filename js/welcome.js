@@ -72,7 +72,9 @@ export function Welcome(next = "#/") {
         <p class="wline">우리는 아직 영어를 몰라.<br>영어를 하나씩 알려 줄래?</p>
         <button class="btn primary big" id="go">좋아!</button>
         <p>${skip}</p>
-      </div></section>`;
+      </div>
+      ${localStorage.getItem("gugudan.session") ? "" : '<p class="wlogin small"><a href="#/login">🧒 선생님이 준 아이디가 있어요</a> · <a href="#/teacher">👩‍🏫 선생님</a></p>'}
+    </section>`;
     $app.querySelector("#go").onclick = askName;
     $app.querySelector("#skip").onclick = done;
   };

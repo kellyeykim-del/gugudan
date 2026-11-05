@@ -9,6 +9,8 @@ import { Blocks, Bingo, Duel } from "./games-more.js";
 import { pose, setPose } from "./village.js";
 import { mountRecorder, stopRecorder, canRecord } from "./recorder.js";
 import { Welcome, needsWelcome, learner } from "./welcome.js";
+import { Teacher, StudentLogin, accountBar, bindAccountBar } from "./teacher.js";
+import { startSync } from "./cloud.js";
 import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
@@ -64,6 +66,7 @@ function Home() {
         </div>
         <a class="hero-restart" href="#/welcome" title="세 친구 소개와 이름 입력을 다시 해요">↺ 처음으로</a>
       </header>
+      ${accountBar()}
       <nav class="quick">
         <a class="qbtn" data-region="r1" href="#/table">📋 구구단표</a>
         <a class="qbtn" data-region="r2" href="#/pick">🎯 범위 고르고 연습</a>
@@ -102,6 +105,7 @@ function Home() {
         <button class="btn ghost" id="reset">학습 기록 지우기</button>
       </details>
     </section>`;
+  bindAccountBar();
   $app.querySelector("#unlock").onchange = (e) => { store.setSetting("unlockAll", e.target.checked); Home(); };
   $app.querySelector("#nameset").onsubmit = (e) => {
     e.preventDefault();
@@ -656,6 +660,8 @@ function route() {
   const parts = path.split("/").filter(Boolean);
   window.scrollTo(0, 0);
   setRegion("r1");
+  if (parts[0] === "teacher") return Teacher(parts); // 선생님·학생 로그인은 친구 소개 전에도 열린다
+  if (parts[0] === "login") return StudentLogin();
   if (parts[0] === "welcome") return Welcome("#/");
   if (needsWelcome()) return Welcome(location.hash || "#/"); // 처음 켰을 때 한 번: 친구 소개 · 이름
   if (["station", "journey", "garden"].includes(parts[0])) return Station();
@@ -673,4 +679,7 @@ function route() {
 }
 
 window.addEventListener("hashchange", route);
+// 로그인이 끝나거나(비밀번호 재설정 등) 선생님 세션이 만료되면 홈의 계정 줄을 새로 그린다
+document.addEventListener("gugudan:session", () => { if (!location.hash || location.hash === "#/") route(); });
 route();
+startSync();

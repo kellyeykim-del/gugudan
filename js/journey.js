@@ -69,6 +69,7 @@ let J = loadJ();
 function saveJ() {
   try {
     localStorage.setItem(KEY, JSON.stringify(J));
+    window.dispatchEvent(new Event("gugudan:saved"));
     return true;
   } catch {
     return false;
