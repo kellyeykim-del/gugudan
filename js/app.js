@@ -56,8 +56,7 @@ function Home() {
     <section class="home">
       <header class="home-hero card">
         <div class="hero-stage">
-          ${VIVID ? `<div class="hero-friends" role="img" aria-label="인사하는 말문이, 귀담이, 차분이">${pose("nuri", "welcome")}${pose("minty", "self")}${pose("bobo", "encourage", { cls: "flip" })}</div>`
-            : '<img class="hero-scene" src="img/village/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">'}
+          <img class="hero-scene" src="img/${VIVID ? "village-vivid" : "village"}/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">
           <span class="onair" aria-hidden="true">${ON_AIR.map((t, i) => `<i style="--d:${i * 1.5}s;--x:${i % 2 ? -1 : 1}">${t}</i>`).join("")}</span>
         </div>
         <div class="home-title">

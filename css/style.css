@@ -900,9 +900,5 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 [data-theme="vivid"] .dno { font-size: 28px; }
 [data-theme="vivid"] .bar h1 { font-size: 20px; }
 [data-theme="vivid"] .welcome h2 { font-size: 24px; }
-[data-theme="vivid"] .onair i { font-size: 14px; left: 50%; top: calc(34px + 22%); }
-/* 대문: 라디오 장면 대신 서서 인사하는 세 친구 */
-.hero-friends { display: flex; align-items: flex-end; justify-content: center; position: relative; }
-.hero-friends::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: 3%; height: 9%; border-radius: 50%; background: var(--scene-deep); opacity: .55; }
-.hero-friends .pose { position: relative; z-index: 1; width: 42%; }
-.hero-friends .pose + .pose { margin-left: -13%; }
+/* 대문: 비비드 라디오 장면(Codex 2026-11-05, characters-design-2026-11-03/radio-vivid-2026-11-05). 말풍선은 라디오 안테나 위에서 */
+[data-theme="vivid"] .onair i { font-size: 14px; left: 57%; top: calc(34px + 30%); }
