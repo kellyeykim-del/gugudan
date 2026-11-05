@@ -11,6 +11,7 @@ import { drillLines } from "./data.js";
 import { pose } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
 import { learnerGa } from "./welcome.js";
+import { wallet, EARN, treeScene } from "./tree.js";
 
 // ── 5구간 ─────────────────────────
 // 저학년이 바로 알아듣게: 장소·모으는 물건·도전 이름은 쉬운 말, 도전은 문제 4개 안팎 + 눈에 보이는 진행(상자·전구)
@@ -66,7 +67,8 @@ function loadJ() {
   }
 }
 let J = loadJ();
-function saveJ() {
+export const jrec = () => J; // 나만의 트리(tree.js)가 같은 기록에 장식을 저장한다
+export function saveJ() {
   try {
     localStorage.setItem(KEY, JSON.stringify(J));
     window.dispatchEvent(new Event("gugudan:saved"));
@@ -290,6 +292,54 @@ function runQuestions(qs, $page, onAll) {
 // 구간마다 단 하나 = 조각 하나. 다 모으면 그 구간 물건(꼬마 마이크 등) 완성. 기능은 처음부터 다 쓸 수 있다.
 const moduleState = (r, n, total) => (n === total ? `✓ 반짝! ${r.module} 완성` : `${r.module} 조각 ${n} / ${total} 모으는 중`);
 
+// 미션 순서: 구간 1~4(단 마치기 + 구간 도전) → 잠꾸러기 라디오 깨우기 → 보너스 7단. 보상은 반짝이(✨)로 통일하고, 반짝이로 '나만의 트리'를 꾸민다.
+const DAN_GAIN = EARN.star * 3;
+const firstOpen = (dans) => dans.find((d) => !store.passed(d.id));
+function missionRows() {
+  const rows = REGIONS.slice(0, 4).map((r) => {
+    const dans = regionDans(r), n = regionCount(r), done = n === dans.length, ch = !!J.challenges[r.id];
+    return { r, got: done && ch, title: `${r.from}–${r.to}단 + ${r.challenge.name}`,
+      sub: `${r.place} · 단마다 ✨${DAN_GAIN} · 도전 ✨${EARN.challenge}`, prog: done ? (ch ? "" : "도전만 남았어요") : `${n} / ${dans.length}단` };
+  });
+  rows.push({ r: { id: "r4", core: true }, got: !!J.core.cleared, lock: !coreOpen(), title: "잠꾸러기 라디오 깨우기",
+    sub: `36단을 다 마치면 열려요 · ✨${EARN.core}`, prog: coreOpen() ? "" : `${store.passedCount()} / 36단` });
+  const b = REGIONS[4], bd = regionDans(b), bn = regionCount(b);
+  rows.push({ r: b, got: bn === bd.length, lock: !store.bonusOpen(), title: "보너스 7단 마치기",
+    sub: `본편을 다 마치면 열려요 · 단마다 ✨${DAN_GAIN}`, prog: `${bn} / ${bd.length}단` });
+  const now = rows.findIndex((x) => !x.got && !x.lock);
+  rows.forEach((x, i) => (x.state = x.got ? "got" : i === now ? "now" : x.lock ? "lock" : "later"));
+  return rows;
+}
+// 지금 할 미션 한 장: 무엇을 하면 · 얼마나 남았고 · 무엇을 받는지
+function nextMission() {
+  for (const r of REGIONS.slice(0, 4)) {
+    const dans = regionDans(r), n = regionCount(r);
+    if (n < dans.length) {
+      const d = firstOpen(dans), left = dans.length - n;
+      return { r, title: `${r.from}–${r.to}단 마치기`, place: r.place, meter: [n, dans.length],
+        row: `<span>${n} / ${dans.length}단 · 한 단마다 목소리 카드 1장</span><b>${left}단 남았어요</b>`,
+        gift: `<b>받는 것: 반짝이 ✨ ${left * DAN_GAIN}</b><span>한 단마다 ✨${DAN_GAIN} · 다 마치면 ‘${esc(r.challenge.name)}’ 도전이 열려요 (✨${EARN.challenge})</span>`,
+        go: `<a class="btn primary block" href="#/dan/${d.id}">▷ 이어서 ${danLabel(d)}</a>` };
+    }
+    if (!J.challenges[r.id]) return { r, title: `구간 도전: ${r.challenge.name}`, place: r.place,
+      row: `<span>${r.from}–${r.to}단을 다 마쳤어요!</span><b>도전만 남았어요</b>`,
+      gift: `<b>받는 것: 반짝이 ✨ ${EARN.challenge}</b><span>${esc(r.challenge.intro)}</span>`,
+      go: `<a class="btn primary block" href="#/challenge/${r.id}">🏁 ${esc(r.challenge.name)} 시작</a>` };
+  }
+  if (!J.core.cleared) return { r: REGIONS[3], title: "잠꾸러기 라디오 깨우기", place: "본편 마지막 도전",
+    row: `<span>본편 36단을 다 마쳤어요!</span><b>마지막 도전</b>`,
+    gift: `<b>받는 것: 반짝이 ✨ ${EARN.core} + 목소리 마스터 메달</b><span>듣기 · 순서 · 내 목소리, 세 가지 놀이로 라디오를 깨워요</span>`,
+    go: `<a class="btn primary block" href="#/core">📻 라디오 깨우기</a>` };
+  const b = REGIONS[4], bd = regionDans(b), bn = regionCount(b), d = firstOpen(bd);
+  if (d) return { r: b, title: "보너스 7단 마치기", place: b.place, meter: [bn, bd.length],
+    row: `<span>${bn} / ${bd.length}단</span><b>${bd.length - bn}단 남았어요</b>`,
+    gift: `<b>받는 것: 반짝이 ✨ ${(bd.length - bn) * DAN_GAIN}</b><span>한 단마다 ✨${DAN_GAIN}</span>`,
+    go: `<a class="btn primary block" href="#/dan/${d.id}">▷ 이어서 ${danLabel(d)}</a>` };
+  return { r: b, title: "모든 미션 완료!", place: "정말 멋져요", row: "",
+    gift: `<b>트리를 마음껏 꾸며요</b><span>단을 다시 연습하거나 게임으로 복습해도 좋아요</span>`,
+    go: `<a class="btn primary block" href="#/tree">🎄 트리 꾸미기</a>` };
+}
+
 export function Station() {
   setRegion("r1");
   const passed = store.passedCount();
@@ -329,16 +379,41 @@ export function Station() {
   const onAir = J.broadcast?.length
     ? `<div class="card onair"><b>📻 내가 고른 방송 순서</b><ol class="cue">${J.broadcast.map((t) => `<li>${esc(t)}</li>`).join("")}</ol>
         <button class="btn" id="replay">다시 방송하기</button></div>` : "";
+  const m = nextMission();
+  const chip = { got: "받음 ✓", now: "하는 중", later: "다음", lock: "🔒 잠김" };
+  const rows = missionRows().map((x, i) => `<li class="mrow ${x.state}" data-region="${x.r.core ? "r4" : x.r.id}">
+      <span class="mno">${x.r.core ? "📻" : x.r.id === "bonus" ? "B" : `0${i + 1}`}</span>
+      <span class="mt"><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></span>
+      <span class="mr">${x.prog && x.state !== "got" ? `<small>${esc(x.prog)}</small>` : ""}<em class="chip-s ${x.state}">${chip[x.state]}</em></span></li>`).join("");
+  const w = wallet();
   $app.innerHTML = `${header("우리 목소리 방송국")}
     <section class="page journey">
+      <a class="card mytree" data-region="lilac" href="#/tree" aria-label="나만의 트리 꾸미러 가기, 반짝이 ${w}개">
+        <span class="mytree-art">${treeScene()}</span>
+        <span class="mytree-text"><span class="kick">🎄 나만의 트리</span><b class="wallet-big">✨ ${w}</b>
+          <span>단을 마치면 반짝이가 생겨요. 크리스마스 상점에서 장식을 사서 트리를 꾸며요!</span>
+          <span class="btn primary">트리 꾸미러 가기</span></span>
+      </a>
+      <div class="card next" data-region="${m.r.id}">
+        <span class="kick">지금 할 미션</span>
+        <h3>${esc(m.title)} <small>· ${esc(m.place)}</small></h3>
+        ${m.meter ? `<div class="meter"><i style="width:${(m.meter[0] / m.meter[1]) * 100}%"></i></div>` : ""}
+        ${m.row ? `<div class="next-row">${m.row}</div>` : ""}
+        <div class="gift"><span class="gift-ic" aria-hidden="true">🎁</span><div>${m.gift}</div></div>
+        ${m.go}
+      </div>
+      <h2 class="mhead">미션 순서</h2>
+      <ol class="mlist card">${rows}</ol>
+      <p class="quiet small center">반짝이로 산 장식은 ‘나만의 트리’에 걸려요 · 치우면 반짝이를 돌려받아요</p>
       <div class="card story">
         <div class="story-art" aria-hidden="true">${pose("minty", "listen")}${pose("nuri", "self")}${pose("bobo", "listen", { cls: "flip" })}</div>
         <div class="story-text"><p>말문이, 귀담이, 차분이의<br>작은 라디오 방송국이에요.</p>
         <p>이 세 친구들은 아직 영어를 몰라요.<br>
-        <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드가 한 장 생기고,<br>카드를 모으면 방송국에<br>새 물건이 생겨요!</p>
+        <b>${esc(learnerGa())} 한 단을 마칠 때마다</b><br>목소리 카드 한 장과<br>반짝이 ✨${DAN_GAIN}개가 생겨요!</p>
         <a class="small redo" href="#/welcome">👋 친구 소개 · 이름 다시 하기</a></div>
       </div>
       ${onAir}
+      <h2 class="mhead">구간별 목소리 카드</h2>
       ${REGIONS.slice(0, 4).map((r) => card(r)).join("")}
       <article class="region-card core-card">
         <span class="region-range">본편 마지막 도전</span><h3>잠꾸러기 라디오 깨우기</h3>
@@ -373,11 +448,12 @@ export function showVoiceCard(d) {
         <span class="kicker">🎉 ${danLabel(d)} 통과! 별 3개</span>
         <h2 id="reward-title">목소리 카드가 생겼어요!</h2>
         <p class="quiet">${esc(learnerGa())} 알려 준 말을 친구들이 기억했어요. ${esc(r.place)} 목소리 카드 ${n} / ${total}</p>
+        <p class="gain">✨ 반짝이 +${EARN.star * 3} <small>· 지금 ${wallet()}개</small></p>
         <div class="row2">
           <a class="btn primary" href="#/dan/${d.id}?step=rec">🎙 내 목소리 녹음하기</a>
           <button class="btn" id="rw-ok">계속하기</button>
         </div>
-        <a class="quiet small" href="#/station">방송국 보기 →</a>
+        <a class="small tree-go" href="#/tree">🎄 반짝이로 트리 꾸미기 →</a>
       </div>
     </div>`;
   const last = document.activeElement;
@@ -432,6 +508,7 @@ export function Challenge(id) {
       <section class="page"><div class="jtokens" data-on="${on}" aria-hidden="true">${qs.map(() => `<span>${off}</span>`).join("")}</div><div class="jbox"></div></section>`;
     runQuestions(qs, $app.querySelector(".page"), () => {
       stopRecorder();
+      const first = !preview && !J.challenges[r.id]; // 반짝이는 처음 성공했을 때만 (기록 날짜가 생길 때)
       if (!preview) J.challenges[r.id] ||= today();
       const saved = saveJ();
       $app.innerHTML = `${header(r.challenge.name, "#/station")}
@@ -439,8 +516,9 @@ export function Challenge(id) {
           ${pose(r.host, "celebrate", { cls: "done-char" })}
           <p class="jtokens done" aria-hidden="true">${qs.map(() => `<span class="on">${r.challenge.token[1]}</span>`).join("")}</p>
           <p class="big">${esc(r.challenge.name)} 성공!</p><p>${esc(r.challenge.done)}</p>
+          ${first ? `<p class="gain">✨ 반짝이 +${EARN.challenge} <small>· 지금 ${wallet()}개</small></p>` : ""}
           ${saved ? "" : '<p class="quiet small">이 기기에 기록을 저장하지 못했어요.</p>'}
-          <div class="row2"><a class="btn primary" href="#/station">방송국으로</a><a class="btn" href="#/">홈으로</a></div>
+          <div class="row2"><a class="btn primary" href="#/station">방송국으로</a><a class="btn" href="#/tree">🎄 트리 꾸미기</a></div>
         </div></section>`;
     });
   };
@@ -496,13 +574,14 @@ function send() {
         <button class="btn primary" id="send">라디오 깨우기</button></div>
     </section>`;
   $app.querySelector("#send").onclick = () => {
+    const first = !J.core.cleared;
     J.core.cleared ||= today();
     const saved = saveJ();
-    reward(saved);
+    reward(saved, first);
   };
 }
 
-function reward(saved = true) {
+function reward(saved = true, first = false) {
   setRegion("r4");
   $app.innerHTML = `${header("우리가 함께 만든 방송", "#/station")}
     <section class="page core-reward">
@@ -516,6 +595,7 @@ function reward(saved = true) {
           <li><b>귀담이</b> 이제 우리가 배운 말을 들려줄게!</li>
           <li><b>차분이</b> 함께 해 줘서 고마워.</li>
         </ul>
+        ${first ? `<p class="gain">✨ 반짝이 +${EARN.core} <small>· 지금 ${wallet()}개</small></p>` : ""}
         <p class="quiet small">기념 메달은 학습 활동 완료 기록이에요. 공인 인증이나 영어 숙달 보증이 아니에요.</p>
         ${saved ? "" : '<p class="quiet small">이 기기에 기록을 저장하지 못했어요.</p>'}
         <div class="row2"><a class="btn primary" href="#/table">앙코르 만들기</a><a class="btn" href="#/">오늘은 여기까지</a></div>

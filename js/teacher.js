@@ -4,11 +4,15 @@ import { MAIN_DANS, BONUS_DANS, SENT_DANS } from "./data.js";
 import { $app, esc, header, toast, danLabel } from "./ui.js";
 import { pose } from "./village.js";
 import { REGIONS } from "./journey.js";
+import { sparklesOf, treeCount } from "./tree.js";
 import { session, isStudent, isTeacher, teacher, teacherLogin, teacherSignup, studentLogin, logout, errText } from "./cloud.js";
 
 const STEPS = ["see", "hide", "order"];
 const starsOf = (v1, id) => STEPS.filter((s) => v1?.progress?.[id]?.[s]).length;
 const passedOf = (v1) => MAIN_DANS.filter((d) => starsOf(v1, d.id) === 3).length;
+// 반짝이(나만의 트리 화폐)는 학생 화면과 같은 계산: 본편·보너스·문장 단의 별 전부 + 도전
+const sparkles = (v1, j) => sparklesOf([...MAIN_DANS, ...BONUS_DANS, ...SENT_DANS].reduce((a, d) => a + starsOf(v1, d.id), 0), j);
+const spent = (j) => j?.tree?.spent || 0;
 const starTotal = (v1) => MAIN_DANS.reduce((a, d) => a + starsOf(v1, d.id), 0);
 const CH_REGIONS = REGIONS.filter((r) => r.challenge);
 const challengesOf = (j) => CH_REGIONS.filter((r) => j?.challenges?.[r.id]).length;
@@ -216,7 +220,8 @@ async function StudentDetail(id) {
       <div><b class="big">${esc(r.nickname)}</b> <span class="quiet">${esc(r.login_id)}</span>${r.locked ? ' <span class="err">🔒 비밀번호를 여러 번 틀려 잠김</span>' : ""}</div>
       <div class="quiet small">마지막 공부: ${when(r.updated_at)} · 이름(앱 안): ${esc(v1.settings?.learner || "-")}</div>
       <div class="sumrow"><span><b>${passedOf(v1)}</b> / ${MAIN_DANS.length}단 통과</span><span>★ <b>${starTotal(v1)}</b> / ${MAIN_DANS.length * 3}</span>
-        <span>구간 도전 <b>${challengesOf(j)}</b> / ${CH_REGIONS.length}</span><span>마지막 도전 <b>${j.core?.cleared ? "✓" : "-"}</b></span></div>
+        <span>구간 도전 <b>${challengesOf(j)}</b> / ${CH_REGIONS.length}</span><span>마지막 도전 <b>${j.core?.cleared ? "✓" : "-"}</b></span>
+        <span>🎄 반짝이 <b>✨ ${Math.max(0, sparkles(v1, j) - spent(j))}</b> 남음 · 트리 장식 <b>${treeCount(j)}</b>개</span></div>
     </div>
     <div class="card"><h2 class="h3">단별 별 (보기 · 가리기 · 순서)</h2><div class="tgrid">${MAIN_DANS.map(cell).join("")}</div>
       ${anyOf(SENT_DANS) ? `<h3 class="h4">문장형</h3><div class="tgrid">${SENT_DANS.map(cell).join("")}</div>` : ""}

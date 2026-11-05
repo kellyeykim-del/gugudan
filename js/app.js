@@ -11,6 +11,7 @@ import { mountRecorder, stopRecorder, canRecord } from "./recorder.js";
 import { Welcome, needsWelcome, learner } from "./welcome.js";
 import { Teacher, StudentLogin, accountBar, bindAccountBar } from "./teacher.js";
 import { startSync } from "./cloud.js";
+import { TreePage, wallet, EARN } from "./tree.js";
 import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
@@ -84,7 +85,7 @@ function Home() {
       </div>
       <a class="station-link card accent-card" data-region="lilac" href="#/station">
         <span class="station-thumb region-thumb" aria-hidden="true">${pose("nuri", "talk", { cls: "talk" })}</span>
-        <div><b>📻 우리 목소리 방송국</b><span>목소리 카드 ${passed} / 36 · 구간 도전 · 마지막 도전</span></div>
+        <div><b>📻 우리 목소리 방송국 · 🎄 나만의 트리</b><span>목소리 카드 ${passed} / 36 · 반짝이 ✨ ${wallet()} · 지금 할 미션 보기</span></div>
         <span class="go" aria-hidden="true">→</span>
       </a>
       <nav class="menu">
@@ -310,7 +311,7 @@ function Dan(id, params) {
       const st = $app.querySelector(".danhead-card .stars");
       if (st) st.outerHTML = starsHtml(d.id);
       if (n === 3 && !d.sent) showVoiceCard(d);
-      else toast(n === 3 ? `🎉 ${danLabel(d)} 통과! 별 3개` : `⭐ 별 ${n}개`);
+      else toast(n === 3 ? `🎉 ${danLabel(d)} 통과! 별 3개 · ✨ +${EARN.star}` : `⭐ 별 ${n}개 · ✨ +${EARN.star}`);
       // 구간의 마지막 단을 마치면 탐험 지도 소식을 한 번 더 (보상 창이 닫힐 즈음)
       const r = n === 3 && regionJustDone(d);
       if (r) setTimeout(() => toast(`🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`), 2500);
@@ -665,6 +666,7 @@ function route() {
   if (parts[0] === "welcome") return Welcome("#/");
   if (needsWelcome()) return Welcome(location.hash || "#/"); // 처음 켰을 때 한 번: 친구 소개 · 이름
   if (["station", "journey", "garden"].includes(parts[0])) return Station();
+  if (parts[0] === "tree") return TreePage();
   if (parts[0] === "challenge") return Challenge(parts[1]);
   if (parts[0] === "core") return Core(params);
   if (parts[0] === "about") return About();

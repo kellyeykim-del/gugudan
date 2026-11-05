@@ -902,3 +902,101 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 [data-theme="vivid"] .welcome h2 { font-size: 24px; }
 /* 대문: 비비드 라디오 장면(Codex 2026-11-05, characters-design-2026-11-03/radio-vivid-2026-11-05). 말풍선은 라디오 안테나 위에서 */
 [data-theme="vivid"] .onair i { font-size: 14px; left: 57%; top: calc(34px + 30%); }
+
+/* ───────────── 나만의 트리 (#/tree) · 방송국 '지금 할 미션' ─────────────
+   반짝이(✨)로 크리스마스 상점에서 장식을 사서 트리에 건다. 장식 그림은 임시 SVG(색은 아래 --o-* 변수). */
+:root { --o-red: #C9705A; --o-blue: #7C8FA6; --o-gold: #E2B95A; --o-green: #91A58C; --o-cream: #F4E8D5; --o-white: #FFFDF8; --o-brown: #A47A5B; --o-line: #65584E; }
+:root[data-theme="vivid"] { --o-red: #E84135; --o-blue: #0CAADC; --o-gold: #F6C64A; --o-green: #3AA676; --o-cream: #FFF4DF; --o-white: #FFFFFF; --o-brown: #B5704A; --o-line: #343442; }
+.kick { display: block; font-size: 12.5px; font-weight: 800; color: var(--acc, var(--purple)); }
+.mhead { font-family: var(--hand); font-size: 22px; margin: 22px 0 8px; }
+[data-theme="vivid"] .mhead { font-size: 18px; font-weight: 800; }
+.gain { display: inline-block; margin: 6px 0; padding: 4px 12px; border-radius: 99px; background: #FFF3CF; color: #7A5A00; font-weight: 800; }
+.gain small { font-weight: 400; color: var(--quiet); }
+.tree-go { display: inline-block; margin-top: 6px; font-weight: 700; color: var(--purple); }
+
+/* 트리 장면: 5:6, 트리는 너비 70% · 바닥 위. 장식 자리는 장면 % (tree.js와 짝) */
+.tree-scene { position: relative; aspect-ratio: 5 / 6; border-radius: 18px; overflow: hidden; user-select: none;
+  background: radial-gradient(circle at 12% 14%, var(--scene-deep) 0 3px, transparent 4px), radial-gradient(circle at 30% 6%, var(--scene-deep) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 10%, var(--scene-deep) 0 3px, transparent 4px), radial-gradient(circle at 90% 26%, var(--scene-deep) 0 2px, transparent 3px),
+    radial-gradient(circle at 8% 38%, var(--scene-deep) 0 2px, transparent 3px), radial-gradient(circle at 64% 4%, var(--scene-deep) 0 2px, transparent 3px),
+    linear-gradient(#FFFFFF 0 55%, var(--scene, var(--lilac)) 100%); }
+.tree-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: var(--scene-deep, var(--lilac-deep)); opacity: .6; }
+.tree-svg { position: absolute; left: 15%; width: 70%; bottom: 4%; overflow: visible; }
+.tree-svg .bulb { animation: twinkle 1.6s ease-in-out infinite alternate; }
+@keyframes twinkle { from { opacity: 1; } to { opacity: .45; } }
+.tree-friend { position: absolute; bottom: 1%; width: 30%; z-index: 1; }
+.tf-l { left: -6%; }
+.tf-r { right: -6%; }
+.orn { position: absolute; z-index: 2; transform: translate(-50%, -50%); aspect-ratio: 1; padding: 0; border: 0; background: none; line-height: 0; }
+.orn svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(0 2px 0 rgba(0,0,0,.08)); }
+.tree-scene.edit .orn:not(.fixed) { cursor: grab; touch-action: none; }
+.orn.drag { cursor: grabbing; z-index: 5; scale: 1.15; }
+.orn.sel { z-index: 4; outline: 3px dashed var(--primary); outline-offset: 3px; border-radius: 50%; }
+.orn.new { animation: drop-in .5s cubic-bezier(.3, 1.5, .6, 1); }
+@keyframes drop-in { from { translate: 0 -60%; scale: .4; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .tree-svg .bulb, .orn.new { animation: none; } }
+
+.tree-page { display: grid; gap: 14px; }
+.tree-card { padding: 12px; background: var(--scene); border-color: var(--scene-deep); }
+.tree-tool { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; min-height: 44px; margin-top: 10px; }
+.tree-tool .btn { padding: 8px 14px; font-size: 14px; }
+.wallet-card { display: flex; flex-direction: column; gap: 6px; }
+.wallet b { font-size: 30px; }
+.earn summary { cursor: pointer; font-weight: 700; color: var(--purple); }
+.earn ul { margin: 8px 0; padding-left: 20px; line-height: 1.8; }
+.shop-card h2 { font-family: var(--hand); font-size: 22px; margin: 0 0 10px; }
+[data-theme="vivid"] .shop-card h2 { font-size: 18px; font-weight: 800; }
+.shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+.ware { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px 8px; border-radius: 14px; border: 1px solid var(--line);
+  background: #fff; font: inherit; color: var(--ink); cursor: pointer; }
+.ware:hover { border-color: var(--primary); }
+.ware-art { width: 44px; height: 44px; }
+.ware-art svg { width: 100%; height: 100%; }
+.ware b { font-size: 13px; }
+.ware .price { font-size: 13px; font-weight: 800; color: #7A5A00; }
+.ware.short { opacity: .5; }
+.ware.owned { background: #EEF6EF; border-color: #BFD9C3; }
+.ware.owned .price { color: var(--ok); }
+@media (min-width: 820px) {
+  .tree-page { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); align-items: start; }
+  .tree-main { position: sticky; top: 12px; }
+}
+
+/* 방송국: 트리 카드 */
+.mytree { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; padding: 12px; margin-bottom: 12px;
+  background: var(--scene); border-color: var(--scene-deep); color: var(--ink); text-decoration: none; }
+.mytree-text { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-size: 14px; line-height: 1.6; color: var(--quiet); }
+.wallet-big { font-size: 28px; color: var(--ink); }
+.mytree .btn { margin-top: 4px; }
+/* 지금 할 미션 */
+.next { border: 2px solid var(--acc); margin-bottom: 4px; }
+.next h3 { margin: 2px 0 10px; font-size: 19px; }
+.next h3 small { font-size: 14px; font-weight: 400; color: var(--quiet); }
+.next .meter { background: var(--scene); }
+.next .meter i { background: var(--acc); }
+.next-row { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13.5px; margin: 6px 0 10px; color: var(--quiet); }
+.next-row b { color: var(--acc); }
+.gift { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--scene); }
+.gift-ic { font-size: 26px; line-height: 1; }
+.gift b { display: block; font-size: 15px; }
+.gift span { font-size: 13px; color: var(--quiet); line-height: 1.5; }
+.next .btn.block { margin-top: 12px; }
+/* 미션 순서 */
+.mlist { list-style: none; margin: 0; padding: 4px 14px; }
+.mrow { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--line); }
+.mrow:first-child { border-top: 0; }
+.mno { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--scene); color: var(--acc); font-weight: 800; font-size: 14px; }
+.mt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mt b { font-size: 15px; }
+.mt small { font-size: 12.5px; color: var(--quiet); }
+.mr { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
+.mr small { font-size: 12px; color: var(--quiet); white-space: nowrap; }
+.chip-s { font-style: normal; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; background: #F1EFEC; color: var(--quiet); }
+.chip-s.got { background: #E6F1E8; color: #3E6B46; }
+.chip-s.now { background: var(--primary); color: #fff; }
+.mrow.lock .mno, .mrow.lock .mt { opacity: .55; }
+.mrow.now .mt b { color: var(--acc); }
+@media (max-width: 420px) {
+  .mytree { grid-template-columns: 112px 1fr; }
+  .wallet-big { font-size: 24px; }
+}
