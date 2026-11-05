@@ -19,7 +19,7 @@
   --lilac-deep: #DCD3EA;
   --paper: #FFFFFF;
   --shadow: 0 4px 14px rgba(74, 63, 55, .06);
-  --hand: "Gaegu", "Noto Sans KR", sans-serif;
+  --hand: "Jua", "Noto Sans KR", sans-serif; /* 제목 글꼴: 주아(OFL). 2026-11-05 개구 손글씨에서 교체 */
 }
 
 * { box-sizing: border-box; }
@@ -937,10 +937,10 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 @keyframes snow { to { translate: 0 50%; } }
 .room-sign { position: absolute; left: 5%; top: 12%; z-index: 1; padding: 5px 12px; border-radius: 10px; background: var(--o-white);
   border: 2px solid var(--o-line); font-weight: 800; font-size: 14px; color: var(--ink); rotate: -3deg; box-shadow: 0 3px 0 rgba(0,0,0,.08); }
-.room-friend { position: absolute; bottom: 1%; width: 24%; z-index: 1; pointer-events: none; }
-.rf-l { left: -3%; }
+.room-friend { position: absolute; bottom: 1%; width: 22%; z-index: 1; pointer-events: none; }
+.rf-l { left: 2%; }
 .rf-m { display: none; }
-.rf-r { right: -3%; }
+.rf-r { right: 2%; }
 /* 트리 장면: 방 바닥에서 높이 100%(휴대폰) · 96%(넓은 화면), 5:6 */
 .tree-scene { position: absolute; left: 50%; bottom: 0; height: 100%; aspect-ratio: 5 / 6; translate: -50% 0; z-index: 2; }
 .tree-art { position: absolute; left: 15%; top: 26%; width: 70%; aspect-ratio: 5 / 6; pointer-events: none; }
@@ -951,10 +951,10 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 @media (min-width: 820px) {
   .tree-room { aspect-ratio: 1; }
   .tree-scene { height: 97%; }
-  .room-friend { width: 19%; }
-  .rf-l { left: 1%; }
-  .rf-r { right: 1%; }
-  .rf-m { display: inline-block; left: 18%; width: 15%; bottom: 3%; }
+  .room-friend { width: 18%; }
+  .rf-l { left: 5%; }
+  .rf-r { right: 5%; }
+  .rf-m { display: inline-block; left: 21%; width: 14%; bottom: 3%; }
   .room-window { right: 7%; width: 16%; }
   .room-sign { font-size: 16px; left: 6%; }
 }
@@ -1037,3 +1037,16 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   .mytree-art { width: 128px; border-radius: 12px; }
   .wallet-big { font-size: 24px; }
 }
+
+/* 기본 화면 제목 글꼴 주아(Jua, OFL · 굵기 하나): 가짜 굵게를 막고 개구 손글씨 때보다 한 단계 작게 */
+:root:not([data-theme="vivid"]) :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .mhead, .shop-card h2, .onair i) {
+  font-weight: 400; font-synthesis: none; letter-spacing: -.01em; }
+:root:not([data-theme="vivid"]) .home-title h1 { font-size: 36px; }
+:root:not([data-theme="vivid"]) .sec-head h2 { font-size: 24px; }
+:root:not([data-theme="vivid"]) .rtile b { font-size: 21px; }
+:root:not([data-theme="vivid"]) .region-hero-card h2 { font-size: 28px; }
+:root:not([data-theme="vivid"]) .dno { font-size: 31px; }
+:root:not([data-theme="vivid"]) .bar h1 { font-size: 22px; }
+:root:not([data-theme="vivid"]) .welcome h2 { font-size: 25px; }
+:root:not([data-theme="vivid"]) .mhead { font-size: 20px; }
+:root:not([data-theme="vivid"]) .shop-card h2 { font-size: 20px; }

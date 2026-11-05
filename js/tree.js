@@ -45,9 +45,9 @@ export const ITEMS = [
   { k: "cookie", name: "말문이 쿠키", p: 8, size: 12 },
   { k: "sock", name: "양말", p: 8, size: 11 },
   { k: "mic", name: "마이크 장식", p: 10, size: 11 },
-  { k: "radio", name: "라디오 장식", p: 10, size: 13 },
-  { k: "gift", name: "선물 상자", p: 10, size: 16 },
-  { k: "snowman", name: "눈사람", p: 15, size: 19 },
+  { k: "radio", name: "라디오 장식", p: 10, size: 12 },
+  { k: "gift", name: "선물 상자", p: 10, size: 11.5 },
+  { k: "snowman", name: "눈사람", p: 15, size: 14 },
   { k: "lights", name: "반짝 전구줄", p: 20, one: true, fixed: true },
   { k: "star", name: "반짝 보석 별", p: 25, one: true, fixed: true },
 ].map((it) => ({ ...it, svg: art(it.k) }));
