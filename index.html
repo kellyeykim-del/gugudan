@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+  <script>
+    // 같은 앱의 비비드 색 버전: 주소가 /vivid/ 로 시작하면 (vercel.json이 같은 파일을 보여 줌)
+    if (/^\/vivid(\/|$)/.test(location.pathname)) document.documentElement.dataset.theme = "vivid";
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

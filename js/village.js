@@ -3,10 +3,16 @@
 // 보드의 동작은 친구마다 3개라 몇 칸은 같은 그림이다.
 import { esc } from "./ui.js";
 
-const IMG = "img/village/";
+// 비비드 버전(/vivid/, index.html이 data-theme을 붙임)은 같은 칸 배치의 비비드 시트를 쓴다 (tools/cutout_vivid.py)
+export const VIVID = document.documentElement.dataset.theme === "vivid";
+const IMG = VIVID ? "img/village-vivid/" : "img/village/";
 
 // ── 캐릭터 (manifest.characters) ─────────────────────────
-export const CHARS = {
+export const CHARS = VIVID ? {
+  nuri: { name: "말문이", desc: "빨간 강아지" },
+  minty: { name: "귀담이", desc: "하늘색 토끼" },
+  bobo: { name: "차분이", desc: "남색 곰" },
+} : {
   nuri: { name: "말문이", desc: "테라코타색 강아지" },
   minty: { name: "귀담이", desc: "세이지색 토끼" },
   bobo: { name: "차분이", desc: "블루그레이 곰" },

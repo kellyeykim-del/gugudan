@@ -9,7 +9,7 @@ import { pose } from "./village.js";
 import { setRegion, regionForIds } from "./journey.js";
 
 // 캐릭터 게임 아이콘 (characters-design-2026-11-03/game-icon-proposal). 게임 이름이 따로 읽히므로 꾸밈 그림.
-export const gameIcon = (k) => `<img class="gimg" src="img/games/${k}.png" width="96" height="96" alt="">`;
+export const gameIcon = (k) => `<img class="gimg" src="img/${document.documentElement.dataset.theme === "vivid" ? "games-vivid" : "games"}/${k}.png" width="96" height="96" alt="">`;
 
 // 게임마다 함께하는 친구 (준비·결과 화면에만. 게임 중에는 문제와 버튼을 가리지 않게 넣지 않는다)
 const HOST = { "단어 두더지": "nuri", "주어 룰렛": "minty", "짝꿍 카드": "bobo",

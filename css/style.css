@@ -861,3 +861,48 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .wlogin { text-align: center; margin: 14px 0 0; color: var(--quiet); }
 .wlogin a { color: var(--quiet); font-weight: 600; }
 .st-meter .meter { background: var(--lilac); }
+
+/* ───────────── 비비드 버전 (/vivid/ 주소, html[data-theme="vivid"]) ─────────────
+   같은 구조에 원 비비드 세 친구(빨강 강아지 #E84135 · 하늘 토끼 #0CAADC · 남색 곰 #203A78)와
+   사용자가 고른 바탕 색 조합(크림 · 하늘 · 라벤더)을 입힌다. 구간 카드는 지금처럼 구간마다 다른 옅은 색.
+   글자는 손글씨 대신 굵은 고딕(시안과 같게). 장소 그림(img/places)은 손그림 색에 맞춘 것이라 쓰지 않는다. */
+:root[data-theme="vivid"] {
+  --ink: #1E2A4F;
+  --quiet: #5A6380; /* 흰 바탕 대비 5.9:1 */
+  --line: #E1E7F0;
+  --card: #FFFFFF;
+  --mint-deep: #203A78;
+  --red: #C8372A;
+  --primary: #D23A2B; /* 빨강 버튼, 흰 글자 대비 4.6:1 */
+  --purple: #203A78; /* 남색 강조 */
+  --ok: #2E8A57;
+  --bad: #D23A2B;
+  --lilac: #EEEAF8;
+  --lilac-deep: #D8D0EF;
+  --shadow: 0 4px 14px rgba(32, 58, 120, .07);
+  --hand: "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+/* 구간 색: 1 크림 · 2 하늘 · 3 라벤더 · 4 민트하늘 · 보너스 버터. 홈은 옅은 하늘 */
+:root[data-theme="vivid"], [data-theme="vivid"] [data-region="home"] { --page: #F6FAFD; --scene: #E3EFF7; --scene-deep: #C8DDEC; --acc: #1F5F8B; }
+:root[data-theme="vivid"][data-region="r1"], [data-theme="vivid"] [data-region="r1"] { --page: #FFFCF7; --scene: #FBEEDC; --scene-deep: #EFD8B8; --acc: #A8402D; }
+:root[data-theme="vivid"][data-region="r2"], [data-theme="vivid"] [data-region="r2"] { --page: #F7FBFE; --scene: #DDEEF8; --scene-deep: #B9DAEE; --acc: #1C6893; }
+:root[data-theme="vivid"][data-region="r3"], [data-theme="vivid"] [data-region="r3"] { --page: #FAF9FE; --scene: #E9E5F6; --scene-deep: #D0C8EB; --acc: #4E3F98; }
+:root[data-theme="vivid"][data-region="r4"], [data-theme="vivid"] [data-region="r4"] { --page: #F6FCFB; --scene: #DDF2EE; --scene-deep: #B6DFD6; --acc: #23705F; }
+:root[data-theme="vivid"][data-region="bonus"], [data-theme="vivid"] [data-region="bonus"] { --page: #FFFDF6; --scene: #FBF2D4; --scene-deep: #EEDDA4; --acc: #85620F; }
+[data-theme="vivid"] [data-region="lilac"] { --scene: var(--lilac); --scene-deep: var(--lilac-deep); --acc: #4E3F98; }
+:root[data-theme="vivid"] :is(.scene-head, .stage, .play-hero, .ready-scene, .reward-scene, .region-card) { background-image: none; }
+/* 굵은 고딕 제목 (손글씨 Gaegu보다 글자가 커 보여 한 단계 줄인다) */
+[data-theme="vivid"] :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .onair i) { font-weight: 800; letter-spacing: -.02em; }
+[data-theme="vivid"] .home-title h1 { font-size: 34px; color: var(--ink); }
+[data-theme="vivid"] .sec-head h2 { font-size: 22px; }
+[data-theme="vivid"] .rtile b { font-size: 19px; }
+[data-theme="vivid"] .region-hero-card h2 { font-size: 26px; }
+[data-theme="vivid"] .dno { font-size: 28px; }
+[data-theme="vivid"] .bar h1 { font-size: 20px; }
+[data-theme="vivid"] .welcome h2 { font-size: 24px; }
+[data-theme="vivid"] .onair i { font-size: 14px; left: 50%; top: calc(34px + 22%); }
+/* 대문: 라디오 장면 대신 서서 인사하는 세 친구 */
+.hero-friends { display: flex; align-items: flex-end; justify-content: center; position: relative; }
+.hero-friends::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: 3%; height: 9%; border-radius: 50%; background: var(--scene-deep); opacity: .55; }
+.hero-friends .pose { position: relative; z-index: 1; width: 42%; }
+.hero-friends .pose + .pose { margin-left: -13%; }

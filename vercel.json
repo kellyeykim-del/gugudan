@@ -1,0 +1,4 @@
+{
+  "redirects": [{ "source": "/vivid", "destination": "/vivid/", "permanent": false }],
+  "rewrites": [{ "source": "/vivid/:path*", "destination": "/:path*" }]
+}
