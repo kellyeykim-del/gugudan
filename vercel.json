@@ -1,4 +1,7 @@
 {
   "redirects": [{ "source": "/vivid", "destination": "/vivid/", "permanent": false }],
-  "rewrites": [{ "source": "/vivid/:path*", "destination": "/:path*" }]
+  "rewrites": [
+    { "source": "/vivid/", "destination": "/index.html" },
+    { "source": "/vivid/:path*", "destination": "/:path*" }
+  ]
 }
