@@ -1055,3 +1055,36 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 :root[data-theme="vivid"] .mhead { font-size: 22px; }
 :root[data-theme="vivid"] .shop-card h2 { font-size: 22px; }
 :root[data-theme="vivid"] .onair i { font-size: 17px; }
+
+/* 비비드: 딱딱함을 깨는 손글씨 흐트러짐 (사용자 요청 2026-11-05).
+   짧은 한글 말(꼬리표·장소 이름·응원·힌트·이야기·칩)만 개구 손글씨로, 살짝 기울이고 형광펜·물결 밑줄을 더한다.
+   영어 문장·버튼·긴 설명 숫자는 그대로(읽기 우선). 개구는 작게 보여 1.2배쯤 키운다 */
+:root[data-theme="vivid"] :is(.home-title p, .rplace, .kick, .region-range, .hint, .cheer, .journey .story .story-text p, .gift b, .next-row b,
+  .chip-s, .rgo, .region-card p, .mytree-text > span:not(.btn):not(.kick), .room-sign, .toast, .station-link b, .tree-tool, .earn summary) {
+  font-family: var(--hand); letter-spacing: normal; }
+:root[data-theme="vivid"] .home-title p { display: inline-block; font-size: 18px; font-weight: 700; rotate: -1.5deg; }
+:root[data-theme="vivid"] .rplace { font-size: 17px; font-weight: 700; }
+:root[data-theme="vivid"] .rgo { font-size: 18px; font-weight: 700; padding-block: 6px; }
+:root[data-theme="vivid"] .rtile:nth-child(odd) .rtile-card > b { rotate: -2.5deg; }
+:root[data-theme="vivid"] .rtile:nth-child(even) .rtile-card > b { rotate: 2deg; }
+:root[data-theme="vivid"] .kick { display: inline-block; width: fit-content; font-size: 17px; font-weight: 700; rotate: -2deg; padding: 0 4px;
+  background: linear-gradient(transparent 58%, #FFE58A 58%, #FFE58A 92%, transparent 92%); }
+:root[data-theme="vivid"] .region-range { display: inline-block; font-size: 17px; rotate: -2deg; }
+:root[data-theme="vivid"] .region-card p { font-size: 17px; line-height: 1.5; }
+:root[data-theme="vivid"] .hint { font-size: 17px; line-height: 1.5; }
+:root[data-theme="vivid"] .cheer { font-size: 19px; }
+:root[data-theme="vivid"] .journey .story .story-text p { font-size: 20px; line-height: 1.6; }
+:root[data-theme="vivid"] .gift b { font-size: 19px; font-weight: 700; }
+:root[data-theme="vivid"] .next-row b { display: inline-block; font-size: 18px; font-weight: 700; rotate: -2deg; }
+:root[data-theme="vivid"] .chip-s { font-size: 15px; padding: 2px 10px; }
+:root[data-theme="vivid"] .mrow:nth-child(odd) .chip-s { rotate: -4deg; }
+:root[data-theme="vivid"] .mrow:nth-child(even) .chip-s { rotate: 3deg; }
+:root[data-theme="vivid"] .mytree-text > span:not(.btn):not(.kick) { font-size: 18px; line-height: 1.5; }
+:root[data-theme="vivid"] .room-sign { font-size: 19px; font-weight: 700; }
+:root[data-theme="vivid"] .toast { font-size: 18px; font-weight: 700; }
+:root[data-theme="vivid"] .station-link b { font-size: 19px; }
+:root[data-theme="vivid"] .tree-tool { font-size: 17px; }
+:root[data-theme="vivid"] .earn summary { font-size: 18px; }
+/* 물결 밑줄 (손으로 그은 듯) */
+:root[data-theme="vivid"] :is(.mhead, .shop-card h2) { display: inline-block; padding-bottom: 7px; background: no-repeat left bottom / 100% 9px
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 9' preserveAspectRatio='none'%3E%3Cpath d='M2 6Q16 1 30 5T60 5T90 5T118 3' fill='none' stroke='%23F6C64A' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
