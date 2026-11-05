@@ -494,7 +494,7 @@ p.cheer { margin: 12px 0 0; }
 .region-range { font-size: 12px; font-weight: 800; color: var(--acc, var(--accent)); }
 .region-card h3 { margin: 2px 0 4px; font-size: 20px; }
 .region-card p { margin: 0 0 10px; font-size: 14px; color: var(--quiet); line-height: 1.6; }
-.region-char { width: 84px; margin: -8px -6px -4px 0; background-color: transparent; }
+.region-char { width: 84px; margin: -8px -6px -4px 0; background-color: transparent; align-self: flex-start; } /* flex 줄 높이로 늘어나지 않게 (비율 1:1 유지) */
 .region-card .row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 14px; }
 .region-card .meter i { background: var(--acc, var(--accent)); }
 .module-on { font-weight: 800; color: var(--acc); }
@@ -915,26 +915,58 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .tree-go { display: inline-block; margin-top: 6px; font-weight: 700; color: var(--purple); }
 
 /* 트리 장면: 5:6, 트리는 너비 70% · 바닥 위. 장식 자리는 장면 % (tree.js와 짝) */
-.tree-scene { position: relative; aspect-ratio: 5 / 6; border-radius: 18px; overflow: hidden; user-select: none;
-  background: radial-gradient(circle at 12% 14%, var(--scene-deep) 0 3px, transparent 4px), radial-gradient(circle at 30% 6%, var(--scene-deep) 0 2px, transparent 3px),
-    radial-gradient(circle at 78% 10%, var(--scene-deep) 0 3px, transparent 4px), radial-gradient(circle at 90% 26%, var(--scene-deep) 0 2px, transparent 3px),
-    radial-gradient(circle at 8% 38%, var(--scene-deep) 0 2px, transparent 3px), radial-gradient(circle at 64% 4%, var(--scene-deep) 0 2px, transparent 3px),
-    linear-gradient(#FFFFFF 0 55%, var(--scene, var(--lilac)) 100%); }
-.tree-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: var(--scene-deep, var(--lilac-deep)); opacity: .6; }
-.tree-svg { position: absolute; left: 15%; width: 70%; bottom: 4%; overflow: visible; }
-.tree-svg .bulb { animation: twinkle 1.6s ease-in-out infinite alternate; }
+/* 트리가 놓인 방 (휴대폰 5:6, 넓은 화면 1:1). 트리 장면은 방 가운데 5:6 상자 */
+:root { --room-wall: #EFE8F4; --room-paper: #E4DAEC; --room-floor: #D9C3A8; --room-rug: #C97A62; --room-sky: #5C6A86; }
+:root[data-theme="vivid"] { --room-wall: #E7E0F5; --room-paper: #DAD0EE; --room-floor: #CDB9E4; --room-rug: #E84135; --room-sky: #203A78; }
+.tree-room { position: relative; aspect-ratio: 5 / 6; border-radius: 18px; overflow: hidden; user-select: none;
+  background: radial-gradient(circle, var(--room-paper) 0 2px, transparent 2.5px) 0 0 / 26px 26px, var(--room-wall); }
+.room-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 15%; background: var(--room-floor);
+  box-shadow: inset 0 3px 0 rgba(0,0,0,.06); }
+.room-rug { position: absolute; left: 50%; bottom: 3%; width: 62%; height: 9%; translate: -50% 0; border-radius: 50%;
+  background: var(--room-rug); opacity: .35; }
+.room-flags { position: absolute; left: 0; top: 0; width: 100%; height: 9%; z-index: 1; }
+.room-window { position: absolute; right: 6%; top: 13%; width: 20%; aspect-ratio: 3 / 4; border-radius: 999px 999px 8px 8px; overflow: hidden;
+  background: var(--room-sky); border: 5px solid var(--o-white); box-shadow: 0 0 0 2px var(--o-line); }
+.room-window::before, .room-window::after { content: ""; position: absolute; background: var(--o-white); z-index: 1; }
+.room-window::before { left: 50%; top: 0; bottom: 0; width: 4px; translate: -50% 0; }
+.room-window::after { top: 55%; left: 0; right: 0; height: 4px; }
+.room-window .snow { position: absolute; inset: -100% 0 0; animation: snow 9s linear infinite;
+  background: radial-gradient(circle, #fff 0 1.6px, transparent 2px) 0 0 / 22px 22px,
+    radial-gradient(circle, rgba(255,255,255,.75) 0 1.2px, transparent 1.6px) 11px 7px / 22px 22px; }
+.room-window .snow.s2 { animation-duration: 14s; opacity: .6; background-size: 31px 31px, 31px 31px; }
+@keyframes snow { to { translate: 0 50%; } }
+.room-sign { position: absolute; left: 5%; top: 12%; z-index: 1; padding: 5px 12px; border-radius: 10px; background: var(--o-white);
+  border: 2px solid var(--o-line); font-weight: 800; font-size: 14px; color: var(--ink); rotate: -3deg; box-shadow: 0 3px 0 rgba(0,0,0,.08); }
+.room-friend { position: absolute; bottom: 1%; width: 24%; z-index: 1; pointer-events: none; }
+.rf-l { left: -3%; }
+.rf-m { display: none; }
+.rf-r { right: -3%; }
+/* 트리 장면: 방 바닥에서 높이 100%(휴대폰) · 96%(넓은 화면), 5:6 */
+.tree-scene { position: absolute; left: 50%; bottom: 0; height: 100%; aspect-ratio: 5 / 6; translate: -50% 0; z-index: 2; }
+.tree-art { position: absolute; left: 15%; top: 26%; width: 70%; aspect-ratio: 5 / 6; pointer-events: none; }
+.tree-art img { width: 100%; height: 100%; display: block; }
+.tree-lights { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.tree-lights .bulb { animation: twinkle 1.6s ease-in-out infinite alternate; }
 @keyframes twinkle { from { opacity: 1; } to { opacity: .45; } }
-.tree-friend { position: absolute; bottom: 1%; width: 30%; z-index: 1; }
-.tf-l { left: -6%; }
-.tf-r { right: -6%; }
+@media (min-width: 820px) {
+  .tree-room { aspect-ratio: 1; }
+  .tree-scene { height: 97%; }
+  .room-friend { width: 19%; }
+  .rf-l { left: 1%; }
+  .rf-r { right: 1%; }
+  .rf-m { display: inline-block; left: 18%; width: 15%; bottom: 3%; }
+  .room-window { right: 7%; width: 16%; }
+  .room-sign { font-size: 16px; left: 6%; }
+}
+@media (prefers-reduced-motion: reduce) { .room-window .snow { animation: none; } }
 .orn { position: absolute; z-index: 2; transform: translate(-50%, -50%); aspect-ratio: 1; padding: 0; border: 0; background: none; line-height: 0; }
-.orn svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(0 2px 0 rgba(0,0,0,.08)); }
+.orn img { width: 100%; height: 100%; display: block; pointer-events: none; filter: drop-shadow(0 2px 0 rgba(0,0,0,.12)); }
 .tree-scene.edit .orn:not(.fixed) { cursor: grab; touch-action: none; }
 .orn.drag { cursor: grabbing; z-index: 5; scale: 1.15; }
 .orn.sel { z-index: 4; outline: 3px dashed var(--primary); outline-offset: 3px; border-radius: 50%; }
 .orn.new { animation: drop-in .5s cubic-bezier(.3, 1.5, .6, 1); }
 @keyframes drop-in { from { translate: 0 -60%; scale: .4; opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .tree-svg .bulb, .orn.new { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .tree-lights .bulb, .orn.new { animation: none; } }
 
 .tree-page { display: grid; gap: 14px; }
 .tree-card { padding: 12px; background: var(--scene); border-color: var(--scene-deep); }
@@ -951,7 +983,7 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   background: #fff; font: inherit; color: var(--ink); cursor: pointer; }
 .ware:hover { border-color: var(--primary); }
 .ware-art { width: 44px; height: 44px; }
-.ware-art svg { width: 100%; height: 100%; }
+.ware-art img { width: 100%; height: 100%; display: block; }
 .ware b { font-size: 13px; }
 .ware .price { font-size: 13px; font-weight: 800; color: #7A5A00; }
 .ware.short { opacity: .5; }
@@ -963,11 +995,14 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 }
 
 /* 방송국: 트리 카드 */
-.mytree { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; padding: 12px; margin-bottom: 12px;
+.mytree { display: flex; align-items: center; justify-content: center; gap: 40px; padding: 16px 22px; margin-bottom: 12px;
   background: var(--scene); border-color: var(--scene-deep); color: var(--ink); text-decoration: none; }
-.mytree-text { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-size: 14px; line-height: 1.6; color: var(--quiet); }
-.wallet-big { font-size: 28px; color: var(--ink); }
-.mytree .btn { margin-top: 4px; }
+.mytree-text { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: 380px; font-size: 15px; line-height: 1.6; color: var(--quiet); }
+.mytree-art { display: block; flex: none; width: 250px; height: auto; border-radius: 18px; }
+.wallet-big { font-size: 30px; color: var(--ink); }
+.mytree .btn { margin-top: 6px; }
+.mytree:hover .btn { filter: brightness(1.06); }
+@media (max-width: 640px) { .mytree { gap: 16px; } .mytree-art { width: 170px; } }
 /* 지금 할 미션 */
 .next { border: 2px solid var(--acc); margin-bottom: 4px; }
 .next h3 { margin: 2px 0 10px; font-size: 19px; }
@@ -997,6 +1032,8 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .mrow.lock .mno, .mrow.lock .mt { opacity: .55; }
 .mrow.now .mt b { color: var(--acc); }
 @media (max-width: 420px) {
-  .mytree { grid-template-columns: 112px 1fr; }
+  .mytree { gap: 12px; padding: 12px; }
+  .mytree-text { font-size: 13.5px; }
+  .mytree-art { width: 128px; border-radius: 12px; }
   .wallet-big { font-size: 24px; }
 }

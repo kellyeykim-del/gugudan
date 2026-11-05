@@ -11,7 +11,7 @@ import { drillLines } from "./data.js";
 import { pose } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
 import { learnerGa } from "./welcome.js";
-import { wallet, EARN, treeScene } from "./tree.js";
+import { wallet, EARN, treeCount } from "./tree.js";
 
 // ── 5구간 ─────────────────────────
 // 저학년이 바로 알아듣게: 장소·모으는 물건·도전 이름은 쉬운 말, 도전은 문제 4개 안팎 + 눈에 보이는 진행(상자·전구)
@@ -389,10 +389,11 @@ export function Station() {
   $app.innerHTML = `${header("우리 목소리 방송국")}
     <section class="page journey">
       <a class="card mytree" data-region="lilac" href="#/tree" aria-label="나만의 트리 꾸미러 가기, 반짝이 ${w}개">
-        <span class="mytree-art">${treeScene()}</span>
         <span class="mytree-text"><span class="kick">🎄 나만의 트리</span><b class="wallet-big">✨ ${w}</b>
           <span>단을 마치면 반짝이가 생겨요. 크리스마스 상점에서 장식을 사서 트리를 꾸며요!</span>
+          ${treeCount(J) ? `<span class="small">지금 트리에 장식 ${treeCount(J)}개</span>` : ""}
           <span class="btn primary">트리 꾸미러 가기</span></span>
+        <img class="mytree-art" src="img/tree/station-hero.webp" alt="트리를 꾸미는 말문이, 귀담이, 차분이" width="640" height="800">
       </a>
       <div class="card next" data-region="${m.r.id}">
         <span class="kick">지금 할 미션</span>

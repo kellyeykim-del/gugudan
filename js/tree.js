@@ -1,12 +1,13 @@
 // 나만의 트리: 학습으로 모은 반짝이(✨)로 크리스마스 상점에서 장식을 사서 트리를 꾸민다.
 // 반짝이는 저장하지 않고 기존 기록(별 · 구간 도전 · 마지막 도전)에서 계산한다 → 예전 기록도 그대로 반짝이가 된다.
 // 저장하는 것은 산 장식(자리·값)과 쓴 반짝이뿐 (gugudan.journey의 tree: { spent, items:[{k,x,y,p}] }).
-// 그림은 임시 SVG. GPT 그림이 오면 ITEMS의 svg만 바꾸면 된다.
+// 그림: img/tree/ (Codex 비비드 시안을 tools/cut_tree_art.py로 자름). 전구줄만 SVG로 트리 위에 그린다.
 import { DANS, SENT_DANS } from "./data.js";
 import { store } from "./store.js";
 import { $app, esc, header, toast } from "./ui.js";
 import { pose } from "./village.js";
 import { jrec, saveJ, setRegion } from "./journey.js";
+import { learner } from "./welcome.js";
 
 // ── 반짝이 얻는 법 ─────────────────────────
 export const EARN = { star: 2, challenge: 10, core: 30, welcome: 6 };
@@ -27,48 +28,29 @@ export const wallet = () => Math.max(0, earned() - T().spent);
 export const treeCount = (j) => j?.tree?.items?.length || 0;
 
 // ── 크리스마스 상점 ─────────────────────────
-// 색은 테마마다 CSS 변수(--o-*)로. size = 장면 너비의 %
+// 그림: Codex 비비드 시안(proposals/station-mock/art)을 tools/cut_tree_art.py로 자른 img/tree/<k>.webp. size = 트리 장면 너비의 %
+// 전구줄 · 꼭대기 별은 하나만, 자리가 정해져 있다 (전구줄은 트리 위에 줄로 그린다)
 const f = (v) => `style="fill:var(--o-${v})"`;
 const s = (v, w = 2.5) => `style="stroke:var(--o-${v});stroke-width:${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
 const fs = (v, line = "line", w = 2.5) => `style="fill:var(--o-${v});stroke:var(--o-${line});stroke-width:${w}" stroke-linejoin="round"`;
-const svg = (body) => `<svg viewBox="0 0 64 64" aria-hidden="true">${body}</svg>`;
-const ball = (c) => svg(`<rect x="27" y="5" width="10" height="8" rx="2" ${f("gold")}/><circle cx="32" cy="37" r="21" ${fs(c)}/>
-  <path d="M15 37h34" ${s("white", 3)} opacity=".55"/><path d="M21 28a13 13 0 0 1 8-8" ${s("white", 3.5)} opacity=".8"/>`);
+const art = (k) => `<img src="img/tree/${k}.webp" alt="" draggable="false">`;
 export const ITEMS = [
-  { k: "red", name: "빨간 방울", p: 3, size: 10, svg: ball("red") },
-  { k: "blue", name: "파란 방울", p: 3, size: 10, svg: ball("blue") },
-  { k: "gold", name: "금빛 방울", p: 4, size: 10, svg: ball("gold") },
-  { k: "bell", name: "작은 종", p: 5, size: 11, svg: svg(`<path d="M32 12c-10 0-15 8-15 19v9l-6 8h42l-6-8v-9c0-11-5-19-15-19z" ${fs("gold")}/>
-    <circle cx="32" cy="52" r="5" ${fs("brown")}/><path d="M24 8l8 5 8-5" ${s("red", 4)}/>`) },
-  { k: "candy", name: "지팡이 사탕", p: 5, size: 10, svg: svg(`<path d="M38 58V22a9 9 0 0 0-18 0v3" ${s("line", 12)}/>
-    <path d="M38 58V22a9 9 0 0 0-18 0v3" ${s("white", 8)}/><path d="M38 58V22a9 9 0 0 0-18 0v3" ${s("red", 8)} stroke-linecap="butt" stroke-dasharray="5 5"/>`) },
-  { k: "flake", name: "눈송이", p: 5, size: 10, svg: svg(`<g ${s("blue", 4)}><path d="M32 6v52M9.5 19l45 26M9.5 45l45-26"/>
-    <path d="M26 10l6 6 6-6M26 54l6-6 6 6M10 27l8 2-2 8M54 37l-8-2 2-8M16 47l2-8 8 2M48 17l-2 8-8-2"/></g>`) },
-  { k: "bow", name: "빨간 리본", p: 6, size: 11, svg: svg(`<path d="M32 30L12 18c-6 0-6 24 0 24zM32 30l20-12c6 0 6 24 0 24z" ${fs("red")}/>
-    <path d="M29 33l-9 22 7-3 3 6 2-25M35 33l9 22-7-3-3 6-2-25" ${fs("red")}/><rect x="27" y="25" width="10" height="11" rx="4" ${fs("gold")}/>`) },
-  { k: "cookie", name: "생강 쿠키", p: 8, size: 12, svg: svg(`<circle cx="32" cy="15" r="10" ${fs("brown")}/>
-    <path d="M14 27h36a5 5 0 0 1 0 10h-6l4 16a5 5 0 0 1-9 3l-7-12-7 12a5 5 0 0 1-9-3l4-16h-6a5 5 0 0 1 0-10z" ${fs("brown")}/>
-    <circle cx="28" cy="14" r="1.8" ${f("line")}/><circle cx="36" cy="14" r="1.8" ${f("line")}/><path d="M28 19q4 3 8 0" ${s("white", 2)}/>
-    <circle cx="32" cy="32" r="2.2" ${f("white")}/><circle cx="32" cy="40" r="2.2" ${f("red")}/>`) },
-  { k: "sock", name: "양말", p: 8, size: 12, svg: svg(`<path d="M22 16h22v20L31 52a9 9 0 0 1-15-9l6-8z" ${fs("red")}/>
-    <rect x="19" y="6" width="28" height="12" rx="4" ${fs("white")}/><path d="M26 30h12M26 38h8" ${s("white", 3)}/>`) },
-  { k: "mic", name: "마이크 장식", p: 10, size: 11, svg: svg(`<rect x="23" y="7" width="18" height="28" rx="9" ${fs("red")}/>
-    <path d="M27 14h10M27 20h10" ${s("white", 2.5)}/><path d="M17 30a15 15 0 0 0 30 0" ${s("line", 3.5)}/>
-    <path d="M32 45v8M22 55h20" ${s("line", 4)}/>`) },
-  { k: "radio", name: "라디오 장식", p: 10, size: 13, svg: svg(`<path d="M20 17l24-9" ${s("line", 3)}/><rect x="6" y="18" width="52" height="36" rx="8" ${fs("blue")}/>
-    <circle cx="22" cy="36" r="10" ${fs("cream")}/><circle cx="22" cy="36" r="4" ${f("blue")}/>
-    <rect x="36" y="27" width="16" height="7" rx="2" ${f("cream")}/><circle cx="40" cy="44" r="3" ${f("gold")}/><circle cx="48" cy="44" r="3" ${f("red")}/>`) },
-  { k: "gift", name: "선물 상자", p: 10, size: 16, svg: svg(`<rect x="10" y="26" width="44" height="32" rx="3" ${fs("red")}/>
-    <rect x="7" y="18" width="50" height="11" rx="3" ${fs("red")}/><path d="M32 18v40" ${s("gold", 7)} stroke-linecap="butt"/>
-    <path d="M32 18c-4-10-16-12-14-3 1 4 8 4 14 3zM32 18c4-10 16-12 14-3-1 4-8 4-14 3z" ${fs("gold")}/>`) },
-  { k: "snowman", name: "눈사람", p: 15, size: 20, svg: svg(`<circle cx="32" cy="45" r="15" ${fs("white")}/><circle cx="32" cy="23" r="10" ${fs("white")}/>
-    <path d="M22 13h20M26 13V4h12v9" ${fs("line", "line", 2)}/><path d="M24 31q8 5 16 0l2 6" ${s("red", 5)}/>
-    <circle cx="28" cy="21" r="1.6" ${f("line")}/><circle cx="36" cy="21" r="1.6" ${f("line")}/><path d="M32 24l7 2-7 1z" ${f("gold")}/>
-    <circle cx="32" cy="41" r="1.8" ${f("line")}/><circle cx="32" cy="49" r="1.8" ${f("line")}/>`) },
-  { k: "lights", name: "반짝 전구줄", p: 20, one: true, fixed: true, svg: svg(`<path d="M4 20q28 22 56 0" ${s("line", 2)}/>
-    <circle cx="14" cy="31" r="6" ${f("gold")}/><circle cx="32" cy="36" r="6" ${f("red")}/><circle cx="50" cy="31" r="6" ${f("blue")}/>`) },
-  { k: "star", name: "꼭대기 별", p: 25, one: true, fixed: true, svg: svg(`<path d="M32 5l8 17 18 2-13 13 4 19-17-9-17 9 4-19L6 24l18-2z" ${fs("gold")}/>`) },
-];
+  { k: "red", name: "말문이 방울", p: 3, size: 11 },
+  { k: "blue", name: "귀담이 방울", p: 3, size: 11 },
+  { k: "gold", name: "차분이 방울", p: 4, size: 11 },
+  { k: "bell", name: "작은 종", p: 5, size: 11 },
+  { k: "candy", name: "지팡이 사탕", p: 5, size: 10 },
+  { k: "flake", name: "눈송이", p: 5, size: 10 },
+  { k: "bow", name: "빨간 리본", p: 6, size: 12 },
+  { k: "cookie", name: "말문이 쿠키", p: 8, size: 12 },
+  { k: "sock", name: "양말", p: 8, size: 11 },
+  { k: "mic", name: "마이크 장식", p: 10, size: 11 },
+  { k: "radio", name: "라디오 장식", p: 10, size: 13 },
+  { k: "gift", name: "선물 상자", p: 10, size: 16 },
+  { k: "snowman", name: "눈사람", p: 15, size: 19 },
+  { k: "lights", name: "반짝 전구줄", p: 20, one: true, fixed: true },
+  { k: "star", name: "반짝 보석 별", p: 25, one: true, fixed: true },
+].map((it) => ({ ...it, svg: art(it.k) }));
 const item = (k) => ITEMS.find((x) => x.k === k);
 // 받침이 있으면 을/이, 없으면 를/가
 const batchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c < 11172 && c % 28 !== 0; };
@@ -76,39 +58,40 @@ const eul = (w) => w + (batchim(w) ? "을" : "를");
 const iga = (w) => w + (batchim(w) ? "이" : "가");
 const MAX = 40; // 트리에 너무 빽빽하지 않게
 
-// ── 트리 그림 (장면 너비 70%, 바닥에서 4%: 트리 좌표 → 장면 % 변환과 짝) ─────────────────────────
-const LIGHTS = [[66, 74, 134, 74, 52], [48, 128, 152, 128, 108], [32, 180, 168, 180, 162]]; // 줄마다 [x1,y1,x2,y2,처짐 y]
-function treeSvg(lights) {
-  const tier = (top, base, half) => `<path d="M100 ${top}L${100 - half} ${base}q${half / 2} 12 ${half} 6q${half / 2} 6 ${half} -6z" ${fs("green", "line", 3)}/>`;
+// ── 트리 그림 (img/tree/tree.webp, 5:6) ─────────────────────────
+// 장면(5:6) 안에서 트리는 너비 70% · 왼쪽 15% · 위 26% (예전 SVG 트리와 같은 자리라 저장된 장식 자리가 그대로 맞는다)
+const toScene = (tx, ty) => [15 + tx * 0.7, 26 + ty * 0.7]; // 트리 그림 % → 장면 %
+// 잎 영역: [그림 y%, 왼쪽 x%, 오른쪽 x%] (tools/cut_tree_art.py가 그림에서 잰 값, 가지 끝 물결 줄은 뺐다)
+const LEAF = [[13, 40, 59], [16, 37.2, 61.8], [19, 33.4, 65.2], [22, 28, 68.9], [25, 23.6, 72.3], [28, 21.6, 73.8],
+  [37, 27.1, 69.4], [40, 23.9, 72.3], [43, 19.8, 76.5], [46, 15.5, 82.1], [49, 13.6, 83.8],
+  [58, 18.5, 79.2], [61, 15.5, 82.3], [64, 11.9, 86.2], [67, 8.2, 90.4], [70, 6.1, 92.9]];
+// 전구줄: 층마다 [x1, y1, x2, y2, 처짐] (그림 %)
+const LIGHTS = [[30, 22, 70, 22, 6], [21, 44, 80, 44, 7], [12, 65, 89, 65, 8]];
+function treeArt(lights) {
   const strand = ([x1, y1, x2, y2, sag], n) => {
-    const bulbs = [0.15, 0.38, 0.62, 0.85].map((t, i) => {
-      const x = (1 - t) ** 2 * x1 + 2 * (1 - t) * t * 100 + t * t * x2;
-      const y = (1 - t) ** 2 * y1 + 2 * (1 - t) * t * (sag * 2 - (y1 + y2) / 2) + t * t * y2;
-      return `<circle class="bulb" cx="${x.toFixed(1)}" cy="${(y + 4).toFixed(1)}" r="5" ${f(["gold", "red", "blue", "white"][(i + n) % 4])} style="animation-delay:${((i + n) % 3) * 0.5}s"/>`;
+    const cy = (y1 + y2) / 2 + sag * 2; // 2차 곡선 조절점 (가운데가 sag만큼 처짐)
+    const at = (t) => [(1 - t) ** 2 * x1 + 2 * (1 - t) * t * 50 + t * t * x2, (1 - t) ** 2 * y1 + 2 * (1 - t) * t * cy + t * t * y2];
+    const bulbs = [0.1, 0.3, 0.5, 0.7, 0.9].map((t, i) => {
+      const [x, y] = at(t);
+      return `<circle class="bulb" cx="${x.toFixed(1)}" cy="${((y + 2.2) * 1.2).toFixed(1)}" r="2.3" ${fs(["gold", "red", "blue", "white", "red"][(i + n) % 5], "line", 0.7)} style="animation-delay:${((i + n) % 3) * 0.5}s"/>`;
     }).join("");
-    return `<path d="M${x1} ${y1}Q100 ${sag * 2 - (y1 + y2) / 2} ${x2} ${y2}" ${s("line", 1.6)}/>${bulbs}`;
+    return `<path d="M${x1} ${y1 * 1.2}Q50 ${cy * 1.2} ${x2} ${y2 * 1.2}" ${s("line", 0.7)}/>${bulbs}`;
   };
-  return `<svg class="tree-svg" viewBox="0 0 200 240" aria-hidden="true">
-    <rect x="88" y="198" width="24" height="18" ${fs("brown", "line", 3)}/>
-    <path d="M70 214h60l-6 24H76z" ${fs("red", "line", 3)}/>
-    ${tier(100, 200, 82)}${tier(55, 146, 62)}${tier(16, 90, 42)}
-    ${lights ? LIGHTS.map(strand).join("") : ""}
-  </svg>`;
+  return `<span class="tree-art" aria-hidden="true"><img src="img/tree/tree.webp" alt="" draggable="false">
+    ${lights ? `<svg class="tree-lights" viewBox="0 0 100 120">${LIGHTS.map(strand).join("")}</svg>` : ""}</span>`;
 }
-// 트리 좌표(200x240) → 장면 % (장면 5:6, 트리 너비 70% · 왼쪽 15% · 위 26%)
-const toScene = (tx, ty) => [15 + (tx / 200) * 70, 26 + ty * (70 / 240)];
-// 새 장식이 놓일 자리: 방울은 트리 잎 안 아무 곳, 선물·눈사람은 바닥
+// 새 장식이 놓일 자리: 장식은 잎 안 아무 곳, 선물·눈사람은 바닥
 function spot(it) {
   if (it.k === "gift" || it.k === "snowman") {
     const left = Math.random() < 0.5;
-    return [left ? 12 + Math.random() * 14 : 74 + Math.random() * 14, 88 + Math.random() * 4];
+    return [left ? 12 + Math.random() * 12 : 76 + Math.random() * 12, 89 + Math.random() * 3];
   }
-  const ty = 40 + Math.random() * 150;
-  const half = ((ty - 16) / 184) * 76 * 0.75;
-  return toScene(100 + (Math.random() * 2 - 1) * half, ty);
+  const [ty, x1, x2] = LEAF[Math.floor(Math.random() * LEAF.length)];
+  const pad = Math.min(7, (x2 - x1) / 4);
+  return toScene(x1 + pad + Math.random() * (x2 - x1 - pad * 2), ty);
 }
 
-// ── 장면 그리기 (꾸미기 화면과 방송국 카드 미리 보기가 같이 쓴다) ─────────────────────────
+// ── 장면 그리기 (트리 + 장식, 5:6. 장식 자리는 이 상자 기준 %) ─────────────────────────
 export function treeScene({ edit = false, sel = -1, fresh = -1 } = {}) {
   const t = T();
   const has = (k) => t.items.some((x) => x.k === k);
@@ -116,17 +99,28 @@ export function treeScene({ edit = false, sel = -1, fresh = -1 } = {}) {
   const orns = t.items.map((x, i) => {
     const it = item(x.k);
     if (!it || x.k === "lights") return "";
-    const [l, tp] = x.k === "star" ? [50, 29.5] : [x.x, x.y];
-    const size = x.k === "star" ? 15 : it.size;
+    const [l, tp] = x.k === "star" ? [50, 25.5] : [x.x, x.y];
+    const size = x.k === "star" ? 21 : it.size;
     const attrs = edit ? `type="button" data-i="${i}" aria-label="${esc(it.name)}${x.k === "star" ? "" : " · 끌어서 옮기기"}"` : "";
     return `<${tag} class="orn ${x.k === "star" ? "fixed" : ""} ${i === sel ? "sel" : ""} ${i === fresh ? "new" : ""}" ${attrs}
       style="left:${l}%;top:${tp}%;width:${size}%">${it.svg}</${tag}>`;
   }).join("");
-  return `<div class="tree-scene ${edit ? "edit" : ""}">
-    <span class="tree-floor" aria-hidden="true"></span>
-    ${pose("nuri", "sit", { cls: "tree-friend tf-l" })}${pose("bobo", "listen", { cls: "tree-friend tf-r flip" })}
-    ${treeSvg(has("lights"))}
-    ${orns}
+  return `<div class="tree-scene ${edit ? "edit" : ""}">${treeArt(has("lights"))}${orns}</div>`;
+}
+
+// ── 트리가 놓인 방: 눈 내리는 창문 · 깃발 줄 · 벽난로 대신 포근한 러그 · 세 친구 (꾸밈 그림, 저장 없음) ─────────────────────────
+function treeRoom(sceneHtml) {
+  const flags = ["red", "blue", "gold", "green", "red", "blue", "gold", "green", "red", "blue", "gold"]
+    .map((c, i) => `<path d="M${i * 9 + 1} ${4 + Math.sin((i / 10) * Math.PI) * 5}l7 0-3.5 8z" ${fs(c, "line", 0.5)}/>`).join("");
+  const who = learner();
+  return `<div class="tree-room">
+    <svg class="room-flags" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 3Q50 17 100 3" ${s("line", 0.5)}/>${flags}</svg>
+    <span class="room-window" aria-hidden="true"><i class="snow"></i><i class="snow s2"></i></span>
+    <span class="room-sign">🎄 ${who ? `${esc(who)}의 트리` : "나만의 트리"}</span>
+    <span class="room-floor" aria-hidden="true"></span><span class="room-rug" aria-hidden="true"></span>
+    ${pose("nuri", "celebrate", { cls: "room-friend rf-l" })}${pose("minty", "listen", { cls: "room-friend rf-m" })}${pose("bobo", "encourage", { cls: "room-friend rf-r flip" })}
+    ${sceneHtml}
   </div>`;
 }
 
@@ -152,7 +146,7 @@ export function TreePage() {
       <section class="page tree-page">
         <div class="tree-main">
           <div class="card tree-card" data-region="lilac">
-            ${treeScene({ edit: true, sel, fresh })}
+            ${treeRoom(treeScene({ edit: true, sel, fresh }))}
             ${tool}
           </div>
         </div>
@@ -183,7 +177,7 @@ export function TreePage() {
     const w = wallet();
     if (w < it.p) return toast(`반짝이가 ${it.p - w}개 더 필요해요. 단을 마치면 생겨요!`);
     if (t.items.length >= MAX) return toast(`장식은 ${MAX}개까지예요. 하나를 치우고 다시 사 보세요`);
-    const [x, y] = it.fixed ? [50, 30] : spot(it);
+    const [x, y] = it.fixed ? [50, 25.5] : spot(it);
     t.items.push({ k: it.k, x: +x.toFixed(1), y: +y.toFixed(1), p: it.p });
     t.spent += it.p;
     saveJ();
