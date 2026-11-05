@@ -881,9 +881,9 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   --lilac: #EEEAF8;
   --lilac-deep: #D8D0EF;
   --shadow: 0 4px 14px rgba(32, 58, 120, .07);
-  /* 비비드 글꼴: 제목 주아(OFL) · 본문 한글 고운돋움(OFL) · 영어·숫자 안디카(SIL OFL, 처음 읽는 아이용 a·g).
+  /* 비비드 글꼴: 제목 개구 손글씨(기본 화면과 같음) · 본문 한글 고운돋움(OFL) · 영어·숫자 안디카(SIL OFL, 처음 읽는 아이용 a·g).
      안디카에 한글이 없어 글자마다 자동으로 나뉜다 */
-  --hand: "Jua", "Noto Sans KR", sans-serif;
+  --hand: "Gaegu", "Noto Sans KR", sans-serif;
   --body: "Andika", "Gowun Dodum", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 /* 구간 색: 1 크림 · 2 하늘 · 3 라벤더 · 4 민트하늘 · 보너스 버터. 홈은 옅은 하늘 */
@@ -1042,15 +1042,16 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   .wallet-big { font-size: 24px; }
 }
 
-/* 비비드 제목 글꼴 주아(Jua, OFL · 굵기 하나): 앞의 굵은 고딕 규칙을 덮어 가짜 굵게를 막고 크기를 맞춘다 */
+/* 비비드 제목도 개구 손글씨 (사용자 결정 2026-11-05): 앞의 굵은 고딕용 굵기·크기를 기본 화면 값으로 되돌린다 */
 :root[data-theme="vivid"] :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .mhead, .shop-card h2, .onair i) {
-  font-weight: 400; font-synthesis: none; letter-spacing: -.01em; }
-:root[data-theme="vivid"] .home-title h1 { font-size: 36px; }
-:root[data-theme="vivid"] .sec-head h2 { font-size: 24px; }
-:root[data-theme="vivid"] .rtile b { font-size: 21px; }
-:root[data-theme="vivid"] .region-hero-card h2 { font-size: 28px; }
-:root[data-theme="vivid"] .dno { font-size: 31px; }
-:root[data-theme="vivid"] .bar h1 { font-size: 22px; }
-:root[data-theme="vivid"] .welcome h2 { font-size: 25px; }
-:root[data-theme="vivid"] .mhead { font-size: 20px; }
-:root[data-theme="vivid"] .shop-card h2 { font-size: 20px; }
+  font-weight: 700; letter-spacing: normal; }
+:root[data-theme="vivid"] .home-title h1 { font-size: 40px; }
+:root[data-theme="vivid"] .sec-head h2 { font-size: 28px; }
+:root[data-theme="vivid"] .rtile b { font-size: 26px; }
+:root[data-theme="vivid"] .region-hero-card h2 { font-size: 32px; }
+:root[data-theme="vivid"] .dno { font-size: 36px; }
+:root[data-theme="vivid"] .bar h1 { font-size: 26px; }
+:root[data-theme="vivid"] .welcome h2 { font-size: 28px; }
+:root[data-theme="vivid"] .mhead { font-size: 22px; }
+:root[data-theme="vivid"] .shop-card h2 { font-size: 22px; }
+:root[data-theme="vivid"] .onair i { font-size: 17px; }
