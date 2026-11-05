@@ -8,7 +8,7 @@ import { speak, speakAll, stop, canSpeak } from "./speech.js";
 import { pool, blankQ, shuffle, tokens, findBlank, splitPunct } from "./quiz.js";
 import { $app, esc, hl, danLabel, header } from "./ui.js";
 import { drillLines } from "./data.js";
-import { pose } from "./village.js";
+import { pose, VIVID } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
 import { learnerGa } from "./welcome.js";
 import { wallet, EARN, treeCount } from "./tree.js";
@@ -290,7 +290,26 @@ function runQuestions(qs, $page, onAll) {
 
 // ── 우리 목소리 방송국 (예전 '우리 마을 정원' 자리) ─────────────────────────
 // 구간마다 단 하나 = 조각 하나. 다 모으면 그 구간 물건(꼬마 마이크 등) 완성. 기능은 처음부터 다 쓸 수 있다.
-const moduleState = (r, n, total) => (n === total ? `✓ 반짝! ${r.module} 완성` : `${r.module} 조각 ${n} / ${total} 모으는 중`);
+const moduleState = (r, n, total) => VIVID ? sparkState(r, n, total)
+  : (n === total ? `✓ 반짝! ${r.module} 완성` : `${r.module} 조각 ${n} / ${total} 모으는 중`);
+// 비비드(2026-11-06): 보상은 반짝이 → 나만의 트리 하나뿐이라, 옛 A안의 '물건 조각' 문구 대신 이 구간에서 모은 반짝이를 보여 준다
+const sparkState = (r, n, total) => {
+  const ch = r.challenge && J.challenges[r.id] ? EARN.challenge : 0;
+  const got = n * EARN.star * 3 + ch;
+  return got ? `${n === total ? "✓ " : ""}이 구간에서 반짝이 ✨ ${got} 모았어요` : "아직 시작 전이에요";
+};
+const VIVID_GOAL = {
+  r1: "마이크 앞에서 첫 영어 문장을 말해 봐요.",
+  r2: "섬 곳곳에 숨은 영어 소리를 찾아요.",
+  r3: "끊어진 문장을 한 줄씩 이어 고쳐요.",
+  r4: "안테나를 세우고 우리 방송을 준비해요.",
+  bonus: "본편을 다 마치면 열리는 앙코르 무대예요.",
+};
+// 구간 설명. 비비드는 '조각 모으기' 대신 '한 단마다 목소리 카드 + 반짝이'로
+export const goalOf = (r) => VIVID ? `${VIVID_GOAL[r.id]} 한 단마다 목소리 카드 1장과 반짝이 ✨${EARN.star * 3}!` : r.goal;
+export const doneToast = (r) => VIVID
+  ? `🎙 ${r.place} 완주!${r.challenge ? ` 구간 도전이 열렸어요 (✨${EARN.challenge})` : ""}`
+  : `🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`;
 
 // 미션 순서: 구간 1~4(단 마치기 + 구간 도전) → 잠꾸러기 라디오 깨우기 → 보너스 7단. 보상은 반짝이(✨)로 통일하고, 반짝이로 '나만의 트리'를 꾸민다.
 const DAN_GAIN = EARN.star * 3;
@@ -364,7 +383,7 @@ export function Station() {
       : `<span class="vcard">${d.no}</span>`).join("");
     return `<article class="region-card" data-region="${r.id}">
       <div class="region-top">
-        <div><span class="region-range">${final ? "최종 도전 · " : ""}${range}</span><h3>${esc(r.place)}</h3><p>${esc(r.goal)}</p></div>
+        <div><span class="region-range">${final ? "최종 도전 · " : ""}${range}</span><h3>${esc(r.place)}</h3><p>${esc(goalOf(r))}</p></div>
         ${pose(r.host, done ? "celebrate" : "welcome", { cls: "region-char" })}
       </div>
       <div class="row"><b>목소리 카드 ${n} / ${dans.length}</b><span class="${done ? "module-on" : "quiet"}">${esc(moduleState(r, n, dans.length))}</span></div>

@@ -12,7 +12,7 @@ import { Welcome, needsWelcome, learner } from "./welcome.js";
 import { Teacher, StudentLogin, accountBar, bindAccountBar } from "./teacher.js";
 import { startSync } from "./cloud.js";
 import { TreePage, wallet, EARN } from "./tree.js";
-import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard } from "./journey.js";
+import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard, goalOf, doneToast } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
 // 벤지 리딩룸처럼: 제목 → 자주 쓰는 버튼 → '구간별 학습하기' 카드 5장. 단은 구간 화면에서 고른다.
@@ -143,7 +143,7 @@ function Region(id) {
         <div class="danhead-card region-hero-card">
           <span class="region-tag">${String(REGIONS.indexOf(r) + 1).padStart(2, "0")} 구간</span>
           <h2><span class="h2-range">${regionRange(r)}</span> ${esc(r.place)}</h2>
-          <p>${esc(r.goal)}</p>
+          <p>${esc(goalOf(r))}</p>
           <div class="row"><b>다 외운 단</b><span>${n} / ${dans.length}</span></div>
           <div class="meter"><i style="width:${(n / dans.length) * 100}%"></i></div>
         </div>
@@ -314,7 +314,7 @@ function Dan(id, params) {
       else toast(n === 3 ? `🎉 ${danLabel(d)} 통과! 별 3개 · ✨ +${EARN.star}` : `⭐ 별 ${n}개 · ✨ +${EARN.star}`);
       // 구간의 마지막 단을 마치면 탐험 지도 소식을 한 번 더 (보상 창이 닫힐 즈음)
       const r = n === 3 && regionJustDone(d);
-      if (r) setTimeout(() => toast(`🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`), 2500);
+      if (r) setTimeout(() => toast(doneToast(r)), 2500);
     }
   };
 
