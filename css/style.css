@@ -20,11 +20,13 @@
   --paper: #FFFFFF;
   --shadow: 0 4px 14px rgba(74, 63, 55, .06);
   --hand: "Jua", "Noto Sans KR", sans-serif; /* 제목 글꼴: 주아(OFL). 2026-11-05 개구 손글씨에서 교체 */
+  /* 본문: 영어·숫자는 안디카(Andika, SIL OFL — 처음 읽는 아이용, 손글씨 모양 a·g), 한글은 고운돋움(OFL). 안디카에 한글이 없어 글자마다 자동으로 나뉜다 */
+  --body: "Andika", "Gowun Dodum", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--cream); color: var(--ink);
-  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  font-family: var(--body);
   -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; cursor: pointer; }
@@ -881,6 +883,7 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   --lilac-deep: #D8D0EF;
   --shadow: 0 4px 14px rgba(32, 58, 120, .07);
   --hand: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Andika", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; /* 영어·숫자만 안디카 */
 }
 /* 구간 색: 1 크림 · 2 하늘 · 3 라벤더 · 4 민트하늘 · 보너스 버터. 홈은 옅은 하늘 */
 :root[data-theme="vivid"], [data-theme="vivid"] [data-region="home"] { --page: #F6FAFD; --scene: #E3EFF7; --scene-deep: #C8DDEC; --acc: #1F5F8B; }
