@@ -19,9 +19,8 @@
   --lilac-deep: #DCD3EA;
   --paper: #FFFFFF;
   --shadow: 0 4px 14px rgba(74, 63, 55, .06);
-  --hand: "Jua", "Noto Sans KR", sans-serif; /* 제목 글꼴: 주아(OFL). 2026-11-05 개구 손글씨에서 교체 */
-  /* 본문: 영어·숫자는 안디카(Andika, SIL OFL — 처음 읽는 아이용, 손글씨 모양 a·g), 한글은 고운돋움(OFL). 안디카에 한글이 없어 글자마다 자동으로 나뉜다 */
-  --body: "Andika", "Gowun Dodum", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --hand: "Gaegu", "Noto Sans KR", sans-serif; /* 기본 화면: 개구 손글씨 제목 (사용자 결정 2026-11-05, 이후 글꼴 변경은 비비드만) */
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -882,8 +881,10 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   --lilac: #EEEAF8;
   --lilac-deep: #D8D0EF;
   --shadow: 0 4px 14px rgba(32, 58, 120, .07);
-  --hand: "Noto Sans KR", "Malgun Gothic", sans-serif;
-  --body: "Andika", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; /* 영어·숫자만 안디카 */
+  /* 비비드 글꼴: 제목 주아(OFL) · 본문 한글 고운돋움(OFL) · 영어·숫자 안디카(SIL OFL, 처음 읽는 아이용 a·g).
+     안디카에 한글이 없어 글자마다 자동으로 나뉜다 */
+  --hand: "Jua", "Noto Sans KR", sans-serif;
+  --body: "Andika", "Gowun Dodum", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 /* 구간 색: 1 크림 · 2 하늘 · 3 라벤더 · 4 민트하늘 · 보너스 버터. 홈은 옅은 하늘 */
 :root[data-theme="vivid"], [data-theme="vivid"] [data-region="home"] { --page: #F6FAFD; --scene: #E3EFF7; --scene-deep: #C8DDEC; --acc: #1F5F8B; }
@@ -1041,15 +1042,15 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   .wallet-big { font-size: 24px; }
 }
 
-/* 기본 화면 제목 글꼴 주아(Jua, OFL · 굵기 하나): 가짜 굵게를 막고 개구 손글씨 때보다 한 단계 작게 */
-:root:not([data-theme="vivid"]) :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .mhead, .shop-card h2, .onair i) {
+/* 비비드 제목 글꼴 주아(Jua, OFL · 굵기 하나): 앞의 굵은 고딕 규칙을 덮어 가짜 굵게를 막고 크기를 맞춘다 */
+:root[data-theme="vivid"] :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .mhead, .shop-card h2, .onair i) {
   font-weight: 400; font-synthesis: none; letter-spacing: -.01em; }
-:root:not([data-theme="vivid"]) .home-title h1 { font-size: 36px; }
-:root:not([data-theme="vivid"]) .sec-head h2 { font-size: 24px; }
-:root:not([data-theme="vivid"]) .rtile b { font-size: 21px; }
-:root:not([data-theme="vivid"]) .region-hero-card h2 { font-size: 28px; }
-:root:not([data-theme="vivid"]) .dno { font-size: 31px; }
-:root:not([data-theme="vivid"]) .bar h1 { font-size: 22px; }
-:root:not([data-theme="vivid"]) .welcome h2 { font-size: 25px; }
-:root:not([data-theme="vivid"]) .mhead { font-size: 20px; }
-:root:not([data-theme="vivid"]) .shop-card h2 { font-size: 20px; }
+:root[data-theme="vivid"] .home-title h1 { font-size: 36px; }
+:root[data-theme="vivid"] .sec-head h2 { font-size: 24px; }
+:root[data-theme="vivid"] .rtile b { font-size: 21px; }
+:root[data-theme="vivid"] .region-hero-card h2 { font-size: 28px; }
+:root[data-theme="vivid"] .dno { font-size: 31px; }
+:root[data-theme="vivid"] .bar h1 { font-size: 22px; }
+:root[data-theme="vivid"] .welcome h2 { font-size: 25px; }
+:root[data-theme="vivid"] .mhead { font-size: 20px; }
+:root[data-theme="vivid"] .shop-card h2 { font-size: 20px; }
