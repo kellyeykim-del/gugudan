@@ -6,7 +6,7 @@ import { MAIN_DANS, BONUS_DANS, getDan } from "./data.js";
 import { store } from "./store.js";
 import { speak, speakAll, stop, canSpeak } from "./speech.js";
 import { pool, blankQ, shuffle, tokens, findBlank, splitPunct } from "./quiz.js";
-import { $app, esc, hl, danLabel, header } from "./ui.js";
+import { $app, esc, hl, danLabel, header, toast } from "./ui.js";
 import { drillLines } from "./data.js";
 import { pose, VIVID } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
@@ -359,6 +359,26 @@ function nextMission() {
     go: `<a class="btn primary block" href="#/tree">🎄 트리 꾸미기</a>` };
 }
 
+// 비비드 미션 순서 한 줄의 갈 곳 (잠겼으면 안내 문구)
+function rowGo(x) {
+  const a = (go) => ` role="link" tabindex="0" data-go="${go}"`;
+  const lock = (msg) => ` role="button" tabindex="0" data-lockmsg="${esc(msg)}"`;
+  if (x.r.core) return coreOpen() ? a("#/core") : lock(`🔒 본편 36단을 다 마치면 열려요 · 지금 ${store.passedCount()} / 36`);
+  if (x.r.id === "bonus") return a("#/region/bonus");
+  const r = x.r, done = regionDone(r);
+  if (done || teacherMode()) return a(done && !J.challenges[r.id] ? `#/challenge/${r.id}` : `#/region/${r.id}`);
+  return a(`#/region/${r.id}`);
+}
+// 비비드 라디오 깨우기 카드: 안에서 할 세 놀이와 받는 것을 미리 보여 준다
+function corePreview(passed) {
+  const lit = J.core.phases || [];
+  return `<ol class="core-steps">${PHASES.map((P, i) => `<li class="${lit[i] ? "on" : ""}">
+      ${pose(P.who, ["listen", "rhythm", "welcome"][i], { cls: "core-step-char" })}
+      <b>${["듣기", "순서", "목소리"][i]}</b><span>${esc(P.name)}</span></li>`).join("")}</ol>
+    <div class="core-meta">${J.core.cleared ? "" : `<div class="meter"><i style="width:${(passed / MAIN_DANS.length) * 100}%"></i></div>`}
+      <span class="core-gift">받는 것: 반짝이 ✨${EARN.core} + 목소리 마스터 메달</span></div>`;
+}
+
 export function Station() {
   setRegion("r1");
   const passed = store.passedCount();
@@ -375,12 +395,15 @@ export function Station() {
         : teacherMode() ? `<a class="btn" href="#/challenge/${r.id}">👩‍🏫 선생님 미리 보기: ${esc(r.challenge.name)}</a>`
         : `<span class="quiet small">${dans.length}단을 모두 마치면 구간 도전 ‘${esc(r.challenge.name)}’이 열려요</span>`;
     } else {
-      action = `<span class="quiet small">앙코르 무대는 본편을 다 마친 뒤 열려요 (준비 중)</span>`;
+      const nb = firstOpen(dans);
+      action = !VIVID ? `<span class="quiet small">앙코르 무대는 본편을 다 마친 뒤 열려요 (준비 중)</span>`
+        : store.bonusOpen() ? (nb ? `<a class="btn primary" href="#/dan/${nb.id}">▷ 이어서 ${danLabel(nb)}</a>` : `<span class="badge-done">✓ 보너스 7단 완료</span>`)
+        : `<span class="quiet small">본편 36단을 마치면 열려요 · 지금 ${passed} / 36</span> <a class="btn" href="#/region/bonus">무엇을 배우나 둘러보기 →</a>`;
     }
     // 목소리 카드: 단마다 한 장. 통과한 단은 채워지고 누르면 그 단으로 간다
     const chips = dans.map((d) => store.passed(d.id)
       ? `<a class="vcard on" href="#/dan/${d.id}" title="${esc(drillLines(d)[0])}">${d.no}</a>`
-      : `<span class="vcard">${d.no}</span>`).join("");
+      : `<span class="vcard"${VIVID ? ` title="${esc(d.meaning)}"` : ""}>${d.no}</span>`).join("");
     return `<article class="region-card" data-region="${r.id}">
       <div class="region-top">
         <div><span class="region-range">${final ? "최종 도전 · " : ""}${range}</span><h3>${esc(r.place)}</h3><p>${esc(goalOf(r))}</p></div>
@@ -400,7 +423,7 @@ export function Station() {
         <button class="btn" id="replay">다시 방송하기</button></div>` : "";
   const m = nextMission();
   const chip = { got: "받음 ✓", now: "하는 중", later: "다음", lock: "🔒 잠김" };
-  const rows = missionRows().map((x, i) => `<li class="mrow ${x.state}" data-region="${x.r.core ? "r4" : x.r.id}">
+  const rows = missionRows().map((x, i) => `<li class="mrow ${x.state}" data-region="${x.r.core ? "r4" : x.r.id}"${VIVID ? rowGo(x) : ""}>
       <span class="mno">${x.r.core ? "📻" : x.r.id === "bonus" ? "B" : `0${i + 1}`}</span>
       <span class="mt"><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></span>
       <span class="mr">${x.prog && x.state !== "got" ? `<small>${esc(x.prog)}</small>` : ""}<em class="chip-s ${x.state}">${chip[x.state]}</em></span></li>`).join("");
@@ -438,11 +461,18 @@ export function Station() {
       <article class="region-card core-card">
         <span class="region-range">본편 마지막 도전</span><h3>잠꾸러기 라디오 깨우기</h3>
         <p>방송국의 큰 라디오가 쿨쿨 자고 있어요. 듣기 · 순서 · 내 목소리, 세 가지 놀이를 하면 라디오가 깨어나요.</p>
+        ${VIVID ? corePreview(passed) : ""}
         <div class="region-act">${core}</div>
       </article>
       ${card(REGIONS[4], { final: true })}
       <p class="quiet small">별은 듣기 · 말하기 자기 확인 · 문장 순서 활동의 완료 기록이에요. 자동 발음 평가나 영어 능력 인증이 아니에요.</p>
     </section>`;
+  // 비비드: 미션 순서 줄을 누르면 그 자리로 간다. 잠긴 줄은 왜 잠겼는지 알려 준다
+  $app.querySelectorAll(".mrow[data-go], .mrow[data-lockmsg]").forEach((li) => {
+    const go = () => (li.dataset.go ? (location.hash = li.dataset.go) : toast(li.dataset.lockmsg));
+    li.onclick = go;
+    li.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+  });
   const replay = $app.querySelector("#replay");
   if (replay) replay.onclick = () => speakAll(J.broadcast, store.settings.speed);
 }

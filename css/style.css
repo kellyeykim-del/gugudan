@@ -1082,3 +1082,20 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 /* 물결 밑줄 (손으로 그은 듯) */
 :root[data-theme="vivid"] :is(.mhead, .shop-card h2) { display: inline-block; padding-bottom: 7px; background: no-repeat left bottom / 100% 9px
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 9' preserveAspectRatio='none'%3E%3Cpath d='M2 6Q16 1 30 5T60 5T90 5T118 3' fill='none' stroke='%23F6C64A' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+
+/* 비비드: 미션 순서 줄 누르기 · 라디오 깨우기 미리 보기 (2026-11-06) */
+:root[data-theme="vivid"] .mrow[data-go], :root[data-theme="vivid"] .mrow[data-lockmsg] { cursor: pointer; border-radius: 12px; margin: 0 -8px; padding-left: 8px; padding-right: 8px; transition: background .15s; }
+:root[data-theme="vivid"] .mrow[data-go]:hover, :root[data-theme="vivid"] .mrow[data-lockmsg]:hover { background: var(--scene, #F1F4FA); }
+:root[data-theme="vivid"] .mrow[data-go]::after { content: "›"; font-size: 20px; color: var(--quiet); margin-left: 2px; }
+:root[data-theme="vivid"] .btn.disabled { cursor: pointer; }
+.core-steps { list-style: none; margin: 12px 0 8px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.core-steps li { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px; border-radius: 14px; background: rgba(255, 255, 255, .08); border: 1.5px dashed rgba(255, 255, 255, .25); text-align: center; }
+.core-steps li.on { background: rgba(246, 198, 74, .18); border: 1.5px solid #F6C64A; }
+.core-step-char { width: 64px; height: 64px; }
+.core-steps li:not(.on) .core-step-char { filter: grayscale(.35) brightness(.9); }
+.core-steps b { font-family: var(--hand); font-size: 18px; color: #FFE48A; }
+.core-steps span { font-size: 13px; color: #E8EAEE; }
+.core-meta { display: grid; gap: 6px; margin-bottom: 6px; }
+.core-meta .meter { background: rgba(255, 255, 255, .15); }
+.core-gift { font-weight: 700; color: #FFE48A; font-size: 14px; }
+:root[data-theme="vivid"] .core-card { background: #203A78; }

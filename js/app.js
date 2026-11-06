@@ -156,11 +156,15 @@ function Region(id) {
       ${locked ? "" : `<div class="actions">
         ${r.challenge ? (n === dans.length ? `<a class="btn primary" href="#/challenge/${r.id}">구간 도전: ${esc(r.challenge.name)}</a>`
           : teacherMode() ? `<a class="btn" href="#/challenge/${r.id}">👩‍🏫 선생님 미리 보기: ${esc(r.challenge.name)}</a>`
+          : VIVID ? `<button class="btn disabled" id="chlock" type="button">🔒 구간 도전: ${esc(r.challenge.name)}</button>`
           : `<span class="btn disabled">🔒 구간 도전: ${esc(r.challenge.name)}</span>`) : ""}
         <a class="btn" href="#/quiz?ids=${ids}&n=10">이 구간 시험 10문제</a>
         <a class="btn" href="#/games?ids=${ids}">🎮 이 구간 게임</a>
       </div>`}
     </section>`;
+  // 비비드: 잠긴 구간 도전을 누르면 왜 잠겼는지 알려 준다
+  const lockBtn = $app.querySelector("#chlock");
+  if (lockBtn) lockBtn.onclick = () => toast(`🔒 ${regionRange(r)}을 모두 마치면 열려요 · 지금 ${n} / ${dans.length}`);
 }
 
 // ───────────────────────── 소개 ─────────────────────────
