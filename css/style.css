@@ -1132,3 +1132,144 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 :root[data-theme="vivid"] .jtok-arrow { font-size: 26px; font-weight: 800; color: #E84135; }
 :root[data-theme="vivid"] .jtok-intro .jtokens span.on { animation: none; }
 :root[data-theme="vivid"] .jtok-say { margin: 2px 0 12px; font-weight: 800; color: #203A78; }
+
+/* ── 비비드 소개 화면 (2026-11-08, 시안 proposals/about-2026-11-06/about-vivid.css 적용) ── */
+:root[data-theme="vivid"] .about-v { display: grid; gap: 14px; word-break: keep-all; }
+:root[data-theme="vivid"] .about-v .sec.av-sec { display: flex; align-items: center; gap: 10px; margin: 22px 0 2px; font-family: var(--hand); font-size: 28px; font-weight: 700; }
+:root[data-theme="vivid"] .av-tag { font-family: var(--hand); font-size: 16px; padding: 2px 12px; border-radius: 99px; background: #F6C64A; color: #1E2A4F; transform: rotate(-4deg); }
+
+/* 대문 */
+:root[data-theme="vivid"] .av-hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; padding: 30px 32px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #EEF5FB 100%); }
+:root[data-theme="vivid"] .av-hero .logo { height: 40px; display: block; margin-bottom: 14px; }
+:root[data-theme="vivid"] .av-hero .kick { font-family: var(--hand); font-size: 19px; display: inline-block; transform: rotate(-2deg);
+  background: linear-gradient(transparent 55%, #FFE48A 55%); padding: 0 4px; }
+:root[data-theme="vivid"] .av-hero h2 { font-family: var(--hand); font-size: 46px; margin: 4px 0 8px; color: var(--ink); }
+:root[data-theme="vivid"] .av-lead { font-size: 21px; font-weight: 700; margin: 0 0 10px; }
+:root[data-theme="vivid"] .av-lead b { color: #D23A2B; }
+:root[data-theme="vivid"] .av-hero-text p:last-child { margin: 0; line-height: 1.75; color: var(--quiet); }
+
+:root[data-theme="vivid"] .av-onair { position: relative; background: #203A78; color: #fff; border-radius: 22px; padding: 18px 20px 20px; box-shadow: 0 10px 0 #16295A; }
+:root[data-theme="vivid"] .av-onair-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; color: #C9D6F2; }
+:root[data-theme="vivid"] .av-onair-head b { font-family: var(--hand); font-size: 24px; color: #fff; }
+:root[data-theme="vivid"] .av-lamp { font-family: "Andika", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 3px 10px; border-radius: 99px;
+  background: #E84135; color: #fff; box-shadow: 0 0 0 4px rgba(232, 65, 53, .25); animation: av-blink 1.6s infinite; }
+@keyframes av-blink { 50% { box-shadow: 0 0 0 8px rgba(232, 65, 53, 0); } }
+:root[data-theme="vivid"] .av-lines { list-style: none; margin: 0 0 14px; padding: 12px 16px; background: #FFF4DF; color: #1E2A4F; border-radius: 14px;
+  display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(4, auto); gap: 4px 18px; font-size: 20px; font-weight: 700; }
+:root[data-theme="vivid"] .av-lines li { padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
+:root[data-theme="vivid"] .av-lines li.on { background: #FFE48A; }
+:root[data-theme="vivid"] .av-lines .red { color: #D23A2B; }
+:root[data-theme="vivid"] .av-onair .btn { width: 100%; }
+
+/* 영어구구단이란 */
+:root[data-theme="vivid"] .av-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+:root[data-theme="vivid"] .av-points .card { background: var(--scene); border: 0; padding: 18px; transform: rotate(-.6deg); }
+:root[data-theme="vivid"] .av-points .card:nth-child(2) { transform: rotate(.6deg); }
+:root[data-theme="vivid"] .av-points i { font-style: normal; font-size: 28px; display: block; }
+:root[data-theme="vivid"] .av-points b { display: block; font-family: var(--hand); font-size: 24px; color: var(--acc); margin: 4px 0; }
+:root[data-theme="vivid"] .av-points p { margin: 0; line-height: 1.65; }
+:root[data-theme="vivid"] .av-points .red { color: #D23A2B; font-weight: 700; }
+:root[data-theme="vivid"] .av-fams { padding: 18px 20px; }
+:root[data-theme="vivid"] .av-fams p { margin: 0 0 10px; line-height: 1.65; }
+:root[data-theme="vivid"] .av-fams p.small { margin: 10px 0 0; }
+:root[data-theme="vivid"] .av-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+:root[data-theme="vivid"] .av-chips span { padding: 5px 12px; border-radius: 99px; background: #EEF5FB; border: 1.5px dashed #9BB7D6; font-weight: 700; font-size: 15px; }
+:root[data-theme="vivid"] .av-chips span:nth-child(3n+1) { transform: rotate(-2deg); }
+:root[data-theme="vivid"] .av-chips span:nth-child(3n) { transform: rotate(2deg); }
+
+/* 세 친구 이야기 */
+:root[data-theme="vivid"] .av-story { padding: 0; overflow: hidden; background: #EEEAF8; }
+:root[data-theme="vivid"] .av-story img { width: 100%; aspect-ratio: 1100 / 481; object-fit: cover; display: block; }
+:root[data-theme="vivid"] .av-story-text { padding: 22px 24px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 0 24px; align-items: start; }
+:root[data-theme="vivid"] .av-story-text .av-friends { grid-column: 2; grid-row: 1 / span 2; }
+:root[data-theme="vivid"] .av-say { font-family: var(--hand); font-size: 22px; font-weight: 700; margin: 0 0 10px; color: #4E3F98; background: #fff; border-radius: 18px; padding: 12px 16px; position: relative; }
+:root[data-theme="vivid"] .av-say::after { content: ""; position: absolute; left: 34px; top: -10px; border: 10px solid transparent; border-bottom-color: #fff; border-top: 0; }
+:root[data-theme="vivid"] .av-story-text > p { line-height: 1.7; margin: 0 0 12px; }
+:root[data-theme="vivid"] .av-friends { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+:root[data-theme="vivid"] .av-friends li { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 6px 12px 6px 6px; }
+:root[data-theme="vivid"] .av-friend-char { width: 52px; height: 52px; flex: none; }
+:root[data-theme="vivid"] .av-friends b { font-family: var(--hand); font-size: 20px; margin-right: 6px; }
+:root[data-theme="vivid"] .av-friends em { font-style: normal; font-size: 12.5px; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: #FFF3CF; color: #7A5A00; }
+:root[data-theme="vivid"] .av-friends span { display: block; font-size: 14px; color: var(--quiet); }
+
+/* 한 단 세 걸음 */
+:root[data-theme="vivid"] .av-intro { margin: 0; font-size: 17px; }
+:root[data-theme="vivid"] .av-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr) 1.1fr; gap: 12px; }
+:root[data-theme="vivid"] .av-steps li { position: relative; padding: 18px 16px; text-align: center; }
+:root[data-theme="vivid"] .av-steps li:not(.av-pass)::after { content: "→"; position: absolute; right: -14px; top: 44%; font-size: 20px; color: #9BB7D6; z-index: 1; }
+:root[data-theme="vivid"] .av-step-no { position: absolute; left: 12px; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: #203A78; color: #fff; font-weight: 700; line-height: 26px; font-size: 14px; }
+:root[data-theme="vivid"] .av-steps i { font-style: normal; font-size: 34px; display: block; }
+:root[data-theme="vivid"] .av-steps b { display: block; font-family: var(--hand); font-size: 22px; margin: 4px 0; }
+:root[data-theme="vivid"] .av-steps p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--quiet); }
+:root[data-theme="vivid"] .av-star { display: inline-block; margin-top: 8px; font-size: 20px; }
+:root[data-theme="vivid"] .av-pass { background: #FFF3CF; border: 2px solid #F6C64A; }
+:root[data-theme="vivid"] .av-stars { font-size: 26px; letter-spacing: 2px; }
+:root[data-theme="vivid"] .av-pass b { font-size: 28px; color: #D23A2B; transform: rotate(-2deg); }
+:root[data-theme="vivid"] .av-pass p { color: var(--ink) !important; font-weight: 700; }
+:root[data-theme="vivid"] .av-pass small { display: block; margin-top: 6px; color: var(--quiet); }
+
+/* 구간 여행 지도 */
+:root[data-theme="vivid"] .av-map { padding: 20px; background: #FBFCFE; }
+:root[data-theme="vivid"] .av-map-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+:root[data-theme="vivid"] .av-map-head .kick { font-family: var(--hand); font-size: 22px; }
+:root[data-theme="vivid"] .av-map-head p { margin: 0; color: var(--quiet); }
+:root[data-theme="vivid"] .av-path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; position: relative; }
+:root[data-theme="vivid"] .av-path::before { content: ""; position: absolute; left: 4%; right: 4%; top: 58px; border-top: 3px dashed #C8DDEC; z-index: 0; }
+:root[data-theme="vivid"] .av-stop { position: relative; z-index: 1; background: var(--scene); border-radius: 18px; padding: 12px 10px 14px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+:root[data-theme="vivid"] .av-stop:nth-child(odd) { transform: translateY(10px); }
+:root[data-theme="vivid"] .av-no { font-family: "Andika", sans-serif; font-weight: 700; font-size: 13px; color: var(--acc); }
+:root[data-theme="vivid"] .av-stop-char { width: 70px; height: 70px; }
+:root[data-theme="vivid"] .av-stop b { font-family: var(--hand); font-size: 19px; line-height: 1.15; }
+:root[data-theme="vivid"] .av-range { font-weight: 700; font-size: 14px; color: var(--acc); }
+:root[data-theme="vivid"] .av-stop small { font-size: 12.5px; color: var(--quiet); line-height: 1.4; }
+:root[data-theme="vivid"] .av-final { background: #203A78; color: #fff; justify-content: center; }
+:root[data-theme="vivid"] .av-final .av-no { font-size: 40px; }
+:root[data-theme="vivid"] .av-final .av-range { color: #FFE48A; }
+:root[data-theme="vivid"] .av-final small { color: #C9D6F2; }
+
+:root[data-theme="vivid"] .av-path { margin-bottom: 18px; }
+:root[data-theme="vivid"] .av-path::after { content: "↓"; position: absolute; left: 50%; bottom: -22px; font-size: 20px; color: #9BB7D6; }
+:root[data-theme="vivid"] .av-tree-end { display: flex; align-items: center; gap: 18px; padding: 10px 20px 10px 10px; border-radius: 18px; text-decoration: none; color: var(--ink);
+  background: linear-gradient(90deg, #E7E0F5, #FFF3CF); border: 2px solid #F6C64A; }
+:root[data-theme="vivid"] .av-tree-end img { width: 92px; height: 110px; object-fit: cover; border-radius: 12px; }
+:root[data-theme="vivid"] .av-tree-end > span:nth-child(2) { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+:root[data-theme="vivid"] .av-tree-end .kick { font-family: var(--hand); font-size: 17px; }
+:root[data-theme="vivid"] .av-tree-end b { font-family: var(--hand); font-size: 26px; }
+:root[data-theme="vivid"] .av-tree-end small { color: var(--quiet); font-size: 14px; }
+:root[data-theme="vivid"] .av-tree-end .go { font-size: 24px; color: #D23A2B; }
+
+/* 더 놀기 */
+:root[data-theme="vivid"] .av-tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+:root[data-theme="vivid"] .av-tools a { display: flex; flex-direction: column; gap: 4px; padding: 16px; color: var(--ink); text-decoration: none; transition: transform .15s; }
+:root[data-theme="vivid"] .av-tools a:hover { transform: translateY(-3px) rotate(-1deg); }
+:root[data-theme="vivid"] .av-tools i { font-style: normal; font-size: 28px; }
+:root[data-theme="vivid"] .av-tools b { font-family: var(--hand); font-size: 21px; }
+:root[data-theme="vivid"] .av-tools span { font-size: 13.5px; color: var(--quiet); line-height: 1.55; }
+
+/* 어른께 · 만든 사람 */
+:root[data-theme="vivid"] .av-tip { padding: 18px 22px; background: #F2FAF7; border: 1.5px dashed #9FD3C4; }
+:root[data-theme="vivid"] .av-tip .kick { font-family: var(--hand); font-size: 20px; color: #23705F; }
+:root[data-theme="vivid"] .av-tip ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.8; }
+:root[data-theme="vivid"] .av-maker { margin-top: 0; }
+:root[data-theme="vivid"] .av-quote { font-family: var(--hand); font-size: 21px; font-weight: 700; border-left: 5px solid #F6C64A; padding-left: 12px; }
+:root[data-theme="vivid"] .av-maker .kick { font-family: var(--hand); font-size: 18px; }
+:root[data-theme="vivid"] .av-actions { justify-content: center; }
+
+@media (max-width: 820px) {
+  :root[data-theme="vivid"] .av-hero { grid-template-columns: 1fr; padding: 22px 18px; }
+  :root[data-theme="vivid"] .av-hero h2 { font-size: 38px; }
+  :root[data-theme="vivid"] .av-points { grid-template-columns: 1fr; }
+  :root[data-theme="vivid"] .av-story { grid-template-columns: 1fr; }
+  :root[data-theme="vivid"] .av-story-text { grid-template-columns: 1fr; }
+  :root[data-theme="vivid"] .av-story-text .av-friends { grid-column: auto; grid-row: auto; }
+  :root[data-theme="vivid"] .av-steps { grid-template-columns: 1fr 1fr; }
+  :root[data-theme="vivid"] .av-steps li:not(.av-pass)::after { display: none; }
+  :root[data-theme="vivid"] .av-path { grid-template-columns: 1fr 1fr; }
+  :root[data-theme="vivid"] .av-path::before { display: none; }
+  :root[data-theme="vivid"] .av-stop:nth-child(odd) { transform: none; }
+  :root[data-theme="vivid"] .av-tools { grid-template-columns: 1fr 1fr; }
+  :root[data-theme="vivid"] .av-lines { font-size: 18px; gap: 4px 10px; }
+  :root[data-theme="vivid"] .av-say { font-size: 19px; }
+  :root[data-theme="vivid"] .about-v .sec.av-sec { font-size: 24px; }
+}

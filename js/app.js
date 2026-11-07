@@ -11,7 +11,7 @@ import { mountRecorder, stopRecorder, canRecord } from "./recorder.js";
 import { Welcome, needsWelcome, learner } from "./welcome.js";
 import { Teacher, StudentLogin, accountBar, bindAccountBar } from "./teacher.js";
 import { startSync } from "./cloud.js";
-import { TreePage, wallet, EARN } from "./tree.js";
+import { TreePage, wallet, EARN, danGain, ITEMS } from "./tree.js";
 import { REGIONS, teacherMode, regionOf, regionDans, setRegion, regionForIds, regionJustDone, Station, Challenge, Core, showVoiceCard, goalOf, doneToast } from "./journey.js";
 
 // ───────────────────────── 홈 ─────────────────────────
@@ -170,6 +170,7 @@ function Region(id) {
 // ───────────────────────── 소개 ─────────────────────────
 // 대표 소개 문구는 sogenius.co.kr/about 내용을 줄인 것
 function About() {
+  if (VIVID) return AboutVivid();
   $app.innerHTML = `${header("영어구구단 소개")}
     <section class="page about">
       <div class="hero card">
@@ -217,6 +218,142 @@ function About() {
         <a class="btn ghost" href="https://sogenius.co.kr/" target="_blank" rel="noopener">소지니어스 홈페이지 ↗</a>
       </div>
     </section>`;
+}
+
+// 비비드 소개 (2026-11-08, 시안 proposals/about-2026-11-06 적용). 반짝이 수·구간 이름·상점 가격은 실제 데이터에서 가져온다
+function AboutVivid() {
+  setRegion("home");
+  const DAN11 = ["I have.", "You have.", "We have.", "They have.", "He <span class=\"red\">has</span>.", "She <span class=\"red\">has</span>.", "It <span class=\"red\">has</span>."];
+  const mainGain = danGain(), bonusGain = danGain({ bonus: true });
+  const deco = ITEMS.filter((it) => !it.hat && it.k !== "lights").map((it) => it.p);
+  const hasHats = ITEMS.some((it) => it.hat);
+  const stop1 = (r, i) => `<li class="av-stop" data-region="${r.id}">
+      <span class="av-no">${r.id === "bonus" ? "+" : String(i + 1).padStart(2, "0")}</span>
+      ${pose(r.host, "welcome", { cls: "av-stop-char" })}
+      <b>${esc(r.place)}</b>
+      <span class="av-range">${r.id === "bonus" ? `보너스 ${BONUS_DANS.length}단` : `${r.from}–${r.to}단`}</span>
+      <small>${r.id === "bonus" ? `단마다 ✨${bonusGain}` : `단마다 ✨${mainGain} · 도전 ✨${EARN.challenge}`}</small>
+    </li>`;
+  const main = REGIONS.filter((r) => r.id !== "bonus"), bonus = REGIONS.find((r) => r.id === "bonus");
+  const friend = (who, act, name, role, say) => `<li>${pose(who, act, { cls: "av-friend-char" })}<div><b>${name}</b><em>${role}</em><span>${say}</span></div></li>`;
+  $app.innerHTML = `${header("영어구구단 소개")}
+    <section class="page about-v">
+      <div class="av-hero card">
+        <div class="av-hero-text">
+          <img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시">
+          <span class="kick">우리 목소리 방송국이 들려주는</span>
+          <h2>신나는 영어구구단</h2>
+          <p class="av-lead">수학 구구단처럼, 영어 문장도 <b>‘단’</b>으로 외워요.</p>
+          <p>I · You · We · They · He · She · It, 일곱 주어에 같은 문장틀을 붙이면 한 단이 돼요.
+            비트에 맞춰 소리 내어 외우다 보면, 영어 문장이 머리보다 입에서 먼저 나와요.</p>
+        </div>
+        <div class="av-onair">
+          <div class="av-onair-head"><span class="av-lamp">ON AIR</span><b>11단</b><span>${esc(getDan(11)?.meaning || "")}</span></div>
+          <ol class="av-lines">${DAN11.map((l) => `<li>${l}</li>`).join("")}</ol>
+          <button class="btn primary" id="av-play">▶ 11단 비트낭독 들어 보기</button>
+        </div>
+      </div>
+
+      <h3 class="sec av-sec"><span class="av-tag">하나</span>영어구구단이란?</h3>
+      <div class="av-points">
+        <div class="card" data-region="r1"><i>🔢</i><b>7 × 36</b><p>주어 7개와 문장틀 36단. 한 단은 일곱 문장이라 금방 한 바퀴 돌아요.</p></div>
+        <div class="card" data-region="r2"><i>🔴</i><b>헷갈리는 곳만 빨갛게</b><p>He <span class="red">has</span>, She <span class="red">does</span>처럼 주어 따라 바뀌는 곳만 빨간색. 눈이 먼저 알아채요.</p></div>
+        <div class="card" data-region="r3"><i>🥁</i><b>비트에 맞춰 소리 내어</b><p>눈으로 읽기보다 입으로! 박자에 실어 말하면 리듬으로 기억돼요.</p></div>
+      </div>
+      <div class="av-fams card">
+        <p><b>36단을 마치면</b> 영어 기본 문장의 뼈대가 입에 붙어요. 묻고, 부정하고, 지난 일과 앞으로 할 일까지 말할 수 있어요.</p>
+        <div class="av-chips"><span>be동사</span><span>will</span><span>do</span><span>who</span><span>have</span><span>go</span><span>did · take</span><span>come</span><span>get</span><span>There is / are</span><span>like</span></div>
+        <p class="quiet small">더 하고 싶다면 보너스 ${BONUS_DANS.length}단(make · want/need · 의문사)이 기다려요.</p>
+      </div>
+
+      <h3 class="sec av-sec"><span class="av-tag">둘</span>세 친구와 우리 목소리 방송국</h3>
+      <div class="av-story card">
+        <img src="img/village-vivid/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">
+        <div class="av-story-text">
+          <p class="av-say">“우리는 영어 방송을 하고 싶은데,<br>아직 영어를 몰라. 하나씩 알려 줄래?”</p>
+          <p>내가 한 단을 외울 때마다 친구들이 그 말을 배워 <b>목소리 카드</b>를 한 장씩 모아요.
+            36장을 다 모으면 잠들어 있던 라디오를 깨워 우리 방송을 시작해요!</p>
+          <ul class="av-friends">
+            ${friend("nuri", "welcome", "말문이", "말하기 담당", "틀려도 먼저 말해 보는 씩씩한 강아지")}
+            ${friend("minty", "listen", "귀담이", "듣기 담당", "귀를 쫑긋, 소리를 잘 듣는 토끼")}
+            ${friend("bobo", "encourage", "차분이", "차근차근 담당", "천천히 다시 해 보자고 도와주는 곰")}
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="sec av-sec"><span class="av-tag">셋</span>이렇게 공부해요</h3>
+      <p class="av-intro">한 단은 <b>세 걸음</b>이에요. 한 걸음을 마칠 때마다 별을 하나씩 받아요.</p>
+      <ol class="av-steps">
+        <li class="card"><span class="av-step-no">1</span><i>👀</i><b>보고 듣기</b><p>비트낭독을 들으며 일곱 문장을 눈과 귀로 익혀요.</p><span class="av-star">⭐</span></li>
+        <li class="card"><span class="av-step-no">2</span><i>🙈</i><b>가리고 말하기</b><p>문장을 가리고 내 입으로 말해요. 막히면 살짝 열어 봐도 괜찮아요.</p><span class="av-star">⭐</span></li>
+        <li class="card"><span class="av-step-no">3</span><i>🧩</i><b>순서 맞추기</b><p>섞인 단어를 순서대로 눌러 문장을 완성해요.</p><span class="av-star">⭐</span></li>
+        <li class="card av-pass"><span class="av-stars">⭐⭐⭐</span><b>한 단 통과!</b>
+          <p>목소리 카드 1장 + 반짝이 ✨${mainGain}</p><small>🎙 녹음하기로 내 목소리도 다시 들어 봐요</small></li>
+      </ol>
+
+      <div class="av-map card">
+        <div class="av-map-head"><span class="kick">반짝이 모으는 길</span><p>단을 외우고 도전할수록 반짝이 ✨가 쌓여요. 모은 반짝이로 <b>나만의 트리</b>를 꾸며요!</p></div>
+        <ol class="av-path">
+          ${main.map(stop1).join("")}
+          <li class="av-stop av-final"><span class="av-no">📻</span><b>잠꾸러기 라디오 깨우기</b><span class="av-range">36단 모두</span><small>마지막 도전 ✨${EARN.core}</small></li>
+          ${bonus ? stop1(bonus) : ""}
+        </ol>
+        <a class="av-tree-end" href="#/tree"><img src="img/tree/station-hero.webp" alt=""><span><span class="kick">모은 반짝이로</span><b>🎄 나만의 트리 꾸미기</b>
+          <small>크리스마스 상점에서 장식 ✨${Math.min(...deco)}부터 보석 별 ✨${Math.max(...deco)}까지 골라 트리에 걸어요${hasHats ? ". 세 친구에게 겨울 모자도 씌워 줄 수 있어요" : ""}</small></span><span class="go">→</span></a>
+      </div>
+
+      <h3 class="sec av-sec"><span class="av-tag">넷</span>더 재미있게, 더 단단하게</h3>
+      <div class="av-tools">
+        <a class="card" href="#/table"><i>📋</i><b>구구단표</b><span>36단을 한눈에 보고 아무 단이나 골라요.</span></a>
+        <a class="card" href="#/pick?mode=quiz"><i>✏️</i><b>시험 보기</b><span>빈칸 · 순서 · 듣기 문제로 확인해요.</span></a>
+        <a class="card" href="#/pick?preset=wrong"><i>📌</i><b>내 묶음</b><span>틀린 문장만 모아 다시 연습해요.</span></a>
+        <a class="card" href="#/games"><i>🎮</i><b>게임 6가지</b><span>두더지 · 룰렛 · 짝꿍 카드 · 블록 쌓기 · 빙고 · 1:1 대결</span></a>
+        <a class="card" href="#/tree"><i>🎄</i><b>나만의 트리</b><span>모은 반짝이로 장식을 사서 트리를 꾸며요.</span></a>
+      </div>
+
+      <div class="av-tip card">
+        <span class="kick">부모님 · 선생님께</span>
+        <ul>
+          <li><b>하루 한 단, 소리 내어.</b> 한 단이 짧아서 매일 조금씩 이어 가기 좋아요.</li>
+          <li><b>빨간 글자를 함께 짚어 주세요.</b> 주어에 따라 바뀌는 자리가 문법의 핵심이에요.</li>
+          <li><b>녹음을 같이 들어 보세요.</b> 지난주보다 또렷해진 목소리가 아이에게 가장 큰 칭찬이 돼요.</li>
+        </ul>
+      </div>
+
+      <div class="maker card av-maker">
+        <img src="img/ceo-kang-sojin.jpg" alt="강소진 대표">
+        <div>
+          <span class="kick">만든 사람</span>
+          <h3>강소진 대표 <span class="quiet">소지니어스 (So-geni-us)</span></h3>
+          <p class="av-quote">아이들이 헷갈려하는 기본 문법을 ‘단’으로 묶어 영어구구단을 만들었습니다.</p>
+          <ul>
+            <li>2013년 헌터주니어잉글리시 영어공부방 운영</li>
+            <li>저서 『나는 전문공부방으로 혼자 억대번다 – 영어편』, 『미라클잉글리시』</li>
+            <li>영어 티칭 스킬을 나누는 유튜브 ‘헌터주니어TV’ 운영</li>
+            <li>2026 포브스코리아 소비자 선정 최고의 브랜드 대상</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="actions av-actions">
+        <a class="btn primary" href="#/dan/1">1단부터 시작하기</a>
+        <a class="btn" href="#/station">📻 방송국 · 🎄 트리 보기</a>
+        <a class="btn ghost" href="https://sogenius.co.kr/" target="_blank" rel="noopener">소지니어스 홈페이지 ↗</a>
+      </div>
+    </section>`;
+  // 11단 비트낭독: 누르면 재생, 다시 누르면 멈춤. 녹음 파일이 없으면 문장을 하나씩 읽고 그 줄을 밝힌다
+  const btn = $app.querySelector("#av-play"), lis = [...$app.querySelectorAll(".av-lines li")];
+  const plain = DAN11.map((l) => l.replace(/<[^>]+>/g, ""));
+  let on = false, run = 0;
+  const idle = () => { on = false; btn.textContent = "▶ 11단 비트낭독 들어 보기"; lis.forEach((li) => li.classList.remove("on")); };
+  btn.onclick = async () => {
+    if (on) { stop(); return idle(); }
+    on = true; btn.textContent = "■ 그만 듣기";
+    const my = ++run; // 멈춘 뒤 다시 누른 재생을 앞의 재생 끝이 덮지 않게
+    if (hasDanClip(11)) await playDan(11, store.settings.speed);
+    else await speakAll(plain, store.settings.speed, (i) => lis.forEach((li, k) => li.classList.toggle("on", k === i)));
+    if (my === run) idle();
+  };
 }
 
 // ───────────────────────── 구구단표 ─────────────────────────
