@@ -1110,3 +1110,9 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 :root[data-theme="vivid"] .ware.hat.owned { background: #EEF6EF; border-color: #BFD9C3; }
 :root[data-theme="vivid"] .ware.locked { opacity: .6; }
 :root[data-theme="vivid"] .ware.locked .price { color: var(--quiet); font-weight: 700; }
+/* 비비드: 라디오 깨우기 세 놀이 칸을 밝게 (2026-11-07) */
+:root[data-theme="vivid"] .core-steps li { background: #EEF3FB; border: 2px solid #C9D6F2; }
+:root[data-theme="vivid"] .core-steps li.on { background: #FFF3CF; border-color: #F6C64A; }
+:root[data-theme="vivid"] .core-steps b { color: #203A78; }
+:root[data-theme="vivid"] .core-steps span { color: #4A5578; font-weight: 700; }
+:root[data-theme="vivid"] .core-steps li:not(.on) .core-step-char { filter: none; }
