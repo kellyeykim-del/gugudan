@@ -532,6 +532,23 @@ export function showVoiceCard(d) {
 }
 
 // ── 구간 도전 ─────────────────────────
+// 비비드(2026-11-07): 도전 그림 칸. 시작 화면에 '맞히면 무엇으로 바뀌는지'를 같이 보여 준다.
+// 3구간은 까만 동그라미(⚫) 대신 꺼진 전구 → 켜진 전구 (dim = 꺼진 모습은 흑백)
+const VIVID_TOKEN = {
+  r1: { off: "🎤", on: "🌟", say: "문제를 맞힐 때마다 마이크가 별로 바뀌어요" },
+  r2: { off: "🎁", on: "💎", say: "문제를 맞힐 때마다 상자가 열리고 보석이 나와요" },
+  r3: { off: "💡", on: "💡", dim: true, say: "문제를 맞힐 때마다 전구에 하나씩 불이 켜져요" },
+  r4: { off: "📡", on: "✨", say: "문제를 맞힐 때마다 안테나가 반짝 신호를 보내요" },
+};
+const tokOf = (r) => (VIVID && VIVID_TOKEN[r.id]) || { off: r.challenge.token[0], on: r.challenge.token[1] };
+const tokIntro = (r) => {
+  const t = tokOf(r);
+  if (!VIVID) return `<p class="jtokens" aria-hidden="true">${t.off.repeat(4)}</p>`;
+  return `<div class="jtok-intro" aria-hidden="true"><span class="jtokens ${t.dim ? "dim" : ""}">${`<span><i>${t.off}</i></span>`.repeat(4)}</span>
+      <span class="jtok-arrow">→</span><span class="jtokens"><span class="on">${t.on}</span></span></div>
+    <p class="jtok-say">${esc(t.say)}</p>`;
+};
+
 export function Challenge(id) {
   const r = REGIONS.find((x) => x.id === id && x.challenge);
   if (!r) return (location.hash = "#/station");
@@ -544,7 +561,7 @@ export function Challenge(id) {
       <section class="page"><div class="card center ready">
         <div class="ready-scene">${pose(r.host, "welcome", { cls: "ready-char" })}</div>
         <h2>${esc(r.challenge.name)}</h2><p class="quiet">${esc(r.place)} · ${r.from}–${r.to}단</p>
-        <p class="jtokens" aria-hidden="true">${r.challenge.token[0].repeat(4)}</p>
+        ${tokIntro(r)}
         <p>${esc(r.challenge.intro)}</p>
         <p class="quiet small">틀려도 지금까지 푼 문제는 그대로예요. 시간 제한도 없어요.</p>
         ${preview ? '<p class="small"><b>선생님 미리 보기</b> · 아직 구간을 다 마치지 않아 완료 기록은 남지 않아요.</p>' : ""}
@@ -554,9 +571,9 @@ export function Challenge(id) {
   };
   const play = () => {
     const qs = CHALLENGES[r.id](dans).filter(Boolean);
-    const [off, on] = r.challenge.token;
+    const { off, on, dim } = tokOf(r);
     $app.innerHTML = `${header(r.challenge.name, "#/station")}
-      <section class="page"><div class="jtokens" data-on="${on}" aria-hidden="true">${qs.map(() => `<span>${off}</span>`).join("")}</div><div class="jbox"></div></section>`;
+      <section class="page"><div class="jtokens ${dim ? "dim" : ""}" data-on="${on}" aria-hidden="true">${qs.map(() => `<span>${VIVID ? `<i>${off}</i>` : off}</span>`).join("")}</div><div class="jbox"></div></section>`;
     runQuestions(qs, $app.querySelector(".page"), () => {
       stopRecorder();
       const first = !preview && !J.challenges[r.id]; // 반짝이는 처음 성공했을 때만 (기록 날짜가 생길 때)
@@ -565,7 +582,7 @@ export function Challenge(id) {
       $app.innerHTML = `${header(r.challenge.name, "#/station")}
         <section class="page"><div class="card center">
           ${pose(r.host, "celebrate", { cls: "done-char" })}
-          <p class="jtokens done" aria-hidden="true">${qs.map(() => `<span class="on">${r.challenge.token[1]}</span>`).join("")}</p>
+          <p class="jtokens done" aria-hidden="true">${qs.map(() => `<span class="on">${tokOf(r).on}</span>`).join("")}</p>
           <p class="big">${esc(r.challenge.name)} 성공!</p><p>${esc(r.challenge.done)}</p>
           ${first ? `<p class="gain">✨ 반짝이 +${EARN.challenge} <small>· 지금 ${wallet()}개</small></p>` : ""}
           ${saved ? "" : '<p class="quiet small">이 기기에 기록을 저장하지 못했어요.</p>'}

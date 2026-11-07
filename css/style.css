@@ -1119,3 +1119,16 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 /* 비비드: 라디오 깨우기 진행 막대를 하늘색 톤으로 (2026-11-07) */
 :root[data-theme="vivid"] .core-card .core-meta .meter { height: 12px; background: rgba(255, 255, 255, .18); }
 :root[data-theme="vivid"] .core-card .core-meta .meter i { background: linear-gradient(90deg, #8EDCF5, #0CAADC); }
+/* 비비드: 도전 그림 칸을 밝은 동그라미 칸에 (2026-11-07). 시작 화면은 '지금 → 맞히면' 같이 보여 줌 */
+:root[data-theme="vivid"] .jtokens { gap: 10px; }
+:root[data-theme="vivid"] .jtokens span { width: 56px; height: 56px; display: inline-grid; place-items: center; font-size: 30px; border-radius: 50%;
+  background: #EEF3FB; border: 2px dashed #B9C9E6; filter: none; opacity: 1; }
+:root[data-theme="vivid"] .jtokens span i { font-style: normal; filter: grayscale(.2); }
+:root[data-theme="vivid"] .jtokens.dim span i { filter: grayscale(1); opacity: .55; }
+:root[data-theme="vivid"] .jtokens span.on { background: #FFF3CF; border: 2px solid #F6C64A; filter: none; opacity: 1; box-shadow: 0 0 0 4px rgba(246, 198, 74, .25); }
+:root[data-theme="vivid"] p.jtokens { letter-spacing: 0; }
+:root[data-theme="vivid"] .jtok-intro { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin: 8px 0 4px; }
+:root[data-theme="vivid"] .jtok-intro .jtokens { margin: 0; }
+:root[data-theme="vivid"] .jtok-arrow { font-size: 26px; font-weight: 800; color: #E84135; }
+:root[data-theme="vivid"] .jtok-intro .jtokens span.on { animation: none; }
+:root[data-theme="vivid"] .jtok-say { margin: 2px 0 12px; font-weight: 800; color: #203A78; }
