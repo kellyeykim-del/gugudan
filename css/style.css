@@ -1099,3 +1099,14 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 .core-meta .meter { background: rgba(255, 255, 255, .15); }
 .core-gift { font-weight: 700; color: #FFE48A; font-size: 14px; }
 :root[data-theme="vivid"] .core-card { background: #203A78; }
+
+/* ── 비비드: 트리 방 친구 모자 · 상점 모자 칸 (2026-11-07) ── */
+:root[data-theme="vivid"] .rf-wrap { aspect-ratio: 1; }
+:root[data-theme="vivid"] .rf-wrap .rf-pose { position: absolute; inset: 0; width: 100%; height: 100%; }
+:root[data-theme="vivid"] .rf-wrap.flip { scale: -1 1; }
+:root[data-theme="vivid"] .rf-hat { position: absolute; height: auto; display: block; pointer-events: none; }
+:root[data-theme="vivid"] .ware-art img { object-fit: contain; }
+:root[data-theme="vivid"] .ware.hat { background: #FFF6F4; border-color: #F5C4BE; }
+:root[data-theme="vivid"] .ware.hat.owned { background: #EEF6EF; border-color: #BFD9C3; }
+:root[data-theme="vivid"] .ware.locked { opacity: .6; }
+:root[data-theme="vivid"] .ware.locked .price { color: var(--quiet); font-weight: 700; }

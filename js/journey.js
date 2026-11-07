@@ -11,7 +11,7 @@ import { drillLines } from "./data.js";
 import { pose, VIVID } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
 import { learnerGa } from "./welcome.js";
-import { wallet, EARN, treeCount } from "./tree.js";
+import { wallet, EARN, treeCount, danGain } from "./tree.js";
 
 // ── 5구간 ─────────────────────────
 // 저학년이 바로 알아듣게: 장소·모으는 물건·도전 이름은 쉬운 말, 도전은 문제 4개 안팎 + 눈에 보이는 진행(상자·전구)
@@ -295,7 +295,7 @@ const moduleState = (r, n, total) => VIVID ? sparkState(r, n, total)
 // 비비드(2026-11-06): 보상은 반짝이 → 나만의 트리 하나뿐이라, 옛 A안의 '물건 조각' 문구 대신 이 구간에서 모은 반짝이를 보여 준다
 const sparkState = (r, n, total) => {
   const ch = r.challenge && J.challenges[r.id] ? EARN.challenge : 0;
-  const got = n * EARN.star * 3 + ch;
+  const got = n * (EARN.star * 3 + (r.id === "bonus" ? EARN.encore : 0)) + ch;
   return got ? `${n === total ? "✓ " : ""}이 구간에서 반짝이 ✨ ${got} 모았어요` : "아직 시작 전이에요";
 };
 const VIVID_GOAL = {
@@ -306,13 +306,14 @@ const VIVID_GOAL = {
   bonus: "본편을 다 마치면 열리는 앙코르 무대예요.",
 };
 // 구간 설명. 비비드는 '조각 모으기' 대신 '한 단마다 목소리 카드 + 반짝이'로
-export const goalOf = (r) => VIVID ? `${VIVID_GOAL[r.id]} 한 단마다 목소리 카드 1장과 반짝이 ✨${EARN.star * 3}!` : r.goal;
+export const goalOf = (r) => VIVID ? `${VIVID_GOAL[r.id]} 한 단마다 목소리 카드 1장과 반짝이 ✨${EARN.star * 3 + (r.id === "bonus" ? EARN.encore : 0)}!` : r.goal;
 export const doneToast = (r) => VIVID
   ? `🎙 ${r.place} 완주!${r.challenge ? ` 구간 도전이 열렸어요 (✨${EARN.challenge})` : ""}`
   : `🎙 ${r.place} 완주! ${r.module} 완성${r.challenge ? " · 구간 도전이 열렸어요" : ""}`;
 
 // 미션 순서: 구간 1~4(단 마치기 + 구간 도전) → 잠꾸러기 라디오 깨우기 → 보너스 7단. 보상은 반짝이(✨)로 통일하고, 반짝이로 '나만의 트리'를 꾸민다.
 const DAN_GAIN = EARN.star * 3;
+const ENCORE_GAIN = DAN_GAIN + EARN.encore; // 앙코르(보너스) 단 한 단 (비비드 ✨10, 기본 화면 ✨6)
 const firstOpen = (dans) => dans.find((d) => !store.passed(d.id));
 function missionRows() {
   const rows = REGIONS.slice(0, 4).map((r) => {
@@ -324,7 +325,7 @@ function missionRows() {
     sub: `36단을 다 마치면 열려요 · ✨${EARN.core}`, prog: coreOpen() ? "" : `${store.passedCount()} / 36단` });
   const b = REGIONS[4], bd = regionDans(b), bn = regionCount(b);
   rows.push({ r: b, got: bn === bd.length, lock: !store.bonusOpen(), title: "보너스 7단 마치기",
-    sub: `본편을 다 마치면 열려요 · 단마다 ✨${DAN_GAIN}`, prog: `${bn} / ${bd.length}단` });
+    sub: `본편을 다 마치면 열려요 · 단마다 ✨${ENCORE_GAIN}`, prog: `${bn} / ${bd.length}단` });
   const now = rows.findIndex((x) => !x.got && !x.lock);
   rows.forEach((x, i) => (x.state = x.got ? "got" : i === now ? "now" : x.lock ? "lock" : "later"));
   return rows;
@@ -352,7 +353,7 @@ function nextMission() {
   const b = REGIONS[4], bd = regionDans(b), bn = regionCount(b), d = firstOpen(bd);
   if (d) return { r: b, title: "보너스 7단 마치기", place: b.place, meter: [bn, bd.length],
     row: `<span>${bn} / ${bd.length}단</span><b>${bd.length - bn}단 남았어요</b>`,
-    gift: `<b>받는 것: 반짝이 ✨ ${(bd.length - bn) * DAN_GAIN}</b><span>한 단마다 ✨${DAN_GAIN}</span>`,
+    gift: `<b>받는 것: 반짝이 ✨ ${(bd.length - bn) * ENCORE_GAIN}</b><span>한 단마다 ✨${ENCORE_GAIN}</span>`,
     go: `<a class="btn primary block" href="#/dan/${d.id}">▷ 이어서 ${danLabel(d)}</a>` };
   return { r: b, title: "모든 미션 완료!", place: "정말 멋져요", row: "",
     gift: `<b>트리를 마음껏 꾸며요</b><span>단을 다시 연습하거나 게임으로 복습해도 좋아요</span>`,
@@ -498,7 +499,7 @@ export function showVoiceCard(d) {
         <span class="kicker">🎉 ${danLabel(d)} 통과! 별 3개</span>
         <h2 id="reward-title">목소리 카드가 생겼어요!</h2>
         <p class="quiet">${esc(learnerGa())} 알려 준 말을 친구들이 기억했어요. ${esc(r.place)} 목소리 카드 ${n} / ${total}</p>
-        <p class="gain">✨ 반짝이 +${EARN.star * 3} <small>· 지금 ${wallet()}개</small></p>
+        <p class="gain">✨ 반짝이 +${danGain(d)} <small>· 지금 ${wallet()}개</small></p>
         <div class="row2">
           <a class="btn primary" href="#/dan/${d.id}?step=rec">🎙 내 목소리 녹음하기</a>
           <button class="btn" id="rw-ok">계속하기</button>

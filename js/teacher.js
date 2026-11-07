@@ -11,7 +11,8 @@ const STEPS = ["see", "hide", "order"];
 const starsOf = (v1, id) => STEPS.filter((s) => v1?.progress?.[id]?.[s]).length;
 const passedOf = (v1) => MAIN_DANS.filter((d) => starsOf(v1, d.id) === 3).length;
 // 반짝이(나만의 트리 화폐)는 학생 화면과 같은 계산: 본편·보너스·문장 단의 별 전부 + 도전
-const sparkles = (v1, j) => sparklesOf([...MAIN_DANS, ...BONUS_DANS, ...SENT_DANS].reduce((a, d) => a + starsOf(v1, d.id), 0), j);
+const sparkles = (v1, j) => sparklesOf([...MAIN_DANS, ...BONUS_DANS, ...SENT_DANS].reduce((a, d) => a + starsOf(v1, d.id), 0), j,
+  BONUS_DANS.filter((d) => starsOf(v1, d.id) === 3).length); // 앙코르 단 보너스(비비드만, 기본 화면은 0)
 const spent = (j) => j?.tree?.spent || 0;
 const starTotal = (v1) => MAIN_DANS.reduce((a, d) => a + starsOf(v1, d.id), 0);
 const CH_REGIONS = REGIONS.filter((r) => r.challenge);

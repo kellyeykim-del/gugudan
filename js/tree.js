@@ -2,20 +2,23 @@
 // 반짝이는 저장하지 않고 기존 기록(별 · 구간 도전 · 마지막 도전)에서 계산한다 → 예전 기록도 그대로 반짝이가 된다.
 // 저장하는 것은 산 장식(자리·값)과 쓴 반짝이뿐 (gugudan.journey의 tree: { spent, items:[{k,x,y,p}] }).
 // 그림: img/tree/ (Codex 비비드 시안을 tools/cut_tree_art.py로 자름). 전구줄만 SVG로 트리 위에 그린다.
-import { DANS, SENT_DANS } from "./data.js";
+import { DANS, SENT_DANS, BONUS_DANS } from "./data.js";
 import { store } from "./store.js";
 import { $app, esc, header, toast } from "./ui.js";
-import { pose } from "./village.js";
+import { pose, VIVID } from "./village.js";
 import { jrec, saveJ, setRegion } from "./journey.js";
 import { learner } from "./welcome.js";
 
 // ── 반짝이 얻는 법 ─────────────────────────
-export const EARN = { star: 2, challenge: 10, core: 30, welcome: 6 };
+// 비비드(2026-11-07): 앙코르(보너스) 단은 다 마치면 ✨4 더 → 한 단에 ✨10 (상점 가격을 올린 만큼 끝까지 모을 거리)
+export const EARN = { star: 2, challenge: 10, core: 30, welcome: 6, encore: VIVID ? 4 : 0 };
 const CH_IDS = ["r1", "r2", "r3", "r4"];
-// 선생님 화면에서도 같은 계산을 쓰도록 기록만 받아서 센다
-export function sparklesOf(stars, j) {
+// 한 단을 다 마치면 받는 반짝이 (앙코르 단은 비비드에서 더 많이)
+export const danGain = (d) => EARN.star * 3 + (d?.bonus ? EARN.encore : 0);
+// 선생님 화면에서도 같은 계산을 쓰도록 기록만 받아서 센다 (encore = 다 마친 앙코르 단 수)
+export function sparklesOf(stars, j, encore = 0) {
   const ch = CH_IDS.filter((id) => j?.challenges?.[id]).length;
-  return EARN.welcome + stars * EARN.star + ch * EARN.challenge + (j?.core?.cleared ? EARN.core : 0);
+  return EARN.welcome + stars * EARN.star + ch * EARN.challenge + (j?.core?.cleared ? EARN.core : 0) + encore * EARN.encore;
 }
 export const starsAll = () => [...DANS, ...SENT_DANS].reduce((a, d) => a + store.stars(d.id), 0);
 const T = () => {
@@ -23,7 +26,7 @@ const T = () => {
   if (!j.tree || !Array.isArray(j.tree.items)) j.tree = { spent: 0, items: [] };
   return j.tree;
 };
-export const earned = () => sparklesOf(starsAll(), jrec());
+export const earned = () => sparklesOf(starsAll(), jrec(), BONUS_DANS.filter((d) => store.passed(d.id)).length);
 export const wallet = () => Math.max(0, earned() - T().spent);
 export const treeCount = (j) => j?.tree?.items?.length || 0;
 
@@ -51,7 +54,24 @@ export const ITEMS = [
   { k: "lights", name: "반짝 전구줄", p: 20, one: true, fixed: true },
   { k: "star", name: "반짝 보석 별", p: 25, one: true, fixed: true },
 ].map((it) => ({ ...it, svg: art(it.k) }));
+// 비비드(2026-11-07 시안 승인): 가장 싼 장식 = 한 단(✨6). 단계마다 값을 올리고 전구줄·보석 별은 오래 모아 사는 큰 목표.
+// 이미 산 장식은 산 값(p)을 저장해 두어 치우면 그 값 그대로 돌려받는다 → 값을 바꿔도 아이 기록 손실 없음.
+const VIVID_PRICE = { red: 6, blue: 6, gold: 6, bell: 8, candy: 8, flake: 8, bow: 12, cookie: 12, sock: 12,
+  mic: 15, radio: 15, gift: 15, snowman: 20, lights: 40, star: 60 };
+// 친구 모자: 구간 도전(1·2·3)을 성공하면 열린다. 트리 방 친구 머리 위에 쓰고, 트리 위 자리는 없다.
+// 머리 자리 = 친구 그림 상자 대비 % (proposals/hats-2026-11-06/fit_hats.py가 잰 값)
+const HATS = [
+  { k: "hat-nuri", who: "nuri", name: "말문이 산타 모자", p: 30, need: "r1", at: [21.9, -22.8, 69.2] },
+  { k: "hat-minty", who: "minty", name: "귀담이 털 귀마개", p: 30, need: "r2", at: [19.2, 29, 56.5] },
+  { k: "hat-bobo", who: "bobo", name: "차분이 방울 털모자", p: 30, need: "r3", at: [24.6, -10.5, 50.4] },
+].map((it) => ({ ...it, one: true, hat: true, svg: art(it.k) }));
+if (VIVID) {
+  ITEMS.forEach((it) => (it.p = VIVID_PRICE[it.k] ?? it.p));
+  ITEMS.push(...HATS);
+}
 const item = (k) => ITEMS.find((x) => x.k === k);
+const locks = (it) => !!it.need && !jrec().challenges?.[it.need];
+const hatOn = (who) => VIVID && T().items.some((x) => x.k === `hat-${who}`);
 // 받침이 있으면 을/이, 없으면 를/가
 const batchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c < 11172 && c % 28 !== 0; };
 const eul = (w) => w + (batchim(w) ? "을" : "를");
@@ -62,11 +82,17 @@ const MAX = 40; // 트리에 너무 빽빽하지 않게
 // 장면(5:6) 안에서 트리는 너비 70% · 왼쪽 15% · 위 26% (예전 SVG 트리와 같은 자리라 저장된 장식 자리가 그대로 맞는다)
 const toScene = (tx, ty) => [15 + tx * 0.7, 26 + ty * 0.7]; // 트리 그림 % → 장면 %
 // 잎 영역: [그림 y%, 왼쪽 x%, 오른쪽 x%] (tools/cut_tree_art.py가 그림에서 잰 값, 가지 끝 물결 줄은 뺐다)
-const LEAF = [[13, 40, 59], [16, 37.2, 61.8], [19, 33.4, 65.2], [22, 28, 68.9], [25, 23.6, 72.3], [28, 21.6, 73.8],
+const LEAF_OLD = [[13, 40, 59], [16, 37.2, 61.8], [19, 33.4, 65.2], [22, 28, 68.9], [25, 23.6, 72.3], [28, 21.6, 73.8],
   [37, 27.1, 69.4], [40, 23.9, 72.3], [43, 19.8, 76.5], [46, 15.5, 82.1], [49, 13.6, 83.8],
   [58, 18.5, 79.2], [61, 15.5, 82.3], [64, 11.9, 86.2], [67, 8.2, 90.4], [70, 6.1, 92.9]];
 // 전구줄: 층마다 [x1, y1, x2, y2, 처짐] (그림 %)
-const LIGHTS = [[30, 22, 70, 22, 6], [21, 44, 80, 44, 7], [12, 65, 89, 65, 8]];
+const LIGHTS_OLD = [[30, 22, 70, 22, 6], [21, 44, 80, 44, 7], [12, 65, 89, 65, 8]];
+// 비비드 눈 트리(img/tree/tree-v2.webp, 2026-11-07): 층 높이는 같고 양옆이 3~5% 날씬. 옛 자리에 걸린 장식도 모두 잎 안이다.
+const LEAF = VIVID ? [[13, 40.7, 58.6], [16, 38.3, 61], [19, 35.2, 64], [22, 31.4, 67.5], [25, 27.4, 70.7], [28, 25.8, 72.1],
+  [37, 29.6, 68], [40, 26.9, 70.7], [43, 23.4, 74.1], [46, 19.6, 78.2], [49, 17.5, 80.2],
+  [58, 22.8, 76], [61, 20.3, 78.6], [64, 17, 81.9], [67, 13.4, 85.8], [70, 11.6, 88.3]] : LEAF_OLD;
+const LIGHTS = VIVID ? [[31, 22, 69, 22, 6], [24, 44, 76, 44, 7], [16, 65, 84, 65, 8]] : LIGHTS_OLD;
+const TREE_IMG = VIVID ? "img/tree/tree-v2.webp" : "img/tree/tree.webp";
 function treeArt(lights) {
   const strand = ([x1, y1, x2, y2, sag], n) => {
     const cy = (y1 + y2) / 2 + sag * 2; // 2차 곡선 조절점 (가운데가 sag만큼 처짐)
@@ -77,7 +103,7 @@ function treeArt(lights) {
     }).join("");
     return `<path d="M${x1} ${y1 * 1.2}Q50 ${cy * 1.2} ${x2} ${y2 * 1.2}" ${s("line", 0.7)}/>${bulbs}`;
   };
-  return `<span class="tree-art" aria-hidden="true"><img src="img/tree/tree.webp" alt="" draggable="false">
+  return `<span class="tree-art" aria-hidden="true"><img src="${TREE_IMG}" alt="" draggable="false">
     ${lights ? `<svg class="tree-lights" viewBox="0 0 100 120">${LIGHTS.map(strand).join("")}</svg>` : ""}</span>`;
 }
 // 새 장식이 놓일 자리: 장식은 잎 안 아무 곳, 선물·눈사람은 바닥
@@ -98,7 +124,7 @@ export function treeScene({ edit = false, sel = -1, fresh = -1 } = {}) {
   const tag = edit ? "button" : "span";
   const orns = t.items.map((x, i) => {
     const it = item(x.k);
-    if (!it || x.k === "lights") return "";
+    if (!it || x.k === "lights" || it.hat) return "";
     const [l, tp] = x.k === "star" ? [50, 25.5] : [x.x, x.y];
     const size = x.k === "star" ? 21 : it.size;
     const attrs = edit ? `type="button" data-i="${i}" aria-label="${esc(it.name)}${x.k === "star" ? "" : " · 끌어서 옮기기"}"` : "";
@@ -119,9 +145,19 @@ function treeRoom(sceneHtml) {
     <span class="room-window" aria-hidden="true"><i class="snow"></i><i class="snow s2"></i></span>
     <span class="room-sign">🎄 ${who ? `${esc(who)}의 트리` : "나만의 트리"}</span>
     <span class="room-floor" aria-hidden="true"></span><span class="room-rug" aria-hidden="true"></span>
-    ${pose("nuri", "celebrate", { cls: "room-friend rf-l" })}${pose("minty", "listen", { cls: "room-friend rf-m" })}${pose("bobo", "encourage", { cls: "room-friend rf-r flip" })}
+    ${VIVID ? friendsV() : `${pose("nuri", "celebrate", { cls: "room-friend rf-l" })}${pose("minty", "listen", { cls: "room-friend rf-m" })}${pose("bobo", "encourage", { cls: "room-friend rf-r flip" })}`}
     ${sceneHtml}
   </div>`;
+}
+
+// 비비드: 친구 그림 위에 산 모자를 씌운다. 귀담이는 귀마개를 쓰면 정면(손 흔들기)으로 — 옆모습(listen)은 귀마개가 얼굴을 가린다
+function friendsV() {
+  const one = (who, act, cls) => {
+    const h = hatOn(who) && HATS.find((x) => x.who === who);
+    const hat = h ? `<img class="rf-hat" src="img/tree/${h.k}.webp" alt="" draggable="false" style="left:${h.at[0]}%;top:${h.at[1]}%;width:${h.at[2]}%">` : "";
+    return `<span class="room-friend rf-wrap ${cls}" aria-hidden="true">${pose(who, act, { cls: "rf-pose" })}${hat}</span>`;
+  };
+  return one("nuri", "celebrate", "rf-l") + one("minty", hatOn("minty") ? "welcome" : "listen", "rf-m") + one("bobo", "encourage", "rf-r flip");
 }
 
 // ── 나만의 트리 화면 (#/tree) ─────────────────────────
@@ -133,9 +169,11 @@ export function TreePage() {
     const w = wallet();
     const ware = (it) => {
       const owned = it.one && t.items.some((x) => x.k === it.k);
-      const short = !owned && w < it.p;
-      return `<button type="button" class="ware ${owned ? "owned" : ""} ${short ? "short" : ""}" data-k="${it.k}" aria-label="${esc(it.name)} 반짝이 ${it.p}개${owned ? " · 가지고 있어요, 누르면 치워요" : ""}">
-        <span class="ware-art">${it.svg}</span><b>${esc(it.name)}</b><span class="price">${owned ? "✓ 걸었어요" : `✨ ${it.p}`}</span></button>`;
+      const locked = !owned && locks(it);
+      const short = !owned && !locked && w < it.p;
+      const price = owned ? (it.hat ? "✓ 썼어요" : "✓ 걸었어요") : locked ? `🔒 ${it.need.slice(1)}구간 도전` : `✨ ${it.p}`;
+      return `<button type="button" class="ware ${it.hat ? "hat" : ""} ${owned ? "owned" : ""} ${short ? "short" : ""} ${locked ? "locked" : ""}" data-k="${it.k}" aria-label="${esc(it.name)} 반짝이 ${it.p}개${owned ? " · 가지고 있어요, 누르면 치워요" : locked ? ` · ${it.need.slice(1)}구간 도전을 성공하면 열려요` : ""}">
+        <span class="ware-art">${it.svg}</span><b>${esc(it.name)}</b><span class="price">${price}</span></button>`;
     };
     const cur = t.items[sel];
     const tool = cur && item(cur.k)
@@ -156,7 +194,7 @@ export function TreePage() {
             <details class="earn"><summary>반짝이 얻는 법</summary>
               <ul><li>별 1개 = ✨ ${EARN.star} <small>(한 단을 다 마치면 ✨ ${EARN.star * 3})</small></li>
               <li>구간 도전 성공 = ✨ ${EARN.challenge}</li><li>잠꾸러기 라디오 깨우기 = ✨ ${EARN.core}</li>
-              <li>처음 선물 = ✨ ${EARN.welcome}</li></ul>
+              <li>처음 선물 = ✨ ${EARN.welcome}</li>${EARN.encore ? `<li>앙코르(보너스) 단은 한 단에 ✨ ${EARN.star * 3 + EARN.encore}</li>` : ""}</ul>
               <p class="quiet small">지금까지 모은 반짝이 ${earned()} · 쓴 반짝이 ${t.spent}</p></details>
           </div>
           <div class="card shop-card">
@@ -174,16 +212,17 @@ export function TreePage() {
     const t = T();
     const at = it.one ? t.items.findIndex((x) => x.k === it.k) : -1;
     if (at >= 0) return refund(at);
+    if (locks(it)) return toast(`🔒 ${it.need.slice(1)}구간 도전을 성공하면 ${iga(it.name)} 열려요`);
     const w = wallet();
     if (w < it.p) return toast(`반짝이가 ${it.p - w}개 더 필요해요. 단을 마치면 생겨요!`);
     if (t.items.length >= MAX) return toast(`장식은 ${MAX}개까지예요. 하나를 치우고 다시 사 보세요`);
-    const [x, y] = it.fixed ? [50, 25.5] : spot(it);
+    const [x, y] = it.hat ? [0, 0] : it.fixed ? [50, 25.5] : spot(it);
     t.items.push({ k: it.k, x: +x.toFixed(1), y: +y.toFixed(1), p: it.p });
     t.spent += it.p;
     saveJ();
-    sel = it.fixed ? -1 : t.items.length - 1;
+    sel = it.fixed || it.hat ? -1 : t.items.length - 1;
     draw(t.items.length - 1);
-    toast(`✨ ${it.p} 썼어요 · ${it.fixed ? `${iga(it.name)} 반짝!` : `${eul(it.name)} 걸었어요. 끌어서 옮겨 보세요`}`);
+    toast(`✨ ${it.p} 썼어요 · ${it.hat ? `${eul(it.name)} 썼어요!` : it.fixed ? `${iga(it.name)} 반짝!` : `${eul(it.name)} 걸었어요. 끌어서 옮겨 보세요`}`);
   };
   const refund = (i) => {
     const t = T();
