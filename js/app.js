@@ -268,7 +268,10 @@ function AboutVivid() {
 
       <h3 class="sec av-sec"><span class="av-tag">둘</span>세 친구와 우리 목소리 방송국</h3>
       <div class="av-story card">
-        <img src="img/village-vivid/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">
+        <div class="av-story-stage">
+          <img src="img/village-vivid/friends-radio.webp" alt="라디오 앞에 앉아 영어 방송을 듣는 말문이, 귀담이, 차분이">
+          <span class="onair" aria-hidden="true">${ON_AIR.map((t, i) => `<i style="--d:${i * 1.5}s;--x:${i % 2 ? -1 : 1}">${t}</i>`).join("")}</span>
+        </div>
         <div class="av-story-text">
           <p class="av-say">“우리는 영어 방송을 하고 싶은데,<br>아직 영어를 몰라. 하나씩 알려 줄래?”</p>
           <p>내가 한 단을 외울 때마다 친구들이 그 말을 배워 <b>목소리 카드</b>를 한 장씩 모아요.

@@ -1273,3 +1273,12 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   :root[data-theme="vivid"] .av-say { font-size: 19px; }
   :root[data-theme="vivid"] .about-v .sec.av-sec { font-size: 24px; }
 }
+
+/* 비비드 소개: 세 친구 라디오 그림에서 대문처럼 구구단 문장이 차례로 떠오른다 (2026-11-08). 그림 위 여백에서 안테나 위로 올라가 사라짐 */
+:root[data-theme="vivid"] .av-story-stage { position: relative; padding-top: 40px; }
+:root[data-theme="vivid"] .av-story-stage .onair { margin: 0; }
+:root[data-theme="vivid"] .av-story-stage .onair i { left: 57%; top: calc(40px + 16%); font-size: 22px; padding: 2px 14px; border-width: 2px; border-color: #C9BEEA; }
+@media (max-width: 820px) {
+  :root[data-theme="vivid"] .av-story-stage { padding-top: 34px; }
+  :root[data-theme="vivid"] .av-story-stage .onair i { top: calc(34px + 16%); font-size: 17px; padding: 1px 10px; }
+}
