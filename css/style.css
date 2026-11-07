@@ -1116,6 +1116,6 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 :root[data-theme="vivid"] .core-steps b { color: #203A78; }
 :root[data-theme="vivid"] .core-steps span { color: #4A5578; font-weight: 700; }
 :root[data-theme="vivid"] .core-steps li:not(.on) .core-step-char { filter: none; }
-/* 비비드: 라디오 깨우기 진행 막대를 밝은 노랑으로 (2026-11-07) */
+/* 비비드: 라디오 깨우기 진행 막대를 하늘색 톤으로 (2026-11-07) */
 :root[data-theme="vivid"] .core-card .core-meta .meter { height: 12px; background: rgba(255, 255, 255, .18); }
-:root[data-theme="vivid"] .core-card .core-meta .meter i { background: linear-gradient(90deg, #FFE48A, #F6C64A); }
+:root[data-theme="vivid"] .core-card .core-meta .meter i { background: linear-gradient(90deg, #8EDCF5, #0CAADC); }
