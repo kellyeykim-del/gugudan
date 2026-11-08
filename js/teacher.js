@@ -2,9 +2,9 @@
 // 학생 정보는 별명·아이디만 받는다(실명 X). 기록은 학생 기기의 gugudan.v1 · gugudan.journey를 그대로 받아 와서 보여 준다.
 import { MAIN_DANS, BONUS_DANS, SENT_DANS } from "./data.js";
 import { $app, esc, header, toast, danLabel } from "./ui.js";
-import { pose } from "./village.js";
+import { pose, VIVID } from "./village.js";
 import { REGIONS } from "./journey.js";
-import { sparklesOf, treeCount } from "./tree.js";
+import { sparklesOf, treeCount, treeView } from "./tree.js";
 import { session, isStudent, isTeacher, teacher, teacherLogin, teacherSignup, studentLogin, logout, errText } from "./cloud.js";
 
 const STEPS = ["see", "hide", "order"];
@@ -85,6 +85,7 @@ export function StudentLogin() {
 export function Teacher(parts) {
   if (!isTeacher()) return TeacherLogin(parts[1] === "signup");
   if (parts[1] === "s" && parts[2]) return StudentDetail(parts[2]);
+  if (parts[1] === "trees" && VIVID) return ClassTrees();
   return Dashboard();
 }
 
@@ -127,7 +128,7 @@ async function Dashboard() {
     <div class="card teach-top">
       <div><b>${esc(s.name)}</b> 선생님 <span class="quiet small">${esc(s.email)}</span></div>
       <div class="classcode">반 코드 <b>${esc(s.class_code)}</b></div>
-      <div class="toolbar"><button class="btn" id="copy">📋 학생 안내문 복사</button><button class="btn ghost" id="out">로그아웃</button></div>
+      <div class="toolbar">${VIVID ? '<a class="btn" href="#/teacher/trees">🎄 우리 반 트리 모아보기</a>' : ""}<button class="btn" id="copy">📋 학생 안내문 복사</button><button class="btn ghost" id="out">로그아웃</button></div>
       <p class="hint">앱 링크는 받으신 공유 링크를 그대로 학생에게 보내 주세요. 학생은 첫 화면의 ‘학생 로그인’에서 반 코드·아이디·비밀번호를 적어요.</p>
     </div>
     <details class="card add-st" id="addbox"><summary><b>＋ 학생 아이디 만들기</b></summary>
@@ -258,4 +259,50 @@ async function StudentDetail(id) {
     if (!confirm(`${r.nickname} 학생과 학습 기록을 지울까요? 되돌릴 수 없어요.`)) return;
     try { await teacher.remove(r.id); toast("삭제했어요"); location.hash = "#/teacher"; } catch (er) { toast(errText(er)); }
   };
+}
+
+// ── 우리 반 트리 모아보기 (비비드, 2026-11-08) ──
+// 학생들이 꾸민 나만의 트리를 한 화면에 모아 본다. 교실 큰 화면에 띄워 친구 트리를 함께 구경하는 용도.
+// 보기 전용(기록은 바꾸지 않음). 순서는 별명 순(장식 수로 줄 세우지 않음). 아직 안 꾸민 학생은 이름 없이 인원만 알린다.
+async function ClassTrees() {
+  $app.innerHTML = `${header("🎄 우리 반 트리", "#/teacher")}<section class="page teach tg-page"><p class="quiet center">불러오고 있어요…</p></section>`;
+  let rows;
+  try { rows = await teacher.students(); } catch (er) { return gone(er, $app.querySelector(".tg-page")); }
+  const $p = $app.querySelector(".tg-page");
+  if (!$p) return;
+  const all = rows.slice().sort((a, b) => a.nickname.localeCompare(b.nickname, "ko", { numeric: true }));
+  const done = all.filter((r) => treeCount(r.journey) > 0), yet = all.length - done.length;
+  if (!done.length) {
+    $p.innerHTML = `<div class="card center"><p>아직 트리를 꾸민 학생이 없어요.</p>
+      <p class="hint">학생들이 공부해서 모은 반짝이 ✨로 ‘나만의 트리’를 꾸미면 여기에 모여요.</p></div>`;
+    return;
+  }
+  $p.innerHTML = `<div class="card tg-head"><p><b>${done.length}명</b>의 트리가 모였어요${yet ? ` <span class="quiet">· 아직 꾸미기 전 ${yet}명</span>` : ""}</p>
+      <p class="hint">트리를 누르면 크게 보여요. 교실 화면에 띄워 친구들과 함께 구경해요. (← → 키로 넘기기)</p></div>
+    <div class="tg-grid">${done.map((r, i) => `<button type="button" class="tg-card" data-i="${i}" aria-label="${esc(r.nickname)}의 트리 크게 보기">${treeView(r.journey, r.nickname)}</button>`).join("")}</div>`;
+  let cur = -1;
+  const close = () => { $app.querySelector(".tg-big")?.remove(); cur = -1; };
+  const open = (i) => {
+    close(); // 열린 큰 화면을 닫고(cur 초기화) 새 트리로
+    cur = (i + done.length) % done.length;
+    const r = done[cur];
+    $p.insertAdjacentHTML("beforeend", `<div class="tg-big" role="dialog" aria-label="${esc(r.nickname)}의 트리">
+      <button type="button" class="tg-nav" data-d="-1" aria-label="앞 친구 트리" ${done.length < 2 ? "hidden" : ""}>←</button>
+      <div class="tg-stage">${treeView(r.journey, r.nickname)}<p class="tg-count">${cur + 1} / ${done.length}</p></div>
+      <button type="button" class="tg-nav" data-d="1" aria-label="다음 친구 트리" ${done.length < 2 ? "hidden" : ""}>→</button>
+      <button type="button" class="tg-close" aria-label="닫기">✕</button></div>`);
+    const $b = $p.querySelector(".tg-big");
+    $b.querySelector(".tg-close").onclick = close;
+    $b.querySelectorAll(".tg-nav").forEach((n) => (n.onclick = () => open(cur + +n.dataset.d)));
+    $b.onclick = (e) => { if (e.target === $b) close(); };
+  };
+  $p.querySelectorAll(".tg-card").forEach((c) => (c.onclick = () => open(+c.dataset.i)));
+  const onKey = (e) => {
+    if (!$app.contains($p)) return removeEventListener("keydown", onKey);
+    if (cur < 0) return;
+    if (e.key === "Escape") close();
+    else if (e.key === "ArrowLeft") open(cur - 1);
+    else if (e.key === "ArrowRight") open(cur + 1);
+  };
+  addEventListener("keydown", onKey);
 }

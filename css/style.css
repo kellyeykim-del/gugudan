@@ -1282,3 +1282,34 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   :root[data-theme="vivid"] .av-story-stage { padding-top: 34px; }
   :root[data-theme="vivid"] .av-story-stage .onair i { top: calc(34px + 16%); font-size: 17px; padding: 1px 10px; }
 }
+
+/* 비비드: 선생님 '우리 반 트리 모아보기' (#/teacher/trees, 2026-11-08) */
+:root[data-theme="vivid"] .tg-head p { margin: 0 0 4px; }
+:root[data-theme="vivid"] .tg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+:root[data-theme="vivid"] .tg-card { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 18px; transition: transform .15s; }
+:root[data-theme="vivid"] .tg-card .tree-room { box-shadow: 0 4px 0 rgba(32, 58, 120, .12); }
+:root[data-theme="vivid"] .tg-card:hover { transform: translateY(-3px); }
+:root[data-theme="vivid"] .tg-card:focus-visible .tree-room { outline: 3px solid #F6C64A; outline-offset: 2px; }
+:root[data-theme="vivid"] .tg-card .room-sign { font-size: 15px; }
+:root[data-theme="vivid"] .tg-big { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px;
+  background: rgba(20, 30, 64, .86); }
+:root[data-theme="vivid"] .tg-stage { width: min(calc(100vw - 160px), calc(100vh - 90px)); text-align: center; }
+/* 모아보기의 방은 화면 폭과 상관없이 넓은 화면 배치(정사각 · 세 친구 모두)로 그린다 → 귀담이 귀마개도 보인다 */
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .tree-room { aspect-ratio: 1; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .tree-scene { height: 97%; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .room-friend { width: 18%; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .rf-l { left: 5%; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .rf-r { right: 5%; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .rf-m { display: inline-block; left: 21%; width: 14%; bottom: 3%; }
+:root[data-theme="vivid"] :is(.tg-card, .tg-stage) .room-window { right: 7%; width: 16%; }
+:root[data-theme="vivid"] .tg-stage .room-sign { font-size: clamp(16px, 3vw, 30px); }
+:root[data-theme="vivid"] .tg-count { margin: 10px 0 0; color: #C9D6F2; font-weight: 700; }
+:root[data-theme="vivid"] .tg-nav, :root[data-theme="vivid"] .tg-close { flex: none; width: 56px; height: 56px; border-radius: 50%; border: 0; background: #fff; color: #203A78;
+  font-size: 26px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 rgba(0, 0, 0, .2); }
+:root[data-theme="vivid"] .tg-close { position: absolute; top: 14px; right: 14px; width: 46px; height: 46px; font-size: 20px; }
+@media (max-width: 600px) {
+  :root[data-theme="vivid"] .tg-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  :root[data-theme="vivid"] .tg-card .room-sign { font-size: 12px; padding: 3px 8px; }
+  :root[data-theme="vivid"] .tg-big { flex-wrap: wrap; align-content: center; }
+  :root[data-theme="vivid"] .tg-stage { order: -1; width: 100%; }
+}

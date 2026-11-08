@@ -71,7 +71,7 @@ if (VIVID) {
 }
 const item = (k) => ITEMS.find((x) => x.k === k);
 const locks = (it) => !!it.need && !jrec().challenges?.[it.need];
-const hatOn = (who) => VIVID && T().items.some((x) => x.k === `hat-${who}`);
+const hatOn = (who, t = T()) => VIVID && t.items.some((x) => x.k === `hat-${who}`);
 // 받침이 있으면 을/이, 없으면 를/가
 const batchim = (w) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c < 11172 && c % 28 !== 0; };
 const eul = (w) => w + (batchim(w) ? "을" : "를");
@@ -118,8 +118,9 @@ function spot(it) {
 }
 
 // ── 장면 그리기 (트리 + 장식, 5:6. 장식 자리는 이 상자 기준 %) ─────────────────────────
-export function treeScene({ edit = false, sel = -1, fresh = -1 } = {}) {
-  const t = T();
+// tree를 주면 그 기록(선생님 화면의 학생 트리)을, 없으면 이 기기의 트리를 그린다
+export function treeScene({ edit = false, sel = -1, fresh = -1, tree = null } = {}) {
+  const t = tree || T();
   const has = (k) => t.items.some((x) => x.k === k);
   const tag = edit ? "button" : "span";
   const orns = t.items.map((x, i) => {
@@ -135,29 +136,35 @@ export function treeScene({ edit = false, sel = -1, fresh = -1 } = {}) {
 }
 
 // ── 트리가 놓인 방: 눈 내리는 창문 · 깃발 줄 · 벽난로 대신 포근한 러그 · 세 친구 (꾸밈 그림, 저장 없음) ─────────────────────────
-function treeRoom(sceneHtml) {
+function treeRoom(sceneHtml, { name, tree } = {}) {
   const flags = ["red", "blue", "gold", "green", "red", "blue", "gold", "green", "red", "blue", "gold"]
     .map((c, i) => `<path d="M${i * 9 + 1} ${4 + Math.sin((i / 10) * Math.PI) * 5}l7 0-3.5 8z" ${fs(c, "line", 0.5)}/>`).join("");
-  const who = learner();
+  const who = name ?? learner();
   return `<div class="tree-room">
     <svg class="room-flags" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 3Q50 17 100 3" ${s("line", 0.5)}/>${flags}</svg>
     <span class="room-window" aria-hidden="true"><i class="snow"></i><i class="snow s2"></i></span>
     <span class="room-sign">🎄 ${who ? `${esc(who)}의 트리` : "나만의 트리"}</span>
     <span class="room-floor" aria-hidden="true"></span><span class="room-rug" aria-hidden="true"></span>
-    ${VIVID ? friendsV() : `${pose("nuri", "celebrate", { cls: "room-friend rf-l" })}${pose("minty", "listen", { cls: "room-friend rf-m" })}${pose("bobo", "encourage", { cls: "room-friend rf-r flip" })}`}
+    ${VIVID ? friendsV(tree || T()) : `${pose("nuri", "celebrate", { cls: "room-friend rf-l" })}${pose("minty", "listen", { cls: "room-friend rf-m" })}${pose("bobo", "encourage", { cls: "room-friend rf-r flip" })}`}
     ${sceneHtml}
   </div>`;
 }
 
 // 비비드: 친구 그림 위에 산 모자를 씌운다. 귀담이는 귀마개를 쓰면 정면(손 흔들기)으로 — 옆모습(listen)은 귀마개가 얼굴을 가린다
-function friendsV() {
+function friendsV(t) {
   const one = (who, act, cls) => {
-    const h = hatOn(who) && HATS.find((x) => x.who === who);
+    const h = hatOn(who, t) && HATS.find((x) => x.who === who);
     const hat = h ? `<img class="rf-hat" src="img/tree/${h.k}.webp" alt="" draggable="false" style="left:${h.at[0]}%;top:${h.at[1]}%;width:${h.at[2]}%">` : "";
     return `<span class="room-friend rf-wrap ${cls}" aria-hidden="true">${pose(who, act, { cls: "rf-pose" })}${hat}</span>`;
   };
-  return one("nuri", "celebrate", "rf-l") + one("minty", hatOn("minty") ? "welcome" : "listen", "rf-m") + one("bobo", "encourage", "rf-r flip");
+  return one("nuri", "celebrate", "rf-l") + one("minty", hatOn("minty", t) ? "welcome" : "listen", "rf-m") + one("bobo", "encourage", "rf-r flip");
+}
+
+// 다른 사람(학생)의 트리를 보기 전용으로 그린다: 선생님 화면 '우리 반 트리 모아보기'. 기록은 바꾸지 않는다
+export function treeView(journey, name) {
+  const tree = Array.isArray(journey?.tree?.items) ? journey.tree : { spent: 0, items: [] };
+  return treeRoom(treeScene({ tree }), { name, tree });
 }
 
 // ── 나만의 트리 화면 (#/tree) ─────────────────────────
