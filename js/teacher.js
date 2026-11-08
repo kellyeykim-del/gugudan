@@ -5,7 +5,7 @@ import { $app, esc, header, toast, danLabel } from "./ui.js";
 import { pose, VIVID } from "./village.js";
 import { REGIONS } from "./journey.js";
 import { sparklesOf, treeCount, treeView } from "./tree.js";
-import { session, isStudent, isTeacher, teacher, teacherLogin, teacherSignup, studentLogin, logout, errText } from "./cloud.js";
+import { session, isStudent, isTeacher, teacher, teacherLogin, teacherSignup, teacherRecover, studentLogin, logout, errText } from "./cloud.js";
 
 const STEPS = ["see", "hide", "order"];
 const starsOf = (v1, id) => STEPS.filter((s) => v1?.progress?.[id]?.[s]).length;
@@ -83,7 +83,7 @@ export function StudentLogin() {
 
 // ── 선생님 ──
 export function Teacher(parts) {
-  if (!isTeacher()) return TeacherLogin(parts[1] === "signup");
+  if (!isTeacher()) return parts[1] === "recover" && VIVID ? TeacherRecover() : TeacherLogin(parts[1] === "signup");
   if (parts[1] === "s" && parts[2]) return StudentDetail(parts[2]);
   if (parts[1] === "trees" && VIVID) return ClassTrees();
   return Dashboard();
@@ -98,7 +98,9 @@ function TeacherLogin(signup) {
       <label>비밀번호${signup ? " (8자 이상)" : ""}<input id="pw" type="password" autocomplete="${signup ? "new-password" : "current-password"}" minlength="${signup ? 8 : 1}" maxlength="72" required></label>
       <p class="err" id="err" role="alert"></p>
       <button class="btn primary block" id="go">${signup ? "가입하고 시작하기" : "로그인"}</button>
-      <p class="hint">시범 운영 중이에요. 확인 메일은 보내지 않아요. 비밀번호를 잊으면 앱 관리자에게 알려 주세요.</p>
+      ${VIVID ? `${signup ? "" : '<p class="rc-forgot"><a href="#/teacher/recover">🔑 이메일·비밀번호를 잊었어요</a></p>'}
+      <p class="hint">시범 운영 중이에요. 확인 메일은 보내지 않아요. ${signup ? "가입하면 <b>복구 코드</b>를 한 번 보여 드려요. 이메일·비밀번호를 잊었을 때 필요하니 꼭 적어 두세요." : "잊었을 때는 가입할 때 받은 복구 코드로 새 비밀번호를 정해요."}</p>`
+        : '<p class="hint">시범 운영 중이에요. 확인 메일은 보내지 않아요. 비밀번호를 잊으면 앱 관리자에게 알려 주세요.</p>'}
     </form></section>`;
   const $f = $app.querySelector("#f");
   $f.onsubmit = async (e) => {
@@ -109,12 +111,83 @@ function TeacherLogin(signup) {
       const email = $f.querySelector("#email").value, pw = $f.querySelector("#pw").value;
       if (signup) await teacherSignup(email, pw, $f.querySelector("#name").value);
       else await teacherLogin(email, pw);
+      // 비비드: 가입하자마자 복구 코드를 만들어 한 번 보여 준다 (실패하면 대시보드의 복구 코드 칸에서 다시 만들 수 있다)
+      // 주소를 먼저 바꾸면 라우터가 대시보드를 다시 그려 코드 화면을 덮으므로, 주소는 '적어 두었어요'에서 바꾼다
+      if (signup && VIVID) {
+        const code = await teacher.newRecovery().catch(() => null);
+        if (code) return showRecovery(code, { title: "🎉 가입했어요! 복구 코드를 적어 두세요" });
+      }
       location.hash = "#/teacher";
       Dashboard();
     } catch (er) {
       $f.querySelector("#err").textContent = errText(er);
       busy(go, false);
     }
+  };
+}
+
+// ── 복구 코드 (비비드, 2026-11-08): 메일 없이 이메일·비밀번호를 되찾는 코드. 서버엔 해시만 있어 이 화면에서만 볼 수 있다 ──
+function showRecovery(code, { title, email = "" } = {}) {
+  $app.innerHTML = `${header("🔑 복구 코드")}<section class="page acct-page"><div class="card acct-form rc-show">
+      <h2 class="h3">${esc(title)}</h2>
+      ${email ? `<p>가입 메일: <b>${esc(email)}</b></p>` : ""}
+      <p class="rc-code" aria-label="복구 코드">${esc(code)}</p>
+      <div class="toolbar"><button class="btn" id="rc-copy">📋 복사하기</button></div>
+      <ul class="rc-tips">
+        <li>이메일이나 비밀번호를 잊었을 때 <b>반 코드 + 이 복구 코드</b>로 새 비밀번호를 정할 수 있어요.</li>
+        <li>지금 이 화면에서만 볼 수 있어요. 수첩·사진·메모 앱 등 <b>학생이 볼 수 없는 곳</b>에 적어 두세요.</li>
+        <li>한 번 쓰면 새 복구 코드로 바뀌어요.</li>
+      </ul>
+      <button class="btn primary block" id="rc-done">적어 두었어요 →</button>
+    </div></section>`;
+  $app.querySelector("#rc-copy").onclick = async () => {
+    try { await navigator.clipboard.writeText(code); toast("복구 코드를 복사했어요"); } catch { prompt("아래 복구 코드를 복사하세요", code); }
+  };
+  $app.querySelector("#rc-done").onclick = () => { if (location.hash === "#/teacher") Dashboard(); else location.hash = "#/teacher"; };
+}
+
+function TeacherRecover() {
+  $app.innerHTML = `${header("🔑 이메일·비밀번호 찾기", "#/teacher")}<section class="page acct-page"><form class="card acct-form" id="f" autocomplete="off">
+      <p class="hint">가입할 때 받은 <b>복구 코드</b>와 우리 반 <b>반 코드</b>를 적으면, 가입 메일을 알려 드리고 새 비밀번호를 정할 수 있어요.</p>
+      <label>반 코드 <small class="quiet">(학생 로그인에 쓰는 코드)</small><input id="cls" maxlength="12" autocapitalize="characters" spellcheck="false" required></label>
+      <label>복구 코드 <small class="quiet">(예: K7MX-3PQA-9RTD)</small><input id="code" maxlength="20" autocapitalize="characters" spellcheck="false" required></label>
+      <label>새 비밀번호 (8자 이상)<input id="pw" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+      <label>새 비밀번호 한 번 더<input id="pw2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+      <p class="err" id="err" role="alert"></p>
+      <button class="btn primary block" id="go">새 비밀번호로 바꾸기</button>
+      <p class="hint">반 코드를 잊었다면 학생 안내문을 보거나 학생에게 물어보세요. 복구 코드도 없다면 앱 관리자에게 알려 주세요.</p>
+    </form></section>`;
+  const $f = $app.querySelector("#f");
+  $f.onsubmit = async (e) => {
+    e.preventDefault();
+    const go = $f.querySelector("#go"), pw = $f.querySelector("#pw").value;
+    if (pw !== $f.querySelector("#pw2").value) { $f.querySelector("#err").textContent = "새 비밀번호 두 칸이 서로 달라요."; return; }
+    busy(go, true);
+    try {
+      const r = await teacherRecover($f.querySelector("#cls").value, $f.querySelector("#code").value, pw);
+      showRecovery(r.recovery, { title: "✅ 새 비밀번호로 바꿨어요. 새 복구 코드를 적어 두세요", email: r.email });
+    } catch (er) {
+      $f.querySelector("#err").textContent = errText(er);
+      busy(go, false);
+    }
+  };
+}
+
+// 대시보드의 복구 코드 칸: 아직 없으면 눈에 띄게, 있으면 작게 (새로 만들면 예전 코드는 못 씀)
+async function recoveryCard() {
+  const $c = $app.querySelector("#rc");
+  if (!$c) return;
+  let has;
+  try { has = await teacher.hasRecovery(); } catch { return; }
+  if (!$app.contains($c)) return;
+  $c.hidden = false;
+  $c.classList.toggle("rc-need", !has);
+  $c.innerHTML = has
+    ? `<span>🔑 복구 코드를 만들어 두었어요. 잃어버렸다면 새로 만들 수 있어요.</span><button class="btn ghost" id="rc-new">새로 만들기</button>`
+    : `<span>🔑 <b>복구 코드를 아직 안 만들었어요.</b> 이메일·비밀번호를 잊었을 때 필요해요.</span><button class="btn primary" id="rc-new">복구 코드 만들기</button>`;
+  $c.querySelector("#rc-new").onclick = async () => {
+    if (has && !confirm("새 복구 코드를 만들까요? 예전 복구 코드는 더 이상 쓸 수 없어요.")) return;
+    try { showRecovery(await teacher.newRecovery(), { title: "새 복구 코드를 적어 두세요" }); } catch (er) { gone(er); toast(errText(er)); }
   };
 }
 
@@ -131,6 +204,7 @@ async function Dashboard() {
       <div class="toolbar">${VIVID ? '<a class="btn" href="#/teacher/trees">🎄 우리 반 트리 모아보기</a>' : ""}<button class="btn" id="copy">📋 학생 안내문 복사</button><button class="btn ghost" id="out">로그아웃</button></div>
       <p class="hint">앱 링크는 받으신 공유 링크를 그대로 학생에게 보내 주세요. 학생은 첫 화면의 ‘학생 로그인’에서 반 코드·아이디·비밀번호를 적어요.</p>
     </div>
+    ${VIVID ? '<div class="card rc-card" id="rc" hidden></div>' : ""}
     <details class="card add-st" id="addbox"><summary><b>＋ 학생 아이디 만들기</b></summary>
       <form id="add" autocomplete="off">
         <label>별명 또는 번호 <small class="quiet">(실명 대신)</small><input id="nick" maxlength="12" placeholder="예: 3번, 민트" required></label>
@@ -168,6 +242,7 @@ async function Dashboard() {
     busy(go, false);
   };
   loadList();
+  if (VIVID) recoveryCard();
 }
 
 async function loadList() {

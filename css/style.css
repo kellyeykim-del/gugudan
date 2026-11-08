@@ -1313,3 +1313,14 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   :root[data-theme="vivid"] .tg-big { flex-wrap: wrap; align-content: center; }
   :root[data-theme="vivid"] .tg-stage { order: -1; width: 100%; }
 }
+
+/* 비비드: 선생님 복구 코드 (2026-11-08) */
+:root[data-theme="vivid"] .rc-forgot { margin: 12px 0 0; text-align: center; font-weight: 700; }
+:root[data-theme="vivid"] .rc-forgot a { color: #203A78; }
+:root[data-theme="vivid"] .rc-code { margin: 14px 0; padding: 16px 12px; text-align: center; border-radius: 14px; background: #FFF3CF; border: 2px dashed #F6C64A;
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: clamp(22px, 6vw, 32px); font-weight: 800; letter-spacing: .08em; color: #203A78; user-select: all; }
+:root[data-theme="vivid"] .rc-tips { margin: 12px 0 16px; padding-left: 18px; line-height: 1.7; font-size: 15px; }
+:root[data-theme="vivid"] .rc-card { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; padding: 12px 16px; }
+:root[data-theme="vivid"] .rc-card span { flex: 1 1 260px; }
+:root[data-theme="vivid"] .rc-card.rc-need { background: #FFF3CF; border: 2px solid #F6C64A; }
+:root[data-theme="vivid"] .acct-form input#code { letter-spacing: .1em; text-transform: uppercase; }

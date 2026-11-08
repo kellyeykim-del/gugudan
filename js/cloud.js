@@ -22,6 +22,7 @@ const MSG = {
   TOO_MANY: "학생은 100명까지 만들 수 있어요.",
   NOT_LOGGED_IN: "로그인이 끝났어요. 다시 로그인해 주세요.",
   NOT_FOUND: "학생을 찾지 못했어요.",
+  BAD_RECOVERY: "반 코드나 복구 코드가 맞지 않아요.",
   NETWORK: "인터넷 연결을 확인해 주세요.",
 };
 export const errText = (e) => MSG[e?.message] || MSG.NETWORK;
@@ -65,9 +66,18 @@ export async function teacherLogin(email, password) {
   const r = await rpc("gg_teacher_login", { p_email: email, p_password: password });
   setSession({ role: "teacher", token: r.token, name: r.name, class_code: r.class_code, email: r.email });
 }
+// 잊었을 때: 반 코드 + 복구 코드로 새 비밀번호를 정하고 바로 로그인. 돌려받은 r.email · r.recovery(새 복구 코드)를 화면에 보여 준다
+export async function teacherRecover(classCode, code, password) {
+  await leaveStudent();
+  const r = await rpc("gg_teacher_recover", { p_class: classCode, p_code: code, p_password: password });
+  setSession({ role: "teacher", token: r.token, name: r.name, class_code: r.class_code, email: r.email });
+  return r;
+}
 const tk = () => session()?.token || "";
 export const teacher = {
   students: () => rpc("gg_teacher_students", { p_token: tk() }),
+  newRecovery: () => rpc("gg_teacher_new_recovery", { p_token: tk() }).then((r) => r.code),
+  hasRecovery: () => rpc("gg_teacher_recovery_status", { p_token: tk() }),
   add: (id, nick, pin) => rpc("gg_teacher_add_student", { p_token: tk(), p_login_id: id, p_nickname: nick, p_pin: pin }),
   update: (sid, nick, pin = null) => rpc("gg_teacher_update_student", { p_token: tk(), p_student: sid, p_nickname: nick, p_pin: pin }),
   remove: (sid) => rpc("gg_teacher_delete_student", { p_token: tk(), p_student: sid }),
