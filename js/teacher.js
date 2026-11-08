@@ -126,20 +126,42 @@ function TeacherLogin(signup) {
   };
 }
 
+const coarse = () => matchMedia("(pointer: coarse)").matches; // 손가락으로 쓰는 기기(휴대폰·태블릿)
 // ── 복구 코드 (비비드, 2026-11-08): 메일 없이 이메일·비밀번호를 되찾는 코드. 서버엔 해시만 있어 이 화면에서만 볼 수 있다 ──
 function showRecovery(code, { title, email = "" } = {}) {
   $app.innerHTML = `${header("🔑 복구 코드")}<section class="page acct-page"><div class="card acct-form rc-show">
       <h2 class="h3">${esc(title)}</h2>
       ${email ? `<p>가입 메일: <b>${esc(email)}</b></p>` : ""}
       <p class="rc-code" aria-label="복구 코드">${esc(code)}</p>
-      <div class="toolbar"><button class="btn" id="rc-copy">📋 복사하기</button></div>
+      <div class="toolbar"><button class="btn" id="rc-send">📤 나에게 보내 두기</button><button class="btn" id="rc-copy">📋 복사하기</button></div>
+      <p class="hint rc-send-hint">${coarse() ? "카카오톡 ‘나와의 채팅’이나 메일·메모로 보내 두면 적지 않아도 돼요." : "메일 프로그램이 열려요. 받는 사람이 내 메일로 채워져 있으니 ‘보내기’만 누르세요."}</p>
       <ul class="rc-tips">
         <li>이메일이나 비밀번호를 잊었을 때 <b>반 코드 + 이 복구 코드</b>로 새 비밀번호를 정할 수 있어요.</li>
-        <li>지금 이 화면에서만 볼 수 있어요. 수첩·사진·메모 앱 등 <b>학생이 볼 수 없는 곳</b>에 적어 두세요.</li>
+        <li>지금 이 화면에서만 볼 수 있어요. 나에게 보내 두거나 <b>학생이 볼 수 없는 곳</b>에 적어 두세요.</li>
         <li>한 번 쓰면 새 복구 코드로 바뀌어요.</li>
       </ul>
       <button class="btn primary block" id="rc-done">적어 두었어요 →</button>
     </div></section>`;
+  // 나에게 보내 두기: 휴대폰은 공유 창(카카오톡 나와의 채팅·메일·메모), PC는 내 메일 주소가 채워진 메일 쓰기 창. 앱이 메일을 보내지는 않는다
+  const me = session() || {};
+  const mail = email || me.email || "";
+  const msg = `신나는 영어구구단 선생님 복구 코드
+
+복구 코드: ${code}
+반 코드: ${me.class_code || ""}
+가입 메일: ${mail}
+
+이메일·비밀번호를 잊었을 때: 선생님 로그인 화면 → '이메일·비밀번호를 잊었어요' → 반 코드와 복구 코드를 적어요.
+${location.origin}${location.pathname}#/teacher/recover
+
+이 메시지는 학생이 볼 수 없는 곳에 두세요.`;
+  $app.querySelector("#rc-send").onclick = async () => {
+    if (coarse() && navigator.share) {
+      try { await navigator.share({ title: "영어구구단 복구 코드", text: msg }); toast("보내 두었어요"); } catch { /* 공유 취소 */ }
+      return;
+    }
+    location.href = `mailto:${encodeURIComponent(mail)}?subject=${encodeURIComponent("[영어구구단] 선생님 복구 코드")}&body=${encodeURIComponent(msg)}`;
+  };
   $app.querySelector("#rc-copy").onclick = async () => {
     try { await navigator.clipboard.writeText(code); toast("복구 코드를 복사했어요"); } catch { prompt("아래 복구 코드를 복사하세요", code); }
   };
