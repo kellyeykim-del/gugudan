@@ -894,6 +894,10 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
 :root[data-theme="vivid"][data-region="r4"], [data-theme="vivid"] [data-region="r4"] { --page: #F6FCFB; --scene: #DDF2EE; --scene-deep: #B6DFD6; --acc: #23705F; }
 :root[data-theme="vivid"][data-region="bonus"], [data-theme="vivid"] [data-region="bonus"] { --page: #FFFDF6; --scene: #FBF2D4; --scene-deep: #EEDDA4; --acc: #85620F; }
 [data-theme="vivid"] [data-region="lilac"] { --scene: var(--lilac); --scene-deep: var(--lilac-deep); --acc: #4E3F98; }
+/* 줄바꿈 (2026-11-08 휴대폰 전수검사): 한국어는 어절(띄어쓰기) 단위로만 줄을 바꾸고, 칸보다 긴 낱말만 끝에서 끊는다.
+   짧은 제목·설명·버튼은 줄 길이를 고르게(balance), 긴 글은 마지막 줄에 한 글자만 남지 않게(pretty). 지원 안 하는 브라우저는 그냥 무시 */
+:root[data-theme="vivid"] body { word-break: keep-all; overflow-wrap: break-word; line-break: strict; text-wrap: pretty; }
+:root[data-theme="vivid"] :is(h1, h2, h3, h4, button, .btn, label, small, .quiet, .who b, .who span, .tile span, .tag, th, td) { text-wrap: balance; }
 :root[data-theme="vivid"] :is(.scene-head, .stage, .play-hero, .ready-scene, .reward-scene, .region-card) { background-image: none; }
 /* 굵은 고딕 제목 (손글씨 Gaegu보다 글자가 커 보여 한 단계 줄인다) */
 [data-theme="vivid"] :is(.home-title h1, .sec-head h2, .rtile b, .region-hero-card h2, .dno, .bar h1, .welcome h2, .onair i) { font-weight: 800; letter-spacing: -.02em; }
@@ -1272,6 +1276,16 @@ p.jtokens { font-size: 30px; letter-spacing: 8px; }
   :root[data-theme="vivid"] .av-lines { font-size: 18px; gap: 4px 10px; }
   :root[data-theme="vivid"] .av-say { font-size: 19px; }
   :root[data-theme="vivid"] .about-v .sec.av-sec { font-size: 24px; }
+}
+/* 작은 휴대폰(폭 360 이하): 방송 카드 두 줄 문장과 트리 링크가 칸 밖으로 밀리지 않게 여백·글자를 줄인다 (2026-11-08 검사: 320에서 8px 넘침) */
+@media (max-width: 360px) {
+  :root[data-theme="vivid"] .av-hero { padding: 18px 12px; }
+  :root[data-theme="vivid"] .av-onair { padding: 14px 12px 16px; }
+  :root[data-theme="vivid"] .av-lines { font-size: 16px; padding: 10px 8px; gap: 2px 6px; }
+  :root[data-theme="vivid"] .av-lines li { padding: 2px 4px; }
+  :root[data-theme="vivid"] .av-map { padding: 14px 12px; }
+  :root[data-theme="vivid"] .av-tree-end { gap: 10px; padding: 8px 12px 8px 8px; }
+  :root[data-theme="vivid"] .av-tree-end img { width: 70px; height: 84px; }
 }
 
 /* 비비드 소개: 세 친구 라디오 그림에서 대문처럼 구구단 문장이 차례로 떠오른다 (2026-11-08). 그림 위 여백에서 안테나 위로 올라가 사라짐 */

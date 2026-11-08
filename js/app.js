@@ -824,6 +824,21 @@ function route() {
   return Home();
 }
 
+// 비비드 줄바꿈 (2026-11-08 휴대폰 전수검사): 어절 단위 줄바꿈(CSS keep-all)으로도 남는 틈
+// ‘트리’|에 · …)|가 · ~|는 · ✨|가 · 단어|(am 처럼 문장부호와 한글 사이에서 줄이 갈리지 않게, 새로 그린 글자에 보이지 않는 이음표(U+2060)를 넣는다.
+// 화면 글자를 다시 읽어 쓰는 코드는 없다(답 확인·소리는 데이터로 함)
+if (VIVID) {
+  const HIT = /(?:[~)\]’”"]|\p{Extended_Pictographic}️?)(?=[가-힣])|[가-힣](?=[(\[‘“])/u, ALL = new RegExp(HIT.source, "gu");
+  const fix = (t) => { if (HIT.test(t.data)) t.data = t.data.replace(ALL, "$&⁠"); };
+  const walk = (root) => {
+    if (root.nodeType === 3) return fix(root);
+    if (root.nodeType !== 1 || root.closest("script, style, textarea")) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) fix(n);
+  };
+  new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach(walk))).observe(document.body, { childList: true, subtree: true });
+  walk(document.body);
+}
 window.addEventListener("hashchange", route);
 // 로그인이 끝나거나(비밀번호 재설정 등) 선생님 세션이 만료되면 홈의 계정 줄을 새로 그린다
 document.addEventListener("gugudan:session", () => { if (!location.hash || location.hash === "#/") route(); });
