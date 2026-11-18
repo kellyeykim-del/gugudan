@@ -580,6 +580,7 @@ function stepSee($s, d, drill, done) {
           (e) => live && show(e === "play" ? "playing" : e === "pause" ? "paused" : "idle"));
         live = false;
         show("idle");
+        if (finished === "missing") return ($s.querySelector("#stage-note").textContent = "선생님 원음을 준비하고 있어요. 곧 여기서 들을 수 있어요");
         if (!finished) $s.querySelector("#stage-note").textContent = "멈췄어요. 다시 들으려면 비트낭독을 눌러요";
         if (finished) done();
       };

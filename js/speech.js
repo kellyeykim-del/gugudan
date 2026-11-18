@@ -38,15 +38,15 @@ function playFile(src, speed, onState) {
     const a = new Audio(src);
     a.playbackRate = CLIP_RATES[speed] || 1;
     a.preservesPitch = true;
-    const done = () => { if (current?.a === a) current = null; resolve(); };
+    const done = (ok = true) => { if (current?.a === a) current = null; resolve(ok); }; // 파일을 못 읽으면 false
     current = { a, done };
     if (onState) {
       a.onplay = () => onState("play");
       a.onpause = () => onState("pause");
     }
     a.onended = () => { onState?.("ended"); done(); };
-    a.onerror = () => { onState?.("ended"); done(); };
-    a.play().catch(() => { onState?.("ended"); done(); });
+    a.onerror = () => { onState?.("ended"); done(false); };
+    a.play().catch(() => { onState?.("ended"); done(false); });
   });
 }
 
@@ -98,7 +98,8 @@ export async function playDan(id, speed, onState) {
   stop();
   const my = ++runId;
   if (!DAN_CLIPS[id]) return false;
-  await playFile(`audio/dan/${DAN_CLIPS[id]}`, speed, onState);
+  const ok = await playFile(`audio/dan/${DAN_CLIPS[id]}`, speed, onState);
+  if (ok === false) return "missing"; // 칸은 있는데 원음 파일이 아직 없음
   return my === runId;
 }
 
