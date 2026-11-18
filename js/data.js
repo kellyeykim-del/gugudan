@@ -295,7 +295,8 @@ export const DANS = [
     examples: S7.slice(0, 6).map((s, i) => `${i >= 4 ? "Does" : "Do"} ${low(s)} like Korean food?`),
   },
   {
-    no: 33, meaning: "있잖아 한 개가", drillFromExamples: true,
+    // 33~36단: 10단처럼 표의 기본 문장(There is · There are · Is there? · Are there?)을 먼저(baseFirst), 그 아래 응용 문장. 가리기·순서 맞추기는 응용 문장으로
+    no: 33, meaning: "있잖아 한 개가", drillFromExamples: true, baseFirst: true,
     lines: ["There is a ~.", "There is an ~."],
     theme: { en: "There is a/an", ko: "한 개가 있잖아" },
     examples: [
@@ -304,7 +305,7 @@ export const DANS = [
     ],
   },
   {
-    no: 34, meaning: "있잖아 여러 개가", drillFromExamples: true,
+    no: 34, meaning: "있잖아 여러 개가", drillFromExamples: true, baseFirst: true,
     lines: ["There are ~."],
     theme: { en: "There are", ko: "여러 개가 있잖아" },
     examples: [
@@ -314,13 +315,13 @@ export const DANS = [
     ],
   },
   {
-    no: 35, meaning: "있니? 한 개가", drillFromExamples: true,
+    no: 35, meaning: "있니? 한 개가", drillFromExamples: true, baseFirst: true,
     lines: ["Is there a ~?", "Is there an ~?"],
     theme: { en: "Is there a/an ~?", ko: "한 개가 있니?" },
     examples: ["Is there anything wrong?", "Is there anything to eat?", "Is there a good reason?"],
   },
   {
-    no: 36, meaning: "있니? 여러 개가", drillFromExamples: true,
+    no: 36, meaning: "있니? 여러 개가", drillFromExamples: true, baseFirst: true,
     lines: ["Are there ~s?"],
     theme: { en: "Are there ~s?", ko: "여러 개가 있니?" },
     examples: ["Are there chair{s} to sit on?", "Are there book{s} to read?", "Are there people to help us?"],
@@ -433,8 +434,10 @@ export const getDan = (id) => DANS.find((d) => d.id === String(id)) || SENT_DANS
 
 // 단을 연습할 때 쓰는 문장: 틀이 "~"로 된 단은 응용 문장으로 연습
 export const drillLines = (d) => (d.drillFromExamples ? d.examples : d.lines);
-// 카드·목록에 보이는 첫 줄 (10단은 의문사 Who (누구))
-export const faceLine = (d) => (d.wordList ? d.lines[0] : drillLines(d)[0]);
+// 표의 기본 줄을 먼저 보이고 응용 문장을 그 아래에 두는 단 (10단 의문사, 33~36단 There is/are)
+export const baseFirst = (d) => !!(d.wordList || d.baseFirst);
+// 카드·목록에 보이는 첫 줄 (10단은 의문사 Who (누구), 33단은 There is a ~.)
+export const faceLine = (d) => (baseFirst(d) ? d.lines[0] : drillLines(d)[0]);
 
 // 3인칭 변화형은 자동으로 빨간색
 export const THIRD_FORMS = new Set(["does", "doesn't", "has", "goes", "comes", "gets", "likes", "makes", "wants", "needs"]);

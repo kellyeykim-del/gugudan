@@ -1,6 +1,6 @@
-// 소리 내기: ElevenLabs 새 목소리(바꾼 단만) → 낭독 원음(mp3 클립) → Azure로 미리 만든 mp3 → 브라우저 내장 TTS 순서.
-// 단마다 비트낭독(audio/dan)은 따로 playDan()이 통째로 튼다.
-import { LINE_CLIPS, DAN_CLIPS } from "./audio-manifest.js";
+// 소리 내기: 선생님 낭독 원음(sogenius_pn 줄 클립) → ElevenLabs 목소리 → Azure로 미리 만든 mp3 → 브라우저 내장 TTS 순서.
+// 단마다 전체 읽기(audio/read)는 playRead(), 비트낭독(audio/dan, 마이크로닷)은 playDan()이 통째로 튼다.
+import { LINE_CLIPS, DAN_CLIPS, READ_CLIPS, FULL_READ } from "./audio-manifest.js";
 import { TTS_CLIPS } from "./tts-manifest.js";
 import { VOICE_CLIPS } from "./voice-manifest.js";
 
@@ -29,6 +29,8 @@ const clipKey = (t) => clean(t).toLowerCase().replace(/[^a-z' ]/g, "").replace(/
 
 export const hasClip = (text) => !!LINE_CLIPS[clipKey(text)];
 export const hasDanClip = (id) => !!DAN_CLIPS[id];
+export const hasRead = (id) => !!READ_CLIPS[id];
+export const hasFullRead = !!FULL_READ;
 
 let current = null; // 지금 재생 중인 { a: Audio, done }
 
@@ -70,9 +72,9 @@ function tts(text, speed) {
 // useClip=false면 원음이 있어도 미리 만든 음성으로 (한 단 안에서 목소리를 섞지 않으려고)
 export function speak(text, speed = "normal", useClip = true) {
   const k = clipKey(text);
-  if (VOICE_CLIPS[k]) return playFile(`audio/voice/${VOICE_CLIPS[k]}`, speed);
   const f = useClip && LINE_CLIPS[k];
   if (f) return playFile(`audio/lines/${f}`, speed);
+  if (VOICE_CLIPS[k]) return playFile(`audio/voice/${VOICE_CLIPS[k]}`, speed);
   return TTS_CLIPS[k] ? playFile(`audio/tts/${TTS_CLIPS[k]}`, speed) : tts(text, speed);
 }
 
@@ -100,6 +102,40 @@ export async function playDan(id, speed, onState) {
   if (!DAN_CLIPS[id]) return false;
   const ok = await playFile(`audio/dan/${DAN_CLIPS[id]}`, speed, onState);
   if (ok === false) return "missing"; // 칸은 있는데 원음 파일이 아직 없음
+  return my === runId;
+}
+
+// 한 단의 선생님 전체 읽기 원음을 통째로 재생하고, 지금 읽는 줄 번호를 onLine(i)로 알린다(끝나면 -1).
+// 31·32단은 like 7줄 뒤에 want·need 7줄씩이 이어지므로 줄 번호는 i % 7 (같은 주어 줄이 다시 밝아짐)
+export async function playRead(id, speed, onLine) {
+  stop();
+  const my = ++runId;
+  const r = READ_CLIPS[id];
+  if (!r) return false;
+  let last = -2;
+  const tick = () => {
+    const a = current?.a;
+    if (!a || my !== runId) return;
+    let i = -1;
+    for (let k = 0; k < r.marks.length; k++) if (a.currentTime >= r.marks[k]) i = k;
+    const row = i < 0 ? -1 : i % (r.rows || r.marks.length);
+    if (row !== last) { last = row; onLine?.(row); }
+  };
+  const timer = setInterval(tick, 60); // 줄 사이가 0.4초쯤인 단도 있어 자주 본다
+  const ok = await playFile(`audio/read/${r.file}`, speed);
+  clearInterval(timer);
+  onLine?.(-1);
+  if (ok === false) return "missing";
+  return my === runId;
+}
+
+// 36단 전체 읽기(선생님 원음 한 곡)
+export async function playFullRead(speed, onState) {
+  stop();
+  const my = ++runId;
+  if (!FULL_READ) return false;
+  const ok = await playFile(`audio/read/${FULL_READ}`, speed, onState);
+  if (ok === false) return "missing";
   return my === runId;
 }
 

@@ -1,7 +1,7 @@
 // 화면 라우터와 각 화면. 해시 주소(#/table, #/dan/7 …)로 화면을 바꾼다.
-import { DANS, MAIN_DANS, BONUS_DANS, FAMILIES, getDan, drillLines, faceLine } from "./data.js";
+import { DANS, MAIN_DANS, BONUS_DANS, FAMILIES, getDan, drillLines, faceLine, baseFirst } from "./data.js";
 import { store } from "./store.js";
-import { speak, speakAll, stop, canSpeak, playDan, hasDanClip, pauseAudio, resumeAudio } from "./speech.js";
+import { speak, speakAll, stop, canSpeak, playDan, hasDanClip, pauseAudio, resumeAudio, playRead, hasRead, playFullRead, hasFullRead } from "./speech.js";
 import { buildQuiz, findBlank, tokens, splitPunct, shuffle } from "./quiz.js";
 import { $app, esc, hl, danLabel, starsHtml, isLocked, toast, header, runLeave } from "./ui.js";
 import { Games, Mole, Roulette, Pairs } from "./games.js";
@@ -373,12 +373,27 @@ function danCard(d) {
 
 function Table(params) {
   if (params.get("locked")) toast("36단을 모두 통과하면 보너스 단이 열려요");
+  // 비비드 화면: 36단 전체 읽기 원음(선생님 한 곡)을 표 위에서 바로 듣기
+  const full = VIVID && canSpeak && hasFullRead;
   $app.innerHTML = `${header("구구단표")}
     <section class="page">
+      ${full ? '<div class="toolbar"><button class="btn primary" id="fullread">▶ 36단 전체 듣기</button><span class="quiet">선생님 원음 · 약 5분</span></div>' : ""}
       <div class="grid-d">${MAIN_DANS.map(danCard).join("")}</div>
       <h2 class="sec">보너스 단 <span class="quiet">make · want/need · 의문사</span></h2>
       <div class="grid-d">${BONUS_DANS.map(danCard).join("")}</div>
     </section>`;
+  const fb = $app.querySelector("#fullread");
+  if (fb) {
+    let on = false;
+    const idle = () => { on = false; fb.textContent = "▶ 36단 전체 듣기"; };
+    fb.onclick = async () => {
+      if (on) { stop(); return idle(); }
+      on = true; fb.textContent = "■ 그만 듣기";
+      const r = await playFullRead(store.settings.speed);
+      if (r === "missing") toast("원음 파일을 열지 못했어요");
+      idle();
+    };
+  }
 }
 
 // ───────────────────────── 범위 고르기 ─────────────────────────
@@ -532,17 +547,17 @@ function bindSpeed(root, rerender) {
 }
 
 function stepSee($s, d, drill, done) {
-  // 10단(의문사): 표처럼 의문사 7개를 먼저 보이고 듣기는 영어만(Who), 응용 문장은 그 아래에
-  const lines = d.wordList ? d.lines : drill;
+  // 10단(의문사)·33~36단(There is/are): 표의 기본 줄을 먼저 보이고(10단 듣기는 영어만 Who), 응용 문장은 그 아래에
+  const lines = baseFirst(d) ? d.lines : drill;
   const say = (l) => (d.wordList ? l.replace(/\s*\([^)]*\)\s*$/, "") : l);
   const render = () => {
     $s.innerHTML = `
       <div class="toolbar">${canSpeak ? `<button class="btn primary" id="playall">▶ 전체 듣기</button>${hasDanClip(d.id) ? '<button class="btn beat" id="beat">🎵 비트낭독</button>' : ""}${speedPicker()}` : `<span class="quiet">이 브라우저는 소리 읽기를 지원하지 않아요</span>`}</div>
-      ${hasDanClip(d.id) ? '<p class="hint">🎵 비트낭독은 선생님 원음이에요.</p>' : ""}
+      ${hasDanClip(d.id) || hasRead(d.id) ? `<p class="hint">${hasRead(d.id) ? "▶ 전체 듣기" : ""}${hasRead(d.id) && hasDanClip(d.id) ? "와 " : ""}${hasDanClip(d.id) ? "🎵 비트낭독" : ""}은 선생님 원음이에요.</p>` : ""}
       ${d.swap ? `<p class="hint">🔁 표에는 <b>${esc(d.swap)}</b>가 함께 적혀 있어요. like 자리에 want(원해) · need(필요해)를 넣어서도 말해 봐요.</p>` : ""}
       <ol class="lines">${lines.map((l, i) => `<li data-i="${i}"><span>${hl(l)}</span>${canSpeak ? '<span class="spk">🔊</span>' : ""}</li>`).join("")}</ol>
       ${d.no === 1 && !d.bonus && !d.sent ? whoPanel(lines) : ""}
-      ${d.examples.length && (!d.drillFromExamples || d.wordList) ? `
+      ${d.examples.length && (!d.drillFromExamples || baseFirst(d)) ? `
         <h3 class="sec">응용 문장 <span class="quiet">${esc(d.theme?.en || "")} · ${esc(d.theme?.ko || "")}</span></h3>
         <ol class="lines small">${d.examples.map((l, i) => `<li data-ex="${i}"><span>${hl(l)}</span>${canSpeak ? '<span class="spk">🔊</span>' : ""}</li>`).join("")}</ol>` : ""}
       <button class="btn block" id="seen">다 봤어요 ✓</button>`;
@@ -551,7 +566,10 @@ function stepSee($s, d, drill, done) {
     const all = $s.querySelector("#playall");
     if (all) all.onclick = async () => {
       const items = [...$s.querySelectorAll("li[data-i]")];
-      const finished = await speakAll(lines.map(say), store.settings.speed, (i) => items.forEach((li, j) => li.classList.toggle("now", j === i)));
+      const mark = (i) => items.forEach((li, j) => li.classList.toggle("now", j === i));
+      // 선생님 전체 읽기 원음(sogenius_pn)이 있으면 통째로 틀고 읽는 줄을 밝힌다. 없거나 파일이 안 열리면 한 줄씩
+      let finished = hasRead(d.id) && lines === d.lines ? await playRead(d.id, store.settings.speed, mark) : "missing";
+      if (finished === "missing") finished = await speakAll(lines.map(say), store.settings.speed, mark);
       if (finished) done();
     };
     const beat = $s.querySelector("#beat");
