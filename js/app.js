@@ -177,9 +177,9 @@ function About() {
         <img class="logo" src="img/sogenius-logo.png" alt="소지니어스 시즌드잉글리시">
         <h2>신나는 영어구구단</h2>
         <p class="lead">수학 구구단처럼, 영어 기본 문장을 <b>‘단’</b>으로 외웁니다.</p>
-        <div class="mini-dan" aria-label="11단 예시">
+        <div class="mini-dan" aria-label="13단 예시">
           <span>I have.</span><span>You have.</span><span>We have.</span><span>They have.</span>
-          <span>He <i class="red">has</i>.</span><span>She <i class="red">has</i>.</span><span>It <i class="red">has</i>.</span>
+          <span>She <i class="red">has</i>.</span><span>He <i class="red">has</i>.</span><span>It <i class="red">has</i>.</span>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ function About() {
 // 비비드 소개 (2026-11-08, 시안 proposals/about-2026-11-06 적용). 반짝이 수·구간 이름·상점 가격은 실제 데이터에서 가져온다
 function AboutVivid() {
   setRegion("home");
-  const DAN11 = ["I have.", "You have.", "We have.", "They have.", "He <span class=\"red\">has</span>.", "She <span class=\"red\">has</span>.", "It <span class=\"red\">has</span>."];
+  const DAN11 = ["I have.", "You have.", "We have.", "They have.", "She <span class=\"red\">has</span>.", "He <span class=\"red\">has</span>.", "It <span class=\"red\">has</span>."]; // 13단 (2023 구구단표)
   const mainGain = danGain(), bonusGain = danGain({ bonus: true });
   const deco = ITEMS.filter((it) => !it.hat && it.k !== "lights").map((it) => it.p);
   const hasHats = ITEMS.some((it) => it.hat);
@@ -248,9 +248,9 @@ function AboutVivid() {
             비트에 맞춰 소리 내어 외우다 보면, 영어 문장이 머리보다 입에서 먼저 나와요.</p>
         </div>
         <div class="av-onair">
-          <div class="av-onair-head"><span class="av-lamp">ON AIR</span><b>11단</b><span>${esc(getDan(11)?.meaning || "")}</span></div>
+          <div class="av-onair-head"><span class="av-lamp">ON AIR</span><b>13단</b><span>${esc(getDan(13)?.meaning || "")}</span></div>
           <ol class="av-lines">${DAN11.map((l) => `<li>${l}</li>`).join("")}</ol>
-          <button class="btn primary" id="av-play">▶ 11단 비트낭독 들어 보기</button>
+          <button class="btn primary" id="av-play">▶ 13단 비트낭독 들어 보기</button>
         </div>
       </div>
 
@@ -344,16 +344,16 @@ function AboutVivid() {
         <a class="btn ghost" href="https://sogenius.co.kr/" target="_blank" rel="noopener">소지니어스 홈페이지 ↗</a>
       </div>
     </section>`;
-  // 11단 비트낭독: 누르면 재생, 다시 누르면 멈춤. 녹음 파일이 없으면 문장을 하나씩 읽고 그 줄을 밝힌다
+  // 13단(have) 비트낭독: 누르면 재생, 다시 누르면 멈춤. 녹음 파일이 없으면 문장을 하나씩 읽고 그 줄을 밝힌다
   const btn = $app.querySelector("#av-play"), lis = [...$app.querySelectorAll(".av-lines li")];
   const plain = DAN11.map((l) => l.replace(/<[^>]+>/g, ""));
   let on = false, run = 0;
-  const idle = () => { on = false; btn.textContent = "▶ 11단 비트낭독 들어 보기"; lis.forEach((li) => li.classList.remove("on")); };
+  const idle = () => { on = false; btn.textContent = "▶ 13단 비트낭독 들어 보기"; lis.forEach((li) => li.classList.remove("on")); };
   btn.onclick = async () => {
     if (on) { stop(); return idle(); }
     on = true; btn.textContent = "■ 그만 듣기";
     const my = ++run; // 멈춘 뒤 다시 누른 재생을 앞의 재생 끝이 덮지 않게
-    if (hasDanClip(11)) await playDan(11, store.settings.speed);
+    if (hasDanClip(13)) await playDan(13, store.settings.speed);
     else await speakAll(plain, store.settings.speed, (i) => lis.forEach((li, k) => li.classList.toggle("on", k === i)));
     if (my === run) idle();
   };
@@ -535,7 +535,8 @@ function stepSee($s, d, lines, done) {
   const render = () => {
     $s.innerHTML = `
       <div class="toolbar">${canSpeak ? `<button class="btn primary" id="playall">▶ 전체 듣기</button>${hasDanClip(d.id) ? '<button class="btn beat" id="beat">🎵 비트낭독</button>' : ""}${speedPicker()}` : `<span class="quiet">이 브라우저는 소리 읽기를 지원하지 않아요</span>`}</div>
-      ${hasDanClip(d.id) ? '<p class="hint">🎵 비트낭독은 선생님 원음이에요. 원음은 She가 He보다 먼저 나와요.</p>' : ""}
+      ${hasDanClip(d.id) ? '<p class="hint">🎵 비트낭독은 선생님 원음이에요.</p>' : ""}
+      ${d.swap ? `<p class="hint">🔁 표에는 <b>${esc(d.swap)}</b>가 함께 적혀 있어요. like 자리에 want(원해) · need(필요해)를 넣어서도 말해 봐요.</p>` : ""}
       <ol class="lines">${lines.map((l, i) => `<li data-i="${i}"><span>${hl(l)}</span>${canSpeak ? '<span class="spk">🔊</span>' : ""}</li>`).join("")}</ol>
       ${d.no === 1 && !d.bonus && !d.sent ? whoPanel(lines) : ""}
       ${d.examples.length && !d.drillFromExamples ? `

@@ -1,15 +1,19 @@
 // 학습 기록을 이 기기의 localStorage에 저장한다.
 import { MAIN_DANS } from "./data.js";
+import { migrateV1, CUR } from "./curriculum.js";
 
 const KEY = "gugudan.v1";
 const STEPS = ["see", "hide", "order"]; // 외우기 3단계 = 별 3개
 
-const blank = () => ({ progress: {}, wrong: {}, best: {}, settings: { speed: "normal", unlockAll: false } });
+const blank = () => ({ cur: CUR, progress: {}, wrong: {}, best: {}, settings: { speed: "normal", unlockAll: false } });
 
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? { ...blank(), ...JSON.parse(raw) } : blank();
+    if (!raw) return blank();
+    const old = JSON.parse(raw), v1 = migrateV1(old); // 예전 단 번호 기록은 2023 구구단표 번호로 옮긴다
+    if (v1 !== old) localStorage.setItem(KEY, JSON.stringify(v1));
+    return { ...blank(), ...v1 };
   } catch {
     return blank();
   }

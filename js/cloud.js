@@ -1,6 +1,7 @@
 // 선생님 · 학생 계정 (Supabase 서버 함수 gg_*). 로그인하지 않으면 지금처럼 이 기기에만 저장된다.
 // 학습 기록 구조(gugudan.v1 · gugudan.journey)는 그대로 두고, 학생으로 로그인했을 때만 통째로 서버에 올려 둔다.
 // 아래 키는 브라우저에 공개되는 publishable 키다(비밀 키 아님). 표는 RLS로 막혀 있고 gg_ 함수로만 읽고 쓴다.
+import { migrateV1 } from "./curriculum.js";
 const URL = "https://urzitmmblbhvnwdooluf.supabase.co/rest/v1/rpc/";
 const KEY = "sb_publishable_oDjzLEMyHHw3d7jMMbQFxQ_4pM0yN1L";
 const SESSION = "gugudan.session"; // { token, role, ...보여 줄 정보, synced }
@@ -75,7 +76,8 @@ export async function teacherRecover(classCode, code, password) {
 }
 const tk = () => session()?.token || "";
 export const teacher = {
-  students: () => rpc("gg_teacher_students", { p_token: tk() }),
+  // 아직 앱을 다시 열지 않은 학생 기록도 새 단 번호로 보여 준다(서버 기록은 그 학생이 다음에 열 때 바뀜)
+  students: () => rpc("gg_teacher_students", { p_token: tk() }).then((rows) => (rows || []).map((r) => ({ ...r, v1: migrateV1(r.v1) }))),
   newRecovery: () => rpc("gg_teacher_new_recovery", { p_token: tk() }).then((r) => r.code),
   hasRecovery: () => rpc("gg_teacher_recovery_status", { p_token: tk() }),
   add: (id, nick, pin) => rpc("gg_teacher_add_student", { p_token: tk(), p_login_id: id, p_nickname: nick, p_pin: pin }),
