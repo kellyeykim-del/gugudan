@@ -7,7 +7,7 @@ import { store } from "./store.js";
 import { speak, speakAll, stop, canSpeak } from "./speech.js";
 import { pool, blankQ, shuffle, tokens, findBlank, splitPunct } from "./quiz.js";
 import { $app, esc, hl, danLabel, header, toast } from "./ui.js";
-import { drillLines } from "./data.js";
+import { faceLine } from "./data.js";
 import { pose, VIVID } from "./village.js";
 import { mountRecorder, stopRecorder } from "./recorder.js";
 import { learnerGa } from "./welcome.js";
@@ -403,7 +403,7 @@ export function Station() {
     }
     // 목소리 카드: 단마다 한 장. 통과한 단은 채워지고 누르면 그 단으로 간다
     const chips = dans.map((d) => store.passed(d.id)
-      ? `<a class="vcard on" href="#/dan/${d.id}" title="${esc(drillLines(d)[0])}">${d.no}</a>`
+      ? `<a class="vcard on" href="#/dan/${d.id}" title="${esc(faceLine(d))}">${d.no}</a>`
       : `<span class="vcard"${VIVID ? ` title="${esc(d.meaning)}"` : ""}>${d.no}</span>`).join("");
     return `<article class="region-card" data-region="${r.id}">
       <div class="region-top">
@@ -493,7 +493,7 @@ export function showVoiceCard(d) {
   box.innerHTML = `<div class="reward-card">
       <div class="reward-scene" data-region="${r.id}">
         ${pose(r.host, "celebrate", { cls: "rw-char", label: "축하하는 친구" })}
-        <div class="vc-big"><span>${danLabel(d)}</span><b>${esc(drillLines(d)[0])}</b><small>${esc(d.meaning)}</small></div>
+        <div class="vc-big"><span>${danLabel(d)}</span><b>${esc(faceLine(d))}</b><small>${esc(d.meaning)}</small></div>
       </div>
       <div class="reward-body">
         <span class="kicker">🎉 ${danLabel(d)} 통과! 별 3개</span>

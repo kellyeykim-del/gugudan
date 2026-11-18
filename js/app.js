@@ -1,5 +1,5 @@
 // 화면 라우터와 각 화면. 해시 주소(#/table, #/dan/7 …)로 화면을 바꾼다.
-import { DANS, MAIN_DANS, BONUS_DANS, FAMILIES, getDan, drillLines } from "./data.js";
+import { DANS, MAIN_DANS, BONUS_DANS, FAMILIES, getDan, drillLines, faceLine } from "./data.js";
 import { store } from "./store.js";
 import { speak, speakAll, stop, canSpeak, playDan, hasDanClip, pauseAudio, resumeAudio } from "./speech.js";
 import { buildQuiz, findBlank, tokens, splitPunct, shuffle } from "./quiz.js";
@@ -132,7 +132,7 @@ function Region(id) {
     return `<a class="dcell ${st} ${locked ? "locked" : ""}" href="${locked ? `#/region/${r.id}` : `#/dan/${d.id}`}">
         <span class="dno">${d.no}<small>단</small></span>
         ${locked ? '<span class="dlock">🔒</span>' : starsHtml(d.id)}
-        <span class="dfirst">${hl(drillLines(d)[0])}</span>
+        <span class="dfirst">${hl(faceLine(d))}</span>
       </a>`;
   };
   setRegion(r.id);
@@ -362,7 +362,7 @@ function AboutVivid() {
 // ───────────────────────── 구구단표 ─────────────────────────
 function danCard(d) {
   const locked = isLocked(d);
-  const first = drillLines(d)[0];
+  const first = faceLine(d);
   return `<a class="dcard ${store.passed(d.id) ? "done" : ""} ${locked ? "locked" : ""}"
       href="${locked ? "#/table?locked=1" : `#/dan/${d.id}`}">
       <div class="dhead"><b>${danLabel(d)}</b>${locked ? "🔒" : starsHtml(d.id)}</div>
@@ -531,7 +531,10 @@ function bindSpeed(root, rerender) {
   root.querySelectorAll("[data-speed]").forEach((b) => (b.onclick = () => { store.setSetting("speed", b.dataset.speed); rerender(); }));
 }
 
-function stepSee($s, d, lines, done) {
+function stepSee($s, d, drill, done) {
+  // 10단(의문사): 표처럼 의문사 7개를 먼저 보이고 듣기는 영어만(Who), 응용 문장은 그 아래에
+  const lines = d.wordList ? d.lines : drill;
+  const say = (l) => (d.wordList ? l.replace(/\s*\([^)]*\)\s*$/, "") : l);
   const render = () => {
     $s.innerHTML = `
       <div class="toolbar">${canSpeak ? `<button class="btn primary" id="playall">▶ 전체 듣기</button>${hasDanClip(d.id) ? '<button class="btn beat" id="beat">🎵 비트낭독</button>' : ""}${speedPicker()}` : `<span class="quiet">이 브라우저는 소리 읽기를 지원하지 않아요</span>`}</div>
@@ -539,16 +542,16 @@ function stepSee($s, d, lines, done) {
       ${d.swap ? `<p class="hint">🔁 표에는 <b>${esc(d.swap)}</b>가 함께 적혀 있어요. like 자리에 want(원해) · need(필요해)를 넣어서도 말해 봐요.</p>` : ""}
       <ol class="lines">${lines.map((l, i) => `<li data-i="${i}"><span>${hl(l)}</span>${canSpeak ? '<span class="spk">🔊</span>' : ""}</li>`).join("")}</ol>
       ${d.no === 1 && !d.bonus && !d.sent ? whoPanel(lines) : ""}
-      ${d.examples.length && !d.drillFromExamples ? `
+      ${d.examples.length && (!d.drillFromExamples || d.wordList) ? `
         <h3 class="sec">응용 문장 <span class="quiet">${esc(d.theme?.en || "")} · ${esc(d.theme?.ko || "")}</span></h3>
         <ol class="lines small">${d.examples.map((l, i) => `<li data-ex="${i}"><span>${hl(l)}</span>${canSpeak ? '<span class="spk">🔊</span>' : ""}</li>`).join("")}</ol>` : ""}
       <button class="btn block" id="seen">다 봤어요 ✓</button>`;
-    $s.querySelectorAll("li[data-i]").forEach((li) => (li.onclick = () => { stop(); speak(lines[+li.dataset.i], store.settings.speed); }));
+    $s.querySelectorAll("li[data-i]").forEach((li) => (li.onclick = () => { stop(); speak(say(lines[+li.dataset.i]), store.settings.speed); }));
     $s.querySelectorAll("[data-ex]").forEach((li) => (li.onclick = () => { stop(); speak(d.examples[+li.dataset.ex], store.settings.speed); }));
     const all = $s.querySelector("#playall");
     if (all) all.onclick = async () => {
       const items = [...$s.querySelectorAll("li[data-i]")];
-      const finished = await speakAll(lines, store.settings.speed, (i) => items.forEach((li, j) => li.classList.toggle("now", j === i)));
+      const finished = await speakAll(lines.map(say), store.settings.speed, (i) => items.forEach((li, j) => li.classList.toggle("now", j === i)));
       if (finished) done();
     };
     const beat = $s.querySelector("#beat");

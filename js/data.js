@@ -116,8 +116,8 @@ export const DANS = [
     ],
   },
   {
-    // 응용 문장은 Claude 초안(감수 전)
-    no: 10, meaning: "5W1H 의문사", drillFromExamples: true, blankGroups: ["wh"],
+    // 화면에는 표처럼 의문사 7개를 먼저(wordList), 그 아래 응용 문장. 가리기·순서 맞추기는 응용 문장으로 연습. 응용 문장은 Claude 초안(감수 전)
+    no: 10, meaning: "5W1H 의문사", wordList: true, drillFromExamples: true, blankGroups: ["wh"],
     lines: ["Who (누구)", "What (무엇)", "When (언제)", "Where (어디서)", "Why (왜)", "How (어떻게)", "Which (어떤)"],
     theme: { en: "Ask about me", ko: "나에 대해 물어보기" },
     examples: [
@@ -433,6 +433,8 @@ export const getDan = (id) => DANS.find((d) => d.id === String(id)) || SENT_DANS
 
 // 단을 연습할 때 쓰는 문장: 틀이 "~"로 된 단은 응용 문장으로 연습
 export const drillLines = (d) => (d.drillFromExamples ? d.examples : d.lines);
+// 카드·목록에 보이는 첫 줄 (10단은 의문사 Who (누구))
+export const faceLine = (d) => (d.wordList ? d.lines[0] : drillLines(d)[0]);
 
 // 3인칭 변화형은 자동으로 빨간색
 export const THIRD_FORMS = new Set(["does", "doesn't", "has", "goes", "comes", "gets", "likes", "makes", "wants", "needs"]);
