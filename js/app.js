@@ -289,7 +289,7 @@ function AboutVivid() {
           <span class="onair" aria-hidden="true">${ON_AIR.map((t, i) => `<i style="--d:${i * 1.5}s;--x:${i % 2 ? -1 : 1}">${t}</i>`).join("")}</span>
         </div>
         <div class="av-story-text">
-          <p class="av-say">“영어 방송을 하고 싶어.<br>하나씩 알려 줄래?”</p>
+          <p class="av-say">“영어 방송을 하고 싶어. 하나씩 알려 줄래?”</p>
           <p>한 단을 외울 때마다 <b>목소리 카드</b> 한 장! 36장을 모으면 라디오를 깨워 방송을 시작해요.</p>
           <ul class="av-friends">
             ${friend("nuri", "welcome", "말문이", "말하기", "")}
